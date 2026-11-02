@@ -50,7 +50,7 @@
   <div class="mhead">
     {% if carnet_sel %}
     <h1>Matricula't · Carnet {{ carnet_sel.codi }}</h1>
-    <p>{{ T(carnet_sel.nom_ca, carnet_sel.nom_es) }} · {{ T(carnet_sel.sub_ca, carnet_sel.sub_es) }}. Tria el pack que millor et vagi i paga per completar la matrícula. <a href="/matricula" style="color:var(--blau);font-weight:600">Veure tots els carnets</a></p>
+    <p>{{ T(carnet_sel.nom_ca, carnet_sel.nom_es) }}. Tria el pack que millor et vagi i paga per completar la matrícula. <a href="/matricula" style="color:var(--blau);font-weight:600">Veure tots els carnets</a></p>
     {% else %}
     <h1>Tria el teu carnet i pack</h1>
     <p>Selecciona l'opció que millor et vagi i paga per completar la matrícula.</p>
@@ -111,7 +111,7 @@
     {% for grup in cataleg %}
     <div class="cgroup" id="carnet-{{ grup.carnet.codi }}">
       <h2><span class="cbadge">{{ grup.carnet.codi }}</span> Carnet {{ grup.carnet.codi }}</h2>
-      <p class="cdesc">{{ T(grup.carnet.nom_ca, grup.carnet.nom_es) }} · {{ T(grup.carnet.sub_ca, grup.carnet.sub_es) }}</p>
+      <p class="cdesc">{{ T(grup.carnet.nom_ca, grup.carnet.nom_es) }}</p>
       <div class="packs">
         {% set _codi = grup.carnet.codi|upper %}
         {% set _pw = pw.get(_codi) %}
@@ -127,7 +127,7 @@
             <div class="pk-top"><span class="nm">{{ T(p.nom_ca, p.nom_es) }}</span><span class="chk">✓</span></div>
             {% set _pp = (_pw.packs|selectattr('id', 'equalto', p.id)|list|first) if _pw else none %}
             <span class="pr">{% if _pp and _pp.preu_abans %}<s class="abans">{{ _pp.preu_abans }}€</s>{% endif %}{{ _pp.preu_txt if _pp else eur(p.preu) }}€</span>
-            <span class="inc">{{ T(p.inclou_ca, p.inclou_es).splitlines()|join(' · ') }}</span>
+            <span class="inc">{% if p.classes %}{{ p.classes }} pràctiques{% else %}Sense pràctiques{% endif %}</span>
           </div>
         </label>
         {% endfor %}
