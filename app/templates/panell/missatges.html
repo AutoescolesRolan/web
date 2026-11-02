@@ -1,0 +1,24 @@
+{% extends "panell/base_panell.html" %}
+{% block title %}Missatges{% endblock %}
+{% block content %}
+<h1>Missatges del formulari de contacte</h1>
+<p class="sub">També arriben per correu a la secretaria del centre triat. Per respondre, contesta aquell correu.</p>
+<div class="taula">
+<table>
+  <thead><tr><th>Data</th><th>Centre</th><th>De</th><th>Missatge</th><th>Correu</th></tr></thead>
+  <tbody>
+  {% for m in files %}
+  <tr>
+    <td style="white-space:nowrap">{{ (m.creat_en|local).strftime('%d/%m/%y %H:%M') }}</td>
+    <td>{{ m.centre.nom if m.centre else '—' }}</td>
+    <td><b>{{ m.nom }}</b><div class="sub" style="font-size:12.5px"><a href="mailto:{{ m.email }}">{{ m.email }}</a>{% if m.telefon %} · {{ m.telefon }}{% endif %}</div></td>
+    <td style="white-space:pre-wrap;max-width:520px">{{ m.text }}</td>
+    <td>{% if m.enviat.startswith('OK') %}<span class="pill ok">Enviat</span>{% else %}<span class="pill pend" title="{{ m.enviat }}">No enviat</span>{% endif %}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="5" class="sub" style="text-align:center;padding:26px">Encara no hi ha cap missatge.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{% block title %}Panell{% endblock %} · Web Rolan</title>
+<link rel="icon" href="/static/img/logo-rolan.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--blau:#2541B8;--blau-fosc:#1A2E82;--tinta:#14224F;--verd:#8BC53F;--verd-suau:#EEF7E1;--paper:#F6F7FB;--vora:#E6E9F2;--vora-forta:#D5DAE8;
+  --suau:#66708C;--tenue:#9AA2B8;--danger:#E5484D;--disp:'Bricolage Grotesque',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--body);color:var(--tinta);background:var(--paper);font-size:14.5px;line-height:1.5}
+a{color:var(--blau);text-decoration:none}
+h1,h2,h3{font-family:var(--disp);letter-spacing:-.01em}
+h1{font-size:26px;margin-bottom:4px}h2{font-size:18px;margin:22px 0 10px}
+.top{background:var(--tinta);color:#fff}
+.top-in{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:18px;min-height:58px;flex-wrap:wrap}
+.top .marca{display:flex;align-items:center;gap:9px;font-family:var(--disp);font-weight:800;color:#fff;white-space:nowrap}
+.top .marca img{width:32px;height:32px;border-radius:50%}
+.top nav{display:flex;gap:2px;flex-wrap:wrap}
+.top nav a{color:#c9d1ef;padding:8px 11px;border-radius:9px;font-weight:600;font-size:13.5px}
+.top nav a:hover,.top nav a.on{background:rgba(255,255,255,.1);color:#fff}
+.top .qui{margin-left:auto;font-size:13px;color:#aeb8dd;display:flex;gap:12px;align-items:center}
+.top .qui a{color:#fff;font-weight:600}
+.road{height:6px;background:repeating-linear-gradient(90deg,var(--verd) 0 26px,transparent 26px 46px)}
+.main{max-width:1200px;margin:0 auto;padding:26px 20px 60px}
+.sub{color:var(--suau)}
+.card{background:#fff;border:1px solid var(--vora);border-radius:14px;padding:18px 20px;margin-top:16px}
+.btn{display:inline-flex;align-items:center;gap:7px;font:600 13.5px var(--body);border:none;border-radius:10px;padding:9px 15px;cursor:pointer;background:var(--blau);color:#fff;white-space:nowrap}
+.btn:hover{background:var(--blau-fosc)}
+.btn.ghost{background:#fff;color:var(--tinta);border:1px solid var(--vora-forta)}
+.btn.verd{background:var(--verd);color:#173a05}
+.btn.perill{background:#fff;color:#b42318;border:1px solid #f3b6b8}
+.btn.sm{padding:6px 11px;font-size:12.5px}
+input,select,textarea{font:inherit;border:1px solid var(--vora-forta);border-radius:9px;padding:8px 11px;background:#fff;color:var(--tinta);max-width:100%}
+textarea{width:100%;min-height:90px}
+label{font-size:13px;font-weight:600}
+table{width:100%;border-collapse:collapse;background:#fff}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--suau);text-align:left;padding:10px 12px;border-bottom:1px solid var(--vora);background:#FAFBFD}
+td{padding:10px 12px;border-bottom:1px solid var(--vora);vertical-align:top}
+tr.clic{cursor:pointer}tr.clic:hover td{background:#F7F9FF}
+.taula{background:#fff;border:1px solid var(--vora);border-radius:14px;overflow:auto;margin-top:14px}
+.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:100px;white-space:nowrap}
+.pill.ok{background:var(--verd-suau);color:#3d5c15}.pill.pend{background:#FEF3DB;color:#8a5a12}.pill.gris{background:#EEF1F6;color:var(--suau)}
+.pill.blau{background:#EEF1FC;color:var(--blau)}
+.avis{border-radius:12px;padding:11px 15px;font-size:13.5px;margin-top:14px}
+.avis.ok{background:var(--verd-suau);color:#3d5c15;border:1px solid #cfe6b0}
+.avis.err{background:#fee2e2;color:#991b1b;border:1px solid #f3b6b8}
+.avis.warn{background:#FEF3DB;color:#8a5a12;border:1px solid #f6d9a0}
+.filtres{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:16px}
+.kpi{background:#fff;border:1px solid var(--vora);border-radius:14px;padding:14px 16px}
+.kpi b{display:block;font-family:var(--disp);font-size:26px}.kpi span{font-size:12.5px;color:var(--suau)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+.grid2 .ple{grid-column:1/-1}
+.grid2 label{display:block;margin-bottom:4px}
+.grid2 input,.grid2 select{width:100%}
+.dl{display:grid;grid-template-columns:180px 1fr;gap:6px 14px;font-size:14px}
+.dl dt{color:var(--suau)}.dl dd{font-weight:600}
+pre.reg{white-space:pre-wrap;font:12.5px/1.5 ui-monospace,Menlo,monospace;background:#F7F9FC;border:1px solid var(--vora);border-radius:10px;padding:10px 12px;color:#39425c}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}.dl{grid-template-columns:1fr}.dl dt{margin-top:6px}}
+</style>
+</head>
+<body>
+{% if u %}
+<div class="top"><div class="top-in">
+  <a class="marca" href="/gestio"><img src="/static/img/logo-rolan.png" alt="">Web Rolan</a>
+  {% set p = request.url.path %}
+  <nav>
+    <a href="/gestio" class="{{ 'on' if p == '/gestio' or p.startswith('/gestio/comanda') }}">Comandes</a>
+    <a href="/gestio/missatges" class="{{ 'on' if p.startswith('/gestio/missatges') }}">Missatges</a>
+    {% if u.rol == 'admin' %}
+    <a href="/gestio/preus" class="{{ 'on' if p.startswith('/gestio/preus') }}">Preus</a>
+    <a href="/gestio/promocions" class="{{ 'on' if p.startswith('/gestio/promocions') }}">Promocions</a>
+    <a href="/gestio/centres" class="{{ 'on' if p.startswith('/gestio/centres') }}">Centres</a>
+    <a href="/gestio/dades" class="{{ 'on' if p.startswith('/gestio/dades') }}">Dades i correus</a>
+    <a href="/gestio/usuaris" class="{{ 'on' if p.startswith('/gestio/usuaris') }}">Usuaris</a>
+    {% endif %}
+  </nav>
+  <div class="qui">{{ u.nom or u.email }}{% if u.centre %} · {{ u.centre.nom }}{% endif %} <a href="/" target="_blank" rel="noopener">Veure la web ↗</a> <a href="/gestio/sortir">Sortir</a></div>
+</div></div>
+<div class="road"></div>
+{% endif %}
+<div class="main">{% block content %}{% endblock %}</div>
+<script>
+document.addEventListener('click', function(e){
+  var tr = e.target.closest('tr[data-href]');
+  if (tr && !e.target.closest('a,button,input,select')) location.href = tr.getAttribute('data-href');
+});
+</script>
+</body>
+</html>

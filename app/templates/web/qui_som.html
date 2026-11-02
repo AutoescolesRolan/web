@@ -1,0 +1,67 @@
+{% extends "web/base_web.html" %}
+{% block title %}Qui som · Autoescoles Rolan{% endblock %}
+{% block extra_css %}
+.wrap-h{max-width:1000px;margin:0 auto;padding:44px 22px 60px}
+.h-head{text-align:center;max-width:680px;margin:0 auto 34px}
+.h-head .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--verd-fosc,#3d5c15);text-transform:uppercase;margin-bottom:12px}
+.h-head .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--verd)}
+.h-head h1{font-size:38px;color:var(--tinta);margin:0 0 10px;line-height:1.1}
+.h-head p{color:var(--text-suau);font-size:16px;line-height:1.6}
+.h-grid{display:grid;grid-template-columns:1fr 1fr;gap:38px;align-items:center}
+.h-photo{position:relative}
+.h-photo img{width:100%;border-radius:18px;display:block;box-shadow:0 18px 44px rgba(16,24,48,.18);filter:saturate(1.02)}
+.h-photo .cap{margin-top:12px;text-align:center;font-size:13px;color:var(--text-suau);font-style:italic}
+.h-text h2{color:var(--tinta);font-size:24px;margin:0 0 14px}
+.h-text p{color:#39425c;font-size:15.5px;line-height:1.7;margin:0 0 14px}
+.h-values{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:48px}
+.h-val{background:#fff;border:1px solid var(--vora);border-radius:16px;padding:22px}
+.h-val .n{font-weight:800;color:var(--tinta);margin:8px 0 4px;font-size:16px}
+.h-val .d{color:var(--text-suau);font-size:14px;line-height:1.55}
+.h-val svg{width:26px;height:26px;color:var(--verd-fosc,#3d5c15)}
+.h-cta{text-align:center;margin-top:48px}
+@media(max-width:800px){.h-grid{grid-template-columns:1fr;gap:22px}.h-values{grid-template-columns:1fr}.h-head h1{font-size:30px}}
+{% endblock %}
+{% block content %}
+<div class="wrap-h">
+  <div class="h-head">
+    <span class="eyebrow"><span class="dot"></span>Qui som</span>
+    <h1>Una història familiar des de 1987</h1>
+    <p>Som una de les primeres autoescoles de Badalona. El que va començar amb un cotxe i molta il·lusió, avui continua sent un negoci familiar que passa de generació en generació.</p>
+  </div>
+
+  <div class="h-grid">
+    <div class="h-photo">
+      <img src="/static/img/historia-rolan.png" alt="Els inicis d'Autoescoles Rolan, 1987">
+      <div class="cap">Els nostres inicis · el primer cotxe de l'autoescola</div>
+    </div>
+    <div class="h-text">
+      <h2>Com va començar tot</h2>
+      <p>L'any 1987, en <strong>Rolant Rodríguez García</strong> va obrir les portes de la nostra autoescola a Badalona. Amb aquell primer cotxe va ensenyar a conduir als primers alumnes, i va posar les bases d'un projecte fet de proximitat, paciència i confiança.</p>
+      <p>Gairebé quatre dècades després, seguim sent el mateix: una <strong>autoescola familiar</strong>, on el negoci ha anat passant de pares a fills i on cada alumne no és un número, sinó algú a qui acompanyem fins que aconsegueix el seu carnet.</p>
+      <p>Per a nosaltres, això és molt més que una feina. És la nostra història, la del nostre barri i la de totes les persones que hem ajudat a posar-se al volant.</p>
+    </div>
+  </div>
+
+  <div class="h-values">
+    <div class="h-val">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <div class="n">Tracte proper</div>
+      <div class="d">Et coneixem pel nom. T'acompanyem a cada pas, sense presses i amb confiança.</div>
+    </div>
+    <div class="h-val">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 15 8l6 .9-4.5 4.3 1 6.3-5.5-3-5.5 3 1-6.3L3 8.9 9 8z"/></svg>
+      <div class="n">Experiència</div>
+      <div class="d">Gairebé 40 anys formant conductors a Badalona i rodalies.</div>
+    </div>
+    <div class="h-val">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <div class="n">Família</div>
+      <div class="d">Un projecte que passa de generació en generació, amb la mateixa il·lusió del primer dia.</div>
+    </div>
+  </div>
+
+  <div class="h-cta">
+    <a class="btn btn-verd btn-lg" href="/preus">Comença amb nosaltres</a>
+  </div>
+</div>
+{% endblock %}

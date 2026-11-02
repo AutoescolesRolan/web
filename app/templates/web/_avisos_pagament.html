@@ -1,0 +1,10 @@
+{% if cancelat %}
+<div class="note" style="background:var(--danger-bg);border:1px solid #f3b6b8;color:#8a1f22;border-radius:12px;padding:12px 16px;font-size:13.5px;margin-top:18px">Has cancel·lat el pagament. No s'ha cobrat res: pots tornar-ho a provar quan vulguis.</div>
+{% elif err == 'nopago' %}
+<div class="note" style="background:#fee2e2;border:1px solid #f3b6b8;color:#991b1b;border-radius:12px;padding:12px 16px;font-size:13.5px;margin-top:18px">Ara mateix no es pot pagar en línia. Truca'ns al {{ escola('escola_telefon', '934 647 857') }} i acabem la matrícula per telèfon.</div>
+{% elif err == 'pagament' %}
+<div class="note" style="background:#fee2e2;border:1px solid #f3b6b8;color:#991b1b;border-radius:12px;padding:12px 16px;font-size:13.5px;margin-top:18px">No s'ha pogut obrir la pàgina de pagament. Torna-ho a provar d'aquí a un moment.</div>
+{% endif %}
+{% if stripe_test %}
+<div class="note" style="background:var(--warn-bg);border:1px solid #f6d9a0;border-radius:12px;padding:12px 16px;font-size:13px;color:#8a5a12;margin-top:18px">{% if mode_demo() %}Mode de demostració: el pagament és simulat i no es cobra res.{% else %}Mode de proves: al pagar, fes servir la targeta de test <b>4242 4242 4242 4242</b>, qualsevol data futura i qualsevol CVC. No es cobra res real.{% endif %}</div>
+{% endif %}

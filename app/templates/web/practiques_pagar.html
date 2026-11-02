@@ -1,0 +1,24 @@
+{% extends "web/base_web.html" %}
+{% block title %}Comprar pràctiques · Autoescoles Rolan{% endblock %}
+{% block extra_css %}{% include "web/_pagina_css.html" %}{% endblock %}
+{% block content %}
+<div class="wrap cwrap">
+  <h1>Comprar classes pràctiques</h1>
+  <p class="sub">Només falta el pagament.</p>
+  {% if cancelat %}<div class="note err">Has cancel·lat el pagament. No s'ha cobrat res: pots tornar-ho a provar quan vulguis.</div>
+  {% elif err == 'nopago' %}<div class="note err">Ara mateix no es pot pagar en línia. Truca'ns al {{ escola('escola_telefon', '934 647 857') }}.</div>
+  {% elif err == 'pagament' %}<div class="note err">No s'ha pogut obrir la pàgina de pagament. Torna-ho a provar d'aquí a un moment.</div>{% endif %}
+  <div class="card">
+    <ul class="files">
+      <li><span>Alumne/a</span><b>{{ c.nom_complet }}</b></li>
+      {% if c.centre %}<li><span>Centre</span><b>{{ c.centre.nom }}</b></li>{% endif %}
+      <li><span>Pràctiques</span><b>{{ c.producte_en(ll) }}</b></li>
+      {% if c.descompte %}<li><span>{{ c.promocio }}</span><b>−{{ eur2(c.descompte) }} €</b></li>{% endif %}
+      <li><span>Total</span><b>{{ eur2(c.total) }} €</b></li>
+    </ul>
+    <form method="post" action="/pagament/{{ c.token }}" style="margin-top:16px">
+      <button type="submit" class="btn btn-verd btn-lg" style="width:100%;justify-content:center"{{ ' disabled' if not stripe_on }}>Pagar {{ eur2(c.total) }} €</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

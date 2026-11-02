@@ -1,0 +1,62 @@
+{% extends "web/base_web.html" %}
+{% block title %}Política de privacitat · Autoescoles Rolan{% endblock %}
+{% block content %}
+<style>
+.legal{max-width:820px;margin:0 auto;padding:40px 22px 20px}
+.legal h1{font-size:clamp(26px,4vw,36px);font-weight:800;margin-bottom:6px}
+.legal .upd{color:var(--text-tenue);font-size:13px;margin-bottom:26px}
+.legal h2{font-size:19px;font-weight:700;margin:26px 0 8px;color:var(--tinta)}
+.legal p,.legal li{color:var(--text-suau);line-height:1.65;font-size:15px}
+.legal ul{margin:8px 0 8px 18px}
+.legal table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+.legal th,.legal td{border:1px solid var(--vora);padding:8px 10px;text-align:left;vertical-align:top}
+.legal th{background:#f7f9fc}
+.legal .rev{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:14px 16px;font-size:13.5px;margin:18px 0}
+</style>
+<div class="legal">
+  <h1>Política de privacitat</h1>
+  <p class="upd">Darrera actualització: {{ '2026' }}</p>
+
+  {% set _falta = not escola("escola_rao_social") or not escola("escola_domicili") %}{% if _falta %}
+  <div class="rev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><b>Esborrany per revisar.</b> Plantilla conforme al RGPD (UE 2016/679) i la LOPDGDD (LO 3/2018). Cal que la revisi el vostre assessor legal i completar les dades <b>[...]</b> (especialment si teniu delegat de protecció de dades i els encarregats del tractament reals).</div>
+  {% endif %}
+
+  <h2>1. Responsable del tractament</h2>
+  <ul>
+    <li><b>Titular:</b> {{ escola('escola_rao_social') or (escola('escola_nom', 'Autoescoles Rolan') ~ ' [raó social]') }} — NIF {{ escola('escola_nif') }}</li>
+    <li><b>Domicili:</b> {{ escola('escola_domicili') or '[adreça fiscal], Badalona' }}</li>
+    <li><b>Contacte:</b> {{ escola('escola_telefon') }} · {{ correu_escola }}</li>
+    <li><b>Delegat de protecció de dades (si escau):</b> [dades del DPD o "no aplica"]</li>
+  </ul>
+
+  <h2>2. Quines dades tractem i amb quina finalitat</h2>
+  <table>
+    <thead><tr><th>Finalitat</th><th>Dades</th><th>Base legal</th></tr></thead>
+    <tbody>
+      <tr><td>Gestió de la matrícula i la formació de l'alumne</td><td>Nom, DNI/NIE, data de naixement, adreça, telèfon, correu, dades del tutor legal si és menor, signatura del contracte</td><td>Execució del contracte de formació</td></tr>
+      <tr><td>Gestió de pagaments i facturació</td><td>Dades identificatives i de pagament (gestionades per la passarel·la de pagament)</td><td>Execució del contracte i obligació legal</td></tr>
+      <tr><td>Comunicacions relatives al servei</td><td>Nom i correu electrònic</td><td>Interès legítim / execució del contracte</td></tr>
+      <tr><td>Respondre les consultes del formulari de contacte</td><td>Nom, correu, telèfon i missatge</td><td>Consentiment</td></tr>
+      <tr><td>Compliment d'obligacions amb la DGT i l'Administració</td><td>Dades necessàries per a la tramitació d'expedients i exàmens</td><td>Obligació legal</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. Menors d'edat</h2>
+  <p>Per als alumnes menors d'edat es requereix el consentiment i les dades del tutor legal, que es recullen abans de formalitzar la matrícula.</p>
+
+  <h2>4. Conservació de les dades</h2>
+  <p>Les dades es conservaran mentre duri la relació i, després, durant els terminis legalment exigits (fiscals, comptables i administratius). Un cop finalitzats, es suprimiran o s'anonimitzaran.</p>
+
+  <h2>5. Destinataris i encarregats del tractament</h2>
+  <p>No es cediran dades a tercers excepte per obligació legal o per a la prestació del servei, a través d'encarregats del tractament: la passarel·la de pagament (Stripe; les dades de la targeta les tracta directament Stripe i l'autoescola no les rep), el proveïdor d'allotjament de la web (Render), el proveïdor d'enviament de correus i, si escau, la DGT. Amb cadascun es formalitza el corresponent contracte d'encarregat de tractament.</p>
+
+  <h2>6. Els teus drets</h2>
+  <p>Pots exercir els drets d'accés, rectificació, supressió, oposició, limitació i portabilitat enviant una sol·licitud a <b>{{ correu_escola }}</b>, acreditant la teva identitat. També pots reclamar davant l'Agència Espanyola de Protecció de Dades (<a href="https://www.aepd.es" target="_blank" rel="noopener">www.aepd.es</a>) si consideres que no s'ha atès el teu dret.</p>
+
+  <h2>7. Seguretat</h2>
+  <p>Apliquem mesures tècniques i organitzatives adients per protegir les dades: connexió segura (HTTPS), pagaments a la pàgina segura de Stripe i accés restringit a les dades.</p>
+
+  <h2>8. Cookies</h2>
+  <p>Consulta la nostra <a href="/cookies">Política de cookies</a>.</p>
+</div>
+{% endblock %}

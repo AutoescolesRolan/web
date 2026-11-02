@@ -1,0 +1,67 @@
+{% extends "panell/base_panell.html" %}
+{% block title %}{{ c.nom_complet }}{% endblock %}
+{% block content %}
+<p><a href="/gestio">← Comandes</a></p>
+<h1 style="margin-top:8px">{{ c.nom_complet }}</h1>
+<p class="sub">{% if c.tipus == 'matricula' %}Matrícula{% else %}Compra de pràctiques{% endif %} · {{ c.producte }}</p>
+{% if fet == 'correus' %}<div class="avis ok">Correus enviats de nou. Mira'n el resultat a sota.</div>{% elif fet == 'nota' %}<div class="avis ok">Nota desada.</div>{% endif %}
+{% if c.estat != 'pagada' %}<div class="avis warn">Aquesta comanda encara <b>no està pagada</b>{% if c.estat == 'signada' %} (el contracte està signat){% endif %}. No cal fer res: si l'alumne/a no paga, no compta com a matrícula.</div>{% endif %}
+
+<div class="card">
+  <h2 style="margin-top:0">Alumne/a</h2>
+  <dl class="dl">
+    <dt>Nom</dt><dd>{{ c.nom_complet }}</dd>
+    <dt>DNI/NIE</dt><dd>{{ c.dni }}</dd>
+    {% if c.naixement %}<dt>Data de naixement</dt><dd>{{ c.naixement.strftime('%d/%m/%Y') }}</dd>{% endif %}
+    <dt>Correu</dt><dd><a href="mailto:{{ c.email }}">{{ c.email }}</a></dd>
+    <dt>Telèfon</dt><dd>{{ c.telefon }}</dd>
+    {% if c.adreca %}<dt>Adreça</dt><dd>{{ c.adreca }} · {{ c.cp }} {{ c.localitat }}</dd>{% endif %}
+    {% if c.tutor_nom %}<dt>Tutor/a legal</dt><dd>{{ c.tutor_nom }} · {{ c.tutor_dni }}</dd>{% endif %}
+    {% if c.franja %}<dt>Horari preferit</dt><dd>{{ {'MATI':'Matí','TARDA':'Tarda'}.get(c.franja, c.franja) }}</dd>{% endif %}
+    {% if c.observacions %}<dt>Observacions</dt><dd style="white-space:pre-wrap">{{ c.observacions }}</dd>{% endif %}
+    <dt>Idioma</dt><dd>{{ 'Castellà' if c.idioma == 'es' else 'Català' }}</dd>
+  </dl>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0">Pagament</h2>
+  <dl class="dl">
+    <dt>Centre</dt><dd>{{ c.centre.nom if c.centre else '—' }}</dd>
+    <dt>Producte</dt><dd>{{ c.producte }} · {{ eur2(c.preu_base) }} €</dd>
+    {% if c.descompte %}<dt>Descompte</dt><dd>{{ c.promocio }} · −{{ eur2(c.descompte) }} €</dd>{% endif %}
+    {% if c.tipus == 'matricula' %}<dt>Taxa DGT</dt><dd>{{ eur2(c.taxa) ~ ' €' if c.taxa else 'No pagada a la web' }}</dd>{% endif %}
+    {% if c.canon %}<dt>Cànon de pistes</dt><dd>{{ eur2(c.canon) }} €</dd>{% endif %}
+    <dt>Total</dt><dd>{{ eur2(c.total) }} €</dd>
+    <dt>Estat</dt><dd>{% if c.estat == 'pagada' %}<span class="pill ok">Pagada</span> el {{ (c.pagat_en|local).strftime('%d/%m/%Y %H:%M') }} · rebut {{ c.num_rebut }}{% else %}<span class="pill pend">Sense pagar</span>{% endif %}</dd>
+    {% if c.stripe_pagament %}<dt>Pagament Stripe</dt><dd>{{ c.stripe_pagament }}</dd>{% endif %}
+    {% if c.signat_en %}<dt>Contracte signat</dt><dd>{{ (c.signat_en|local).strftime('%d/%m/%Y %H:%M') }} · IP {{ c.ip_signatura }}</dd>
+    <dt>Autoritzacions</dt><dd>{{ c.acceptacions|replace(';', ' · ')|replace('=si', ': sí')|replace('=no', ': no') }}</dd>{% endif %}
+  </dl>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+    {% if c.contracte_pdf %}<a class="btn ghost" href="/gestio/comanda/{{ c.id }}/contracte.pdf" target="_blank">Contracte signat (PDF)</a>{% endif %}
+    {% if c.estat == 'pagada' %}<a class="btn ghost" href="/gestio/comanda/{{ c.id }}/rebut.pdf" target="_blank">Rebut (PDF)</a>{% endif %}
+  </div>
+</div>
+
+{% if c.estat == 'pagada' %}
+<div class="card">
+  <h2 style="margin-top:0">Correus</h2>
+  <pre class="reg">{{ c.correus or 'Encara no se n\'ha enviat cap.' }}</pre>
+  <p style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap"><a href="/gestio/comanda/{{ c.id }}/correu/alumne" target="_blank">Veure el correu de l'alumne/a ↗</a><a href="/gestio/comanda/{{ c.id }}/correu/equip" target="_blank">Veure el correu de secretaria ↗</a></p>
+  <form method="post" action="/gestio/comanda/{{ c.id }}/correus" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <button class="btn ghost" name="qui" value="alumne">Tornar a enviar a l'alumne/a</button>
+    <button class="btn ghost" name="qui" value="equip">Tornar a enviar a secretaria i admin</button>
+  </form>
+</div>
+{% endif %}
+
+<div class="card">
+  <h2 style="margin-top:0">Nota interna</h2>
+  <form method="post" action="/gestio/comanda/{{ c.id }}/nota">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <textarea name="nota" placeholder="Per exemple: factura feta a Holded, expedient obert…">{{ c.nota_interna }}</textarea>
+    <button class="btn" type="submit" style="margin-top:8px">Desar la nota</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "panell/base_panell.html" %}
+{% block title %}Preus{% endblock %}
+{% block content %}
+<h1>Preus</h1>
+<p class="sub">El que canviïs aquí es veu a l'instant a la web. Els preus són amb IVA inclòs.</p>
+{% if fet %}<div class="avis ok">Preus desats.</div>{% endif %}
+<form method="post" action="/gestio/preus">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <h2>Packs de matrícula</h2>
+  <div class="taula"><table>
+    <thead><tr><th>Carnet</th><th>Pack</th><th class="num">Preu (€)</th><th>A la venda</th><th>Destacat</th></tr></thead>
+    <tbody>
+    {% for c in carnets %}{% for p in c.packs %}
+    <tr>
+      <td><b>{{ c.codi }}</b></td><td>{{ p.nom_ca }}<div class="sub" style="font-size:12px">{{ p.inclou_ca.splitlines()|join(' · ') }}</div></td>
+      <td class="num"><input type="text" name="preu_{{ p.id }}" value="{{ eur2(p.preu) }}" inputmode="decimal" style="width:100px;text-align:right"></td>
+      <td><input type="checkbox" name="actiu_{{ p.id }}" value="1" {{ 'checked' if p.actiu }}></td>
+      <td><input type="checkbox" name="destacat_{{ p.id }}" value="1" {{ 'checked' if p.destacat }}></td>
+    </tr>
+    {% endfor %}{% endfor %}
+    </tbody>
+  </table></div>
+
+  <h2>Packs de pràctiques</h2>
+  <div class="taula"><table>
+    <thead><tr><th>Classes</th><th>Franja</th><th class="num">Preu (€)</th><th>A la venda</th></tr></thead>
+    <tbody>
+    {% for p in practiques %}
+    <tr><td><b>{{ p.classes }}</b> classes de 45'</td><td>{{ {'MATI':'Matí','TARDA':'Tarda'}.get(p.franja, p.franja) }}</td>
+      <td class="num"><input type="text" name="pp_preu_{{ p.id }}" value="{{ eur2(p.preu) }}" inputmode="decimal" style="width:100px;text-align:right"></td>
+      <td><input type="checkbox" name="pp_actiu_{{ p.id }}" value="1" {{ 'checked' if p.actiu }}></td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+
+  <h2>Taxes</h2>
+  <div class="card grid2">
+    <div><label>Taxa DGT (B, AM, A1, A2)</label><input type="text" name="taxa_dgt" value="{{ aj.taxa_dgt }}"></div>
+    <div><label>Taxa DGT del carnet A</label><input type="text" name="taxa_dgt_a" value="{{ aj.taxa_dgt_a }}"></div>
+    <div><label>Cànon de pistes (motos)</label><input type="text" name="canon_pistes" value="{{ aj.canon_pistes }}"></div>
+    <div><label>Renovació d'expedient</label><input type="text" name="preu_expedient" value="{{ aj.preu_expedient }}"></div>
+  </div>
+
+  <h2>Taula de preus de la pàgina «Preus»</h2>
+  <p class="sub">Una línia per concepte: <b>text en català | text en castellà | preu</b>.</p>
+  <div class="card grid2">
+    <div class="ple"><label>Cotxe</label><textarea name="tarifes_cotxe" rows="9">{{ aj.tarifes_cotxe }}</textarea></div>
+    <div class="ple"><label>Moto i ciclomotor</label><textarea name="tarifes_moto" rows="6">{{ aj.tarifes_moto }}</textarea></div>
+  </div>
+  <p style="margin-top:16px"><button class="btn verd" type="submit">Desar els preus</button></p>
+</form>
+{% endblock %}

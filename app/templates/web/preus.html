@@ -1,0 +1,183 @@
+{% extends "web/base_web.html" %}
+{% block title %}Preus · Autoescoles Rolan{% endblock %}
+{% block extra_css %}
+.head{padding:50px 22px 10px}.head h1{font-size:clamp(30px,4vw,44px);font-weight:800}.head p{color:var(--text-suau);margin-top:10px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:var(--blau);background:#EEF1FC;padding:6px 13px;border-radius:100px;margin-bottom:12px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--verd)}
+.wrap-carnets{max-width:1320px;margin:0 auto;padding:0 22px}
+.carnets{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;padding:30px 0}
+.ccard{background:#fff;border:1px solid var(--vora);border-radius:16px;padding:24px 22px;display:flex;flex-direction:column;scroll-margin-top:90px}
+.sec-b{margin-top:6px}.tax-b{display:inline-block;color:var(--text-tenue);font-size:13px}
+.carnets.un{grid-template-columns:minmax(0,440px);justify-content:center}
+.tria-carnet{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.tria-carnet a{display:inline-flex;align-items:center;justify-content:center;min-width:46px;padding:8px 14px;border-radius:100px;border:1.5px solid var(--vora-forta);background:#fff;color:var(--tinta);font-weight:700;font-size:14px;text-decoration:none;transition:border-color .15s,background .15s}
+.tria-carnet a:hover{border-color:var(--blau)}
+.tria-carnet a.on{background:var(--blau);border-color:var(--blau);color:#fff;box-shadow:0 6px 14px rgba(37,65,184,.22)}
+.ccard .opcions{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ccard .opcions li{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--vora);border-radius:10px;padding:8px 12px;font-size:13.5px;color:var(--text)}
+.ccard .opcions li b{color:var(--blau);font-family:var(--disp);font-size:15px;white-space:nowrap}
+.ccard .opcions li:first-child b{color:var(--tinta)}
+.ccard.feat{position:relative;border:2px solid var(--verd);box-shadow:0 10px 30px rgba(139,197,63,.18)}
+.ccard .tag{position:absolute;top:-11px;left:22px;background:var(--verd);color:#173a05;font-size:11px;font-weight:700;padding:4px 11px;border-radius:100px}
+.ccard .top{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.cbadge{width:52px;height:52px;border-radius:13px;background:#EEF1FC;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:18px;color:var(--blau)}
+.ccard h3{font-size:18.5px}.ccard .meta{font-size:12.5px;color:var(--text-tenue)}
+.ccard ul{list-style:none;margin:12px 0 16px;display:flex;flex-direction:column;gap:8px}
+.ccard li{font-size:13.5px;color:var(--text-suau);display:flex;gap:8px}
+.ccard li b{color:var(--verd-fosc)}
+.ccard .price-row{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:14px;border-top:1px solid var(--vora);min-height:58px}
+.ccard .price{font-family:var(--disp);font-weight:800;font-size:26px;display:inline-flex;flex-direction:column;line-height:1.05}.ccard .price small{font-size:11px;color:var(--text-tenue);font-weight:600;margin-top:3px}
+.ccard .price-row .btn{flex:none;white-space:nowrap}
+.tax-note{font-size:11px;color:var(--text-tenue);margin-top:8px;min-height:34px}
+.packs{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.pack{background:#fff;border:1px solid var(--vora);border-radius:16px;padding:22px;position:relative;display:flex;flex-direction:column}
+.pack.feat{border:2px solid var(--verd);box-shadow:0 10px 30px rgba(139,197,63,.18)}
+.pack .tag{position:absolute;top:-11px;left:22px;background:var(--verd);color:#173a05;font-size:11px;font-weight:700;padding:4px 11px;border-radius:100px}
+.pack h4{font-size:16px;color:var(--blau)}.pack .pp{font-family:var(--disp);font-weight:800;font-size:32px;margin:8px 0 2px}
+.pack .inc{font-size:12.5px;color:var(--text-suau);margin-bottom:14px}
+.pack ul{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:16px;flex:1;font-size:13px;color:var(--text-suau)}
+.sec-head{max-width:640px;margin:44px 0 24px}.sec-head h2{font-size:clamp(24px,3vw,32px);font-weight:800}.sec-head p{color:var(--text-suau);margin-top:8px}
+.note{background:var(--warn-bg);border:1px solid #f6d9a0;border-radius:12px;padding:12px 16px;font-size:13px;color:#8a5a12;margin-top:20px}
+@media(max-width:960px){.carnets,.packs{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.carnets,.packs{grid-template-columns:1fr}}
+{% endblock %}
+{% block content %}
+<div class="wrap head">
+  <span class="eyebrow"><span class="dot"></span>Preus clars</span>
+  <h1>El carnet que necessites</h1>
+  <p>Som flexibles i ens adaptem a tu. Aquests són els preus de referència (IVA inclòs).</p>
+  <nav class="tria-carnet" aria-label="Carnets">
+    <a href="/preus" class="{{ 'on' if not sel }}">Tots</a>
+    {% for c in ['B','AM','A1','A2','A'] %}<a href="/preus?carnet={{ c }}" class="{{ 'on' if sel == c }}">{{ c }}</a>{% endfor %}
+  </nav>
+</div>
+
+{# Tots els preus d'aquí surten de la base de dades (Configuració → Preus): si l'escola els canvia, es veuen a l'instant. #}
+{% set targetes = [
+  ('AM', 'Carnet AM', 'Ciclomotor 49cc · des de 15 anys', ['Matrícula + tramitació', '1r examen teòric AM', '2 pràctiques + examen de maniobres']),
+  ('A1', 'Carnet A1', 'Moto fins a 125 cc · des de 16 anys', ['Teòric + maniobres + circulació', 'Tria segons el carnet que ja tinguis']),
+  ('A2', 'Carnet A2', 'Moto fins a 47 CV · des de 18 anys', ['Teòric + maniobres + circulació', 'Tria segons el carnet que ja tinguis']),
+  ('A', 'Carnet A', 'Moto gran · +2 anys amb A2', ['3h de teòrica', '2 pràctiques de maniobres', '4 pràctiques de circulació']),
+] %}
+{% if sel != 'B' %}
+<div class="wrap-carnets"><div class="carnets{% if sel %} un{% endif %}">
+{% if (not sel or sel == 'B') and pw.get('B') and pw['B'].packs %}
+  <div class="ccard feat" id="B"><span class="tag">El més triat</span>
+    <div class="top"><div class="cbadge">B</div><div><h3>Carnet B</h3><div class="meta">Cotxe · des de 18 anys</div></div></div>
+    <ul><li><b>✓</b> Matrícula + tramitació d'expedient</li><li><b>✓</b> Ensenyament teòric complet</li><li><b>✓</b> Packs de pràctiques a mida</li></ul>
+    <div class="price-row"><span class="price">{% if pw['B'].des_de_abans %}<s class="abans">{{ pw['B'].des_de_abans }}€</s>{% endif %}{{ pw['B'].des_de_txt }}€{% if not pw['B'].unic %} <small>/ des de</small>{% endif %}</span><a class="btn btn-primary" href="#packs">Matricula't</a></div>
+    <div class="tax-note">*Taxes no incloses ({{ pw['B'].taxa_txt }}€)</div>
+  </div>
+{% endif %}
+{% for codi, titol, meta, punts in targetes %}
+{% set pc = pw.get(codi) %}
+{% if (not sel or sel == codi) and pc and pc.packs %}
+  <div class="ccard" id="{{ codi }}">
+    <div class="top"><div class="cbadge">{{ codi }}</div><div><h3>{{ titol }}</h3><div class="meta">{{ meta }}</div></div></div>
+    <ul>{% for x in punts %}<li><b>✓</b> {{ x }}</li>{% endfor %}</ul>
+    {% if not pc.unic %}
+    <ul class="opcions">{% for p in pc.packs|reverse %}<li><span>{{ p.curt }}</span><b>{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</b></li>{% endfor %}</ul>
+    <div class="price-row"><span class="price"><small style="margin:0 0 2px">des de</small>{% if pc.des_de_abans %}<s class="abans">{{ pc.des_de_abans }}€</s>{% endif %}{{ pc.des_de_txt }}€</span><a class="btn btn-primary" href="/matricula?carnet={{ codi }}">Matricula't</a></div>
+    {% else %}
+    <div class="price-row"><span class="price">{% if pc.des_de_abans %}<s class="abans">{{ pc.des_de_abans }}€</s>{% endif %}{{ pc.des_de_txt }}€</span><a class="btn btn-primary" href="/matricula?carnet={{ codi }}">Matricula't</a></div>
+    {% endif %}
+    <div class="tax-note">*Taxes no incloses ({{ pc.taxa_txt }}€{% if pc.canon_txt %} + cànon de pistes {{ pc.canon_txt }}€{% endif %})</div>
+  </div>
+{% endif %}
+{% endfor %}
+</div></div>
+{% endif %}
+
+{% if (not sel or sel == 'B') and pw.get('B') and pw['B'].packs %}
+{% set pb = pw['B'].packs %}
+<div class="wrap">
+  <div class="sec-head{% if sel == 'B' %} sec-b{% endif %}"><span class="eyebrow"><span class="dot"></span>Carnet B{% if sel == 'B' %} · Cotxe · des de 18 anys{% endif %}</span><h2>Tria el teu pack</h2><p>Tots inclouen matrícula, curs intensiu, tramitació d'expedient i 1r examen teòric.{% if sel == 'B' %} <span class="tax-b">Taxes DGT no incloses ({{ pw._taxa }}€).</span>{% endif %}</p></div>
+  <div class="packs" id="packs" style="scroll-margin-top:90px">
+    {% for p in pb %}
+    <div class="pack{% if p.destacat %} feat{% endif %}">{% if p.destacat %}<span class="tag">El més triat</span>{% endif %}<h4>{{ p.curt }}</h4><div class="pp">{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</div>
+      <div class="inc">{% if p.classes %}+ {{ p.classes }} pràctiques{% else %}Sense pràctiques{% endif %}</div>
+      <ul>{% if loop.first %}<li>Matrícula</li><li>Curs intensiu</li><li>Tramitació expedient</li><li>1r examen teòric</li>{% else %}<li>Tot el del {{ pb[0].curt }}</li>{% if p.classes %}<li>{{ p.classes }} classes pràctiques</li>{% endif %}{% endif %}</ul>
+      <a class="btn {% if p.destacat %}btn-verd{% else %}btn-ghost{% endif %}" style="justify-content:center" href="/matricula?carnet=B{% if p.codigo %}&amp;pack={{ p.codigo }}{% endif %}">Triar</a></div>
+    {% endfor %}
+  </div>
+  <div class="note">La taxa d'examen et permet presentar-te a 2 o 3 convocatòries. Si les esgotes, s'afegeixen {{ pw._expedient }}€ de renovació d'expedient + l'examen corresponent.</div>
+</div>
+{% endif %}
+
+<div class="wrap">
+  <div class="sec-head"><span class="eyebrow"><span class="dot"></span>Desglossament</span><h2>{% if sel %}Preus del carnet {{ sel }}{% else %}Preus per carnet{% endif %}</h2><p>Classes soltes, exàmens i taxes (IVA inclòs). Les classes soltes i els exàmens es paguen al teu centre; els packs de pràctiques els pots comprar en línia.</p></div>
+  {% set _es = i18n_get_idioma(request) == 'es' %}
+  {% if (not sel or sel == 'B') and (tarifes_cotxe or packs_practiques) %}
+  <div class="carnet-preus">
+    <div class="cp-head"><span class="cp-badge">B</span><h3>Cotxe (turisme)</h3></div>
+    {% if tarifes_cotxe %}
+    <div class="cp-body un">
+      <div class="cp-block">
+        <div class="cp-tit">Classes, exàmens i taxes</div>
+        <ul class="price-list">
+          {% for ca, es, preu in tarifes_cotxe %}<li class="price-row"><span class="lbl">{{ es if _es else ca }}</span><span class="val">{{ preu }}€</span></li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endif %}
+    {% if packs_practiques %}
+    <div class="cp-packs">
+      <div class="cp-tit">Packs de classes pràctiques <span>estalvia comprant en bloc</span></div>
+      <div class="packs-grid">
+        {% for p in packs_practiques %}
+        <a class="pack-card" href="/practiques?pack={{ p.id }}" style="text-decoration:none">
+          <span class="pc-n">{{ p.classes }} classes</span>
+          <span class="pc-m">{{ {'MATI':'Matí','TARDA':'Tarda'}.get(p.franja, p.franja) }} · 45'</span>
+          <span class="pc-p">{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</span>
+        </a>
+        {% endfor %}
+      </div>
+      <p style="margin-top:12px"><a class="btn btn-verd btn-sm" href="/practiques">Comprar pràctiques en línia</a></p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% if (not sel or sel in ['AM','A1','A2','A']) and tarifes_moto %}
+  <div class="carnet-preus">
+    <div class="cp-head"><span class="cp-badge">{{ sel if sel else 'A' }}</span><h3>{% if sel %}{{ carnets[sel].nom_es if _es else carnets[sel].nom_ca }}{% else %}Moto i ciclomotor (AM, A1, A2, A){% endif %}</h3></div>
+    <div class="cp-body un">
+      <div class="cp-block">
+        <div class="cp-tit">Classes, exàmens i taxes</div>
+        <ul class="price-list">
+          {% for ca, es, preu in tarifes_moto %}<li class="price-row"><span class="lbl">{{ es if _es else ca }}</span><span class="val">{{ preu }}€</span></li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<style>
+.carnet-preus{position:relative;background:#fff;border:1px solid var(--vora);border-radius:18px;padding:22px 24px;margin-bottom:16px;box-shadow:0 4px 18px rgba(20,34,79,.05);overflow:hidden}
+.cp-head{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:2px solid var(--verd-suau)}
+.cp-badge{width:46px;height:46px;border-radius:12px;background:var(--blau,#2541B8);display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:16px;color:#fff}
+.cp-head h3{font-size:18px;font-weight:800;color:var(--tinta)}
+.cp-body{display:grid;grid-template-columns:1fr 1fr;gap:14px 40px}
+@media(max-width:720px){.cp-body{grid-template-columns:1fr;gap:22px}}
+.cp-body.un{grid-template-columns:1fr}
+.cp-body.un .price-list{display:grid;grid-template-columns:1fr 1fr;column-gap:40px}
+.cp-body.un .price-row:nth-last-child(2):nth-child(odd){border-bottom:none}
+@media(max-width:720px){.cp-body.un .price-list{grid-template-columns:1fr}.cp-body.un .price-row:nth-last-child(2):nth-child(odd){border-bottom:1px solid var(--verd-suau)}}
+.cp-tit{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--verd-fosc);margin-bottom:6px}
+.cp-tit::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--verd)}
+.cp-tit span{font-weight:600;text-transform:none;letter-spacing:0;color:var(--text-tenue)}
+.price-list{list-style:none;margin:0;padding:0}
+.price-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--verd-suau)}
+.price-row:last-child{border-bottom:none}
+.price-row .lbl{color:var(--text-suau);font-size:14.5px;line-height:1.35}
+.price-row .val{font-weight:800;color:var(--blau);font-size:15.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.cp-buit{color:var(--text-tenue);padding:11px 0;margin:0}
+.cp-packs{margin-top:18px;padding-top:16px;border-top:2px solid var(--verd-suau)}
+.packs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.pack-card{display:flex;flex-direction:column;gap:2px;background:var(--verd-suau);border:1px solid #d5ebbb;border-radius:14px;padding:15px 17px;transition:transform .12s,box-shadow .12s}
+.pack-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(139,197,63,.25)}
+.pack-card .pc-n{font-weight:700;color:var(--tinta);font-size:15px}
+.pack-card .pc-m{font-size:12.5px;color:#5f7a3a}
+.pack-card .pc-p{margin-top:6px;font-family:var(--disp);font-weight:800;font-size:22px;color:var(--blau)}
+</style>
+{% endblock %}

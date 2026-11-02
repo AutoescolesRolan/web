@@ -1,0 +1,102 @@
+{% extends "web/base_web.html" %}
+{% block title %}Autoescoles Rolan · Formant conductors des de 1987{% endblock %}
+{% block extra_css %}
+.hero{position:relative;overflow:hidden;background:var(--fons-degradat),var(--blanc)}
+.hero-in{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:60px 22px 66px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:13px;color:var(--blau);background:#EEF1FC;padding:6px 13px;border-radius:100px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--verd)}
+.hero h1{font-size:clamp(38px,5.4vw,60px);font-weight:800;margin:20px 0 0;letter-spacing:-.03em}
+.hero h1 .hl{color:var(--blau);position:relative;white-space:nowrap}
+.hero h1 .hl:after{content:"";position:absolute;left:0;right:0;bottom:2px;height:9px;background:var(--verd);opacity:.55;z-index:-1;border-radius:3px}
+.hero p.lead{font-size:18px;color:var(--text-suau);margin:22px 0 30px;max-width:470px}
+.hero-cta{display:flex;gap:13px;flex-wrap:wrap}
+.hero-card{background:#fff;border:1px solid var(--vora);border-radius:22px;box-shadow:var(--ombra-alt);padding:28px}
+.hero-card h3{font-size:19px}.hero-card p{font-size:13.5px;color:var(--text-suau);margin:4px 0 18px}
+.hc-list{display:grid;gap:10px}
+.hc-item{display:flex;align-items:center;gap:12px;border:1px solid var(--vora);border-radius:13px;padding:12px 14px;transition:border-color .14s,box-shadow .14s,transform .14s}
+.hc-badge{width:44px;height:44px;border-radius:11px;background:#EEF1FC;display:grid;place-items:center;font-family:var(--disp);font-weight:800;color:var(--blau);transition:background .14s,color .14s}
+.hc-item:hover{border-color:var(--verd);box-shadow:0 6px 18px rgba(139,197,63,.22);transform:translateY(-1px)}
+.hc-item:hover .hc-badge{background:var(--verd);color:#173a05}
+.hc-item .nm{font-family:var(--disp);font-weight:700;display:flex;flex-direction:column;line-height:1.15}.hc-item .pr{margin-left:auto;font-family:var(--disp);font-weight:800;color:var(--tinta)}
+.hc-item .hc-sub{font-family:var(--body);font-weight:400;font-size:12px;color:var(--text-suau);margin-top:1px}
+.stats{background:var(--tinta);color:#fff;padding:42px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+.stat .n{font-family:var(--disp);font-weight:800;font-size:38px}.stat .n .u{color:var(--verd)}
+.stat .l{font-size:13px;color:#aeb8dd;margin-top:4px}
+.sec{padding:70px 0}.sec-head{max-width:640px;margin-bottom:36px}
+.sec-head h2{font-size:clamp(28px,3.6vw,38px);font-weight:800;margin-top:12px}.sec-head p{color:var(--text-suau);margin-top:10px}
+.journey{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.jstep .jnum{width:52px;height:52px;border-radius:14px;background:#fff;border:2px solid var(--blau);color:var(--blau);display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:20px}
+.jstep h4{margin:14px 0 6px}.jstep p{font-size:13.5px;color:var(--text-suau)}
+.centres{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.centre{display:block;background:#fff;border:1px solid var(--vora);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s,border-color .15s}
+.centre:hover{border-color:var(--blau);box-shadow:0 12px 30px rgba(20,34,79,.12);transform:translateY(-2px)}
+.centre .map{position:relative;height:150px;background:linear-gradient(135deg,#E7EDFF,#EAF7D8)}
+.centre .map iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
+.centre .map:not(.loaded)::after{content:"Mapa · accepta les cookies per veure'l";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#eef1f6;color:#8a93ab;font-size:12.5px;text-align:center;padding:10px}
+.centre .body{padding:16px}.centre h4{font-size:16px}.centre p{font-size:13px;color:var(--text-suau);margin-top:5px}
+.centre .go{display:inline-flex;align-items:center;gap:6px;margin-top:11px;font-size:12.5px;font-weight:600;color:var(--blau)}
+.ctaband{background:linear-gradient(120deg,var(--blau),var(--blau-fosc));color:#fff;border-radius:24px;padding:48px;text-align:center}
+.ctaband h2{color:#fff;font-size:clamp(26px,3.4vw,36px)}.ctaband p{color:#c8d2f5;margin:14px auto 26px;max-width:520px}
+@media(max-width:960px){.hero-in{grid-template-columns:1fr;gap:32px}.stats-grid,.journey,.centres{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.stats-grid,.journey,.centres{grid-template-columns:1fr}.ctaband{padding:32px 20px}}
+{% endblock %}
+{% block content %}
+<section class="hero"><div class="wrap hero-in">
+  <div>
+    <span class="eyebrow"><span class="dot"></span>Formant conductors des de 1987</span>
+    <h1>El teu carnet, <span class="hl">sense complicar-te</span> la vida.</h1>
+    <p class="lead">Matricula't en línia en pocs minuts i paga de forma segura. 3 centres al Barcelonès i el Maresme.</p>
+    <div class="hero-cta">
+      <a class="btn btn-verd btn-lg" href="/preus">Comença ara</a>
+      <a class="btn btn-ghost btn-lg" href="/matricula">Matricula't</a>
+    </div>
+  </div>
+  <div class="hero-card">
+    <h3>Quin carnet vols treure?</h3>
+    <p>Tria'l i mira'n els preus.</p>
+    <div class="hc-list">
+      <a class="hc-item" href="/preus?carnet=B"><span class="hc-badge">B</span><span class="nm">Cotxe</span><span class="pr">{% if pw.get("B") and pw["B"].packs %}{% if not pw["B"].unic %}des de {% endif %}{% if pw["B"].des_de_abans %}<s class="abans">{{ pw["B"].des_de_abans }}€</s>{% endif %}{{ pw["B"].des_de_txt }}€{% endif %}</span></a>
+      <a class="hc-item" href="/preus?carnet=AM"><span class="hc-badge">AM</span><span class="nm">Ciclomotor</span><span class="pr">{% if pw.get("AM") and pw["AM"].packs %}{% if not pw["AM"].unic %}des de {% endif %}{% if pw["AM"].des_de_abans %}<s class="abans">{{ pw["AM"].des_de_abans }}€</s>{% endif %}{{ pw["AM"].des_de_txt }}€{% endif %}</span></a>
+      <a class="hc-item" href="/preus?carnet=A1"><span class="hc-badge">A1</span><span class="nm">Moto A1<small class="hc-sub">fins a 125 cc</small></span><span class="pr">{% if pw.get("A1") and pw["A1"].packs %}{% if not pw["A1"].unic %}des de {% endif %}{% if pw["A1"].des_de_abans %}<s class="abans">{{ pw["A1"].des_de_abans }}€</s>{% endif %}{{ pw["A1"].des_de_txt }}€{% endif %}</span></a>
+      <a class="hc-item" href="/preus?carnet=A2"><span class="hc-badge">A2</span><span class="nm">Moto A2<small class="hc-sub">fins a 47 CV</small></span><span class="pr">{% if pw.get("A2") and pw["A2"].packs %}{% if not pw["A2"].unic %}des de {% endif %}{% if pw["A2"].des_de_abans %}<s class="abans">{{ pw["A2"].des_de_abans }}€</s>{% endif %}{{ pw["A2"].des_de_txt }}€{% endif %}</span></a>
+      <a class="hc-item" href="/preus?carnet=A"><span class="hc-badge">A</span><span class="nm">Moto A<small class="hc-sub">des de 47 CV</small></span><span class="pr">{% if pw.get("A") and pw["A"].packs %}{% if not pw["A"].unic %}des de {% endif %}{% if pw["A"].des_de_abans %}<s class="abans">{{ pw["A"].des_de_abans }}€</s>{% endif %}{{ pw["A"].des_de_txt }}€{% endif %}</span></a>
+    </div>
+  </div>
+</div></section>
+
+<div class="road"></div>
+
+<section class="stats"><div class="wrap stats-grid">
+  <div class="stat"><div class="n">1987</div><div class="l">Des de fa més de 30 anys</div></div>
+  <div class="stat"><div class="n">8.000<span class="u">+</span></div><div class="l">Alumnes titulats</div></div>
+  <div class="stat"><div class="n">3</div><div class="l">Centres al teu costat</div></div>
+  <div class="stat"><div class="n">100<span class="u">%</span></div><div class="l">Alt percentatge d'aprovats</div></div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="sec-head"><span class="eyebrow"><span class="dot"></span>El teu camí</span><h2>Del sofà al carnet, en 4 passos</h2></div>
+  <div class="journey">
+    <div class="jstep"><div class="jnum">1</div><h4>Matricula't</h4><p>Tria carnet i pack i queda registrat com a alumne.</p></div>
+    <div class="jstep"><div class="jnum">2</div><h4>Aprova la teòrica</h4><p>Curs intensiu i tests. Reserva l'examen quan estiguis a punt.</p></div>
+    <div class="jstep"><div class="jnum">3</div><h4>Fes les pràctiques</h4><p>Classes sempre amb el mateix professor, al teu ritme.</p></div>
+    <div class="jstep"><div class="jnum">4</div><h4>Aprova i condueix</h4><p>Examen pràctic superat. Ja tens el carnet!</p></div>
+  </div>
+</div></section>
+
+<section class="sec" id="centres" style="background:#fff;border-top:1px solid var(--vora);border-bottom:1px solid var(--vora)"><div class="wrap">
+  <div class="sec-head"><span class="eyebrow"><span class="dot"></span>Molt a prop teu</span><h2>Els nostres centres</h2><p>Badalona, Sant Adrià de Besòs i el Masnou.</p></div>
+  <div class="centres">
+    {% for c in centres %}
+    <a class="centre" href="https://www.google.com/maps/search/?api=1&query={{ c.maps|urlencode }}" target="_blank" rel="noopener"><div class="map"><iframe data-cookie-src="https://maps.google.com/maps?q={{ c.maps|urlencode }}&z=16&output=embed" loading="lazy" title="{{ c.nom }}" referrerpolicy="no-referrer-when-downgrade"></iframe></div><div class="body"><h4>{{ c.nom }}</h4><p>{{ c.adreca }} · {{ c.cp_localitat.split(' ', 1)[-1] }}</p>{% if c.telefon %}<p>{{ c.telefon }}{% if c.mobil %} · {{ c.mobil }}{% endif %}</p>{% endif %}<span class="go">Veure a Google Maps ↗</span></div></a>
+    {% endfor %}
+  </div>
+</div></section>
+
+<section class="sec"><div class="wrap"><div class="ctaband">
+  <h2>A un clic del teu carnet</h2>
+  <p>Consulta preus i comença la teva matrícula. Ja ets alumne? Compra més pràctiques en línia.</p>
+  <a class="btn btn-verd btn-lg" href="/preus">Veure preus</a>
+  <a class="btn btn-ghost btn-lg" href="/practiques" style="background:#fff;margin-left:8px">Comprar pràctiques</a>
+</div></div></section>
+{% endblock %}

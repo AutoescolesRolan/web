@@ -1,0 +1,58 @@
+{% extends "web/base_web.html" %}
+{% block title %}Contacte · Autoescoles Rolan{% endblock %}
+{% block extra_css %}{% include "web/_pagina_css.html" %}
+.ctr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+.ctr-card{background:#fff;border:1px solid var(--vora);border-radius:16px;padding:16px 18px}
+.ctr-card h4{font-size:16px}.ctr-card p{font-size:13.5px;color:var(--text-suau);margin-top:4px}
+.ctr-card a{color:var(--blau);font-weight:600}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fld label{display:block;font-size:13px;font-weight:600;color:var(--tinta);margin-bottom:6px}
+.fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--vora-forta);border-radius:10px;padding:11px 14px;font-family:var(--body);font-size:14.5px;background:#fff}
+.fld textarea{min-height:130px;resize:vertical}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--blau);box-shadow:0 0 0 3px rgba(37,65,184,.12)}
+.fld-wide{grid-column:1 / -1}
+.accepta{display:flex;gap:10px;align-items:flex-start;margin:14px 0;font-size:13.5px;color:var(--text)}
+.accepta input{margin-top:3px}
+@media(max-width:760px){.ctr-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.fgrid{grid-template-columns:1fr}}
+.cwrap{max-width:920px}
+{% endblock %}
+{% block content %}
+<div class="wrap cwrap">
+  <h1>Contacte</h1>
+  <p class="sub">Escriu-nos i et respondrà la secretaria del centre que triïs. També ens pots trucar.</p>
+
+  <div class="ctr-grid">
+    {% for c in centres %}
+    <div class="ctr-card">
+      <h4>{{ c.nom }}</h4>
+      <p>{{ c.adreca }} · {{ c.cp_localitat }}</p>
+      {% if c.telefon %}<p><a href="tel:{{ c.telefon|replace(' ', '') }}">{{ c.telefon }}</a>{% if c.mobil %} · <a href="tel:{{ c.mobil|replace(' ', '') }}">{{ c.mobil }}</a>{% endif %}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if fet %}
+  <div class="card"><div class="note ok" style="margin:0">Missatge enviat. Et respondrem al correu que ens has indicat tan aviat com puguem.</div></div>
+  {% else %}
+  <form class="card" method="post" action="/contacte">
+    {% if err == 'camps' %}<div class="note err" style="margin:0 0 14px">Cal triar el centre, escriure el nom, un correu vàlid i el missatge, i acceptar la política de privacitat.</div>
+    {% elif err == 'massa' %}<div class="note err" style="margin:0 0 14px">Has enviat massa missatges seguits. Torna-ho a provar d'aquí a una estona o truca'ns.</div>{% endif %}
+    <input type="text" name="web" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    <div class="fgrid">
+      <div class="fld fld-wide"><label>Centre</label>
+        <select name="centre" required>
+          <option value="">Tria el centre</option>
+          {% for c in centres %}<option value="{{ c.codi }}" {{ 'selected' if dades.centre == c.codi }}>{{ c.nom }}</option>{% endfor %}
+        </select></div>
+      <div class="fld"><label>Nom i cognoms</label><input type="text" name="nom" value="{{ dades.nom }}" maxlength="160" autocomplete="name" required></div>
+      <div class="fld"><label>Correu electrònic</label><input type="email" name="email" value="{{ dades.email }}" maxlength="160" autocomplete="email" required></div>
+      <div class="fld"><label>Telèfon <span style="font-weight:400;color:var(--text-tenue)">(opcional)</span></label><input type="tel" name="telefon" value="{{ dades.telefon }}" maxlength="40" autocomplete="tel"></div>
+      <div class="fld fld-wide"><label>Missatge</label><textarea name="text" maxlength="5000" required>{{ dades.text }}</textarea></div>
+    </div>
+    <label class="accepta"><input type="checkbox" name="accepta" value="1" required><span>He llegit la <a href="/privacitat" target="_blank" rel="noopener" style="color:var(--blau);font-weight:600">política de privacitat</a>.</span></label>
+    <button type="submit" class="btn btn-verd btn-lg">Enviar</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,462 @@
+{% extends "web/base_web.html" %}
+{% import "_telefon.html" as tel %}
+{% block title %}Matricula't · Autoescoles Rolan{% endblock %}
+{% block extra_css %}
+.mwrap{max-width:920px;margin:0 auto;padding:34px 22px 60px}
+.mhead h1{font-size:30px}.mhead p{color:var(--text-suau);margin-top:8px;max-width:600px}
+.cgroup{margin-top:26px}
+.cgroup.carnet-amagat{display:none}
+.canvi-carnet{display:none;margin:12px 0 0 2px;font-size:13px;color:var(--text-suau)}
+.canvi-carnet button{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--blau);cursor:pointer;text-decoration:underline}
+.cgroup.carnet-triat .canvi-carnet{display:block}
+.cgroup > h2{font-size:19px;display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.cbadge{width:38px;height:38px;border-radius:10px;background:#EEF1FC;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:15px;color:var(--blau)}
+.cgroup > .cdesc{color:var(--text-tenue);font-size:13px;margin:0 0 14px 48px}
+.packs{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;align-items:stretch}
+.pk{display:block;cursor:pointer}
+.pk input{position:absolute;opacity:0;pointer-events:none}
+.pk .box{position:relative;background:#fff;border:1.5px solid var(--vora);border-radius:15px;padding:18px;height:100%;transition:.15s;display:flex;flex-direction:column}
+.pk .pk-tag{position:absolute;top:-10px;left:14px;background:var(--verd);color:#fff;font-size:11px;font-weight:800;padding:3px 12px;border-radius:100px;letter-spacing:.02em;box-shadow:0 2px 8px rgba(139,197,63,.35)}
+.pk:hover .box{border-color:var(--blau)}
+.pk input:checked + .box{border-color:var(--verd);box-shadow:0 8px 24px rgba(139,197,63,.20);background:linear-gradient(180deg,#fff,var(--verd-suau))}
+.pk .pk-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pk .nm{font-weight:700;color:var(--tinta);font-size:14.5px;line-height:1.25}
+.pk .chk{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--vora-forta);display:grid;place-items:center;color:#fff;font-size:11px}
+.pk input:checked + .box .chk{background:var(--verd);border-color:var(--verd)}
+.pk .pr{font-family:var(--disp);font-weight:800;font-size:24px;color:var(--tinta);margin-top:auto;padding-top:12px}
+.pk .inc{font-size:12.5px;color:var(--text-suau);margin-top:6px}
+.bar{position:sticky;bottom:16px;margin-top:26px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--tinta);color:#fff;border-radius:14px;padding:14px 20px;box-shadow:var(--ombra-alt);flex-wrap:wrap}
+.bar .sel{font-size:14px}.bar .sel b{color:var(--verd)}
+@media(max-width:720px){.bar{position:static;flex-direction:column;align-items:stretch;text-align:center;padding:14px 16px}.bar .btn{justify-content:center;width:100%}}
+.note{background:var(--warn-bg);border:1px solid #f6d9a0;border-radius:12px;padding:12px 16px;font-size:13px;color:#8a5a12;margin-top:18px}
+.empty{background:#fff;border:1px solid var(--vora);border-radius:16px;padding:28px;text-align:center;color:var(--text-suau)}
+.centres-tria{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ctr{cursor:pointer}.ctr input{position:absolute;opacity:0;pointer-events:none}
+.ctr .box{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--vora);border-radius:13px;padding:14px 16px;transition:.15s}
+.ctr:hover .box{border-color:var(--blau)}
+.ctr input:checked + .box{border-color:var(--verd);box-shadow:0 6px 18px rgba(139,197,63,.20);background:linear-gradient(180deg,#fff,var(--verd-suau))}
+.ctr .chk{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--vora-forta);display:grid;place-items:center;color:#fff;font-size:11px}
+.ctr input:checked + .box .chk{background:var(--verd);border-color:var(--verd)}
+.ctr .nm{font-weight:700;color:var(--tinta);font-size:14px}
+.dades-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:620px}
+.fld label{display:block;font-size:13px;font-weight:600;color:var(--tinta);margin-bottom:6px}
+.fld input{width:100%;border:1px solid var(--vora-forta);border-radius:10px;padding:11px 14px;font-family:var(--body);font-size:14.5px}
+.fld input:focus{outline:none;border-color:var(--blau);box-shadow:0 0 0 3px rgba(37,65,184,.12)}
+.fld-wide{grid-column:1 / -1}
+@media(max-width:640px){.centres-tria{grid-template-columns:1fr}.dades-grid{grid-template-columns:1fr}}
+{% endblock %}
+{% block content %}
+<div class="wrap mwrap">
+  <div class="mhead">
+    {% if carnet_sel %}
+    <h1>Matricula't · Carnet {{ carnet_sel.codi }}</h1>
+    <p>{{ T(carnet_sel.nom_ca, carnet_sel.nom_es) }} · {{ T(carnet_sel.sub_ca, carnet_sel.sub_es) }}. Tria el pack que millor et vagi{% if stripe_on %} i paga per completar la matrícula{% else %}; l'autoescola et contactarà per confirmar-la{% endif %}. <a href="/matricula" style="color:var(--blau);font-weight:600">Veure tots els carnets</a></p>
+    {% else %}
+    <h1>Tria el teu carnet i pack</h1>
+    <p>Selecciona l'opció que millor et vagi{% if stripe_on %} i paga per completar la matrícula{% else %}. Quedarà com a sol·licitud i l'autoescola et contactarà per confirmar-la{% endif %}.</p>
+    {% endif %}
+  </div>
+
+  {% if cancelat %}
+  <div class="note" style="background:var(--danger-bg);border-color:#f3b6b8;color:#8a1f22">Has cancel·lat el pagament. Pots tornar-ho a provar quan vulguis.</div>
+  {% endif %}
+  {% if err == 'edat' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Encara no et pots matricular en aquest carnet. El permís es pot treure als <b>{{ edat_min_msg }} anys</b> i la matrícula s'obre 3 mesos abans, quan ja pots fer l'examen teòric{% if edat_des_de %}: <b>a partir del {{ edat_des_de }}</b>{% endif %}. Revisa la data de naixement o tria un altre carnet.
+  </div>
+  {% elif err == 'dni' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">El DNI/NIE no és correcte: revisa el número i la lletra (també el del tutor/a, si n'hi ha).</div>
+  {% elif err == 'camps' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">Cal triar el centre i el pack i omplir totes les dades obligatòries.</div>
+  {% elif err == 'telefon' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">El telèfon ha de tenir 9 xifres (o tria el prefix del teu país).</div>
+  {% elif err == 'codi' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">Aquest codi de descompte no és vàlid o ja ha caducat. Revisa'l o deixa'l en blanc.</div>
+  {% elif err == 'a2_buit' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">Per matricular-te al carnet A, indica la data en què vas treure el permís A2.</div>
+  {% elif err == 'a2_futur' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">La data de l'A2 no pot ser posterior a avui. Revisa-la.</div>
+  {% elif err == 'a2_impossible' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">Aquesta data no és possible: l'A2 es pot treure a partir dels 18 anys i, segons la data de naixement, aleshores encara no els tenies. Revisa les dues dates.</div>
+  {% elif err == 'a2_falten' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">Per al carnet A cal tenir l'A2 des de fa com a mínim 2 anys. Amb la data que has indicat, et podràs matricular <b>a partir del {{ des_de }}</b>. Si tens dubtes, truca'ns al 934 647 857.</div>
+  {% elif err == 'naix' %}
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Cal indicar la data de naixement per matricular-te.</div>
+  {% endif %}
+
+  {% if not cataleg %}
+    <div class="empty">Encara no hi ha carnets configurats. Contacta amb l'autoescola.</div>
+  {% else %}
+  <form method="post" action="/matricula" id="form-matricula" onsubmit="return _validaTutorMat()">
+    <input type="hidden" name="incloure_taxa" id="incloure_taxa" value="0">
+    <input type="hidden" name="incloure_canon" id="incloure_canon" value="0">
+    <input type="hidden" name="carnet_url" value="{{ carnet_sel.codi if carnet_sel else dades.carnet_url }}">
+    <input type="text" name="web" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    {% if promo %}<div class="note" style="background:var(--verd-suau);border-color:#cfe6b0;color:#3d5c15;margin-top:0">{{ T(promo.banner_ca, promo.banner_es) or promo.nom }} · −{{ '%g'|format(promo.percentatge) }}% al preu del pack.</div>{% endif %}
+    {% if seccions %}
+    <div class="cgroup">
+      <h2 style="font-size:17px">On et vols matricular?</h2>
+      <p class="cdesc" style="margin-left:0">Tria el centre de referència on faràs la teva formació.</p>
+      <div class="centres-tria">
+        {% for s in seccions %}
+        <label class="ctr">
+          <input type="radio" name="seccion" value="{{ s.codi }}" {% if dades.seccion == s.codi %}checked{% endif %} required>
+          <span class="box"><span class="chk">✓</span><span class="nm">{{ s.nom }}</span></span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% for grup in cataleg %}
+    <div class="cgroup" id="carnet-{{ grup.carnet.codi }}">
+      <h2><span class="cbadge">{{ grup.carnet.codi }}</span> Carnet {{ grup.carnet.codi }}</h2>
+      <p class="cdesc">{{ T(grup.carnet.nom_ca, grup.carnet.nom_es) }} · {{ T(grup.carnet.sub_ca, grup.carnet.sub_es) }}</p>
+      <div class="packs">
+        {% set _codi = grup.carnet.codi|upper %}
+        {% set _pw = pw.get(_codi) %}
+        {% set _es_moto = _codi in ['AM','A1','A2','A'] %}
+        {% set _te_taxa = _codi != 'A' %}
+        {% for p in grup.packs %}
+        <label class="pk">
+          <input type="radio" name="pack_id" value="{{ p.id }}"
+                 data-taxa="{{ '1' if _te_taxa else '0' }}" data-canon="{{ '1' if _es_moto else '0' }}" data-carnet="{{ _codi }}"
+                 {% if pack_actual == p.id %}checked{% endif %} required>
+          <div class="box">
+            {% if p.destacat %}<span class="pk-tag">El més triat</span>{% endif %}
+            <div class="pk-top"><span class="nm">{{ T(p.nom_ca, p.nom_es) }}</span><span class="chk">✓</span></div>
+            {% set _pp = (_pw.packs|selectattr('id', 'equalto', p.id)|list|first) if _pw else none %}
+            <span class="pr">{% if _pp and _pp.preu_abans %}<s class="abans">{{ _pp.preu_abans }}€</s>{% endif %}{{ _pp.preu_txt if _pp else eur(p.preu) }}€</span>
+            <span class="inc">{{ T(p.inclou_ca, p.inclou_es).splitlines()|join(' · ') }}</span>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+      <p class="canvi-carnet">Torna a tocar el pack triat per desmarcar-lo i veure tots els carnets, o <button type="button" data-tots-carnets>mostra els altres carnets</button>.</p>
+    </div>
+    {% endfor %}
+
+    <div class="cgroup">
+      <h2 style="font-size:17px">Les teves dades</h2>
+      <p class="cdesc" style="margin-left:0">Les necessitem per emplenar el contracte i obrir el teu expedient.</p>
+      <div class="dades-grid">
+        <div class="fld"><label>Nom</label><input type="text" name="nom" value="{{ dades.nom }}" autocomplete="given-name" maxlength="120" required></div>
+        <div class="fld"><label>Cognoms</label><input type="text" name="cognoms" value="{{ dades.cognoms }}" autocomplete="family-name" maxlength="160" required></div>
+        <div class="fld"><label>Correu electrònic</label><input type="email" name="email" value="{{ dades.email }}" autocomplete="email" maxlength="160" required></div>
+        <div class="fld"><label>Telèfon</label>{{ tel.camp("telefon", dades.telefon, required=True) }}</div>
+        <div class="fld"><label>DNI / NIE</label><input type="text" name="dni" value="{{ dades.dni }}" placeholder="12345678Z" required></div>
+        <div class="fld"><label>Data de naixement</label><input type="date" name="naixement" value="{{ dades.naixement }}" required></div>
+        <div class="fld fld-wide" id="bloc-a2" style="display:none">
+          <label>Data en què vas treure el permís A2</label>
+          <input type="date" name="data_a2" id="data_a2" value="{{ dades.data_a2 }}" max="{{ avui_iso }}">
+          <small style="color:var(--text-tenue);font-size:12px">Per al carnet A cal tenir l'A2 des de fa com a mínim 2 anys. És un curs de 9 hores, sense examen. La data la trobaràs al teu permís (apartat 10, al costat de la categoria A2).</small>
+        </div>
+        <div class="fld fld-wide"><label>Adreça</label>
+          <div style="position:relative">
+            <input type="text" id="mf-adreca" name="adreca" value="{{ dades.adreca }}" placeholder="Carrer i número" autocomplete="off" required>
+            {% if maps_api_key %}<div id="mf-adreca-list" class="ac-list" style="display:none"></div>{% endif %}
+          </div>
+          {% if maps_api_key %}<small id="mf-adreca-hint" style="color:var(--text-tenue);font-size:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Comença a escriure i tria l'adreça, o escriu-la manualment.</small>{% endif %}
+        </div>
+        <div class="fld fld-wide"><label>Pis, porta, escala… <span style="font-weight:400;color:var(--text-tenue)">(opcional)</span></label><input type="text" name="adreca2" value="{{ dades.adreca2 }}" placeholder="2n 1a, escala B" maxlength="200" autocomplete="address-line2"></div>
+        <div class="fld"><label>Codi postal</label><input type="text" id="mf-cp" name="cp" value="{{ dades.cp }}" placeholder="08912" required></div>
+        <div class="fld"><label>Població</label><input type="text" id="mf-poblacio" name="poblacio" value="{{ dades.poblacio }}" placeholder="Badalona" required></div>
+        <div class="fld"><label>Horari preferit per a les pràctiques</label>
+          <select name="franja" style="width:100%;border:1px solid var(--vora-forta);border-radius:10px;padding:11px 14px;font-family:var(--body);font-size:14.5px;background:#fff">
+            <option value="">Indiferent</option>
+            <option value="MATI" {{ 'selected' if dades.franja == 'MATI' }}>Matí</option>
+            <option value="TARDA" {{ 'selected' if dades.franja == 'TARDA' }}>Tarda</option>
+          </select></div>
+        <div class="fld"><label>Codi de descompte <span style="font-weight:400;color:var(--text-tenue)">(opcional)</span></label><input type="text" name="codi_promo" value="{{ dades.codi_promo }}" maxlength="40" autocomplete="off" style="text-transform:uppercase"></div>
+        <div class="fld fld-wide"><label>Observacions <span style="font-weight:400;color:var(--text-tenue)">(opcional)</span></label><input type="text" name="observacions" value="{{ dades.observacions }}" maxlength="500" placeholder="Disponibilitat, dubtes…"></div>
+      </div>
+
+      <div id="tutor-block" style="display:none;border:1.5px solid #f0c96b;background:#FDF7E7;border-radius:12px;padding:14px 16px;margin-top:14px">
+        <label style="font-weight:700;font-size:14px;color:#8a6d1a">Consentiment del tutor/a legal (alumne menor d'edat)</label>
+        <p class="cdesc" style="margin-left:0;color:#8a6d1a">L'alumne és menor de 18 anys. El pare/mare o tutor/a legal ha d'autoritzar la matrícula abans de pagar.</p>
+        <div class="dades-grid">
+          <div class="fld fld-wide"><label>Nom i cognoms del tutor/a legal</label><input type="text" name="tutor_nom" value="{{ dades.tutor_nom }}" placeholder="Nom i cognoms"></div>
+          <div class="fld"><label>DNI / NIE del tutor/a</label><input type="text" name="tutor_dni" value="{{ dades.tutor_dni }}" placeholder="12345678Z"></div>
+        </div>
+        <label style="display:flex;gap:9px;align-items:flex-start;margin-top:6px;font-size:13.5px;color:#5c4a12">
+          <input type="checkbox" name="tutor_accepta" value="1" id="tutor_accepta" style="margin-top:3px">
+          <span>Com a tutor/a legal, autoritzo la matrícula d'aquest/a alumne/a menor d'edat i accepto que el contracte el signaré jo en representació seva.</span>
+        </label>
+      </div>
+      {% if err == 'tutor' %}
+      <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b;margin-top:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>L'alumne és menor: cal el nom i DNI del tutor/a legal i la seva autorització abans de pagar.</div>
+      {% endif %}
+    </div>
+
+    {% if stripe_on and stripe_test %}
+    <div class="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><path d="M9 3h6"/><path d="M10 3v6l-4.5 9a2 2 0 0 0 1.8 3h9.4a2 2 0 0 0 1.8-3L14 9V3"/><line x1="7" y1="15" x2="17" y2="15"/></svg>{% if mode_demo() %}Mode de demostració: el pagament és simulat i no es cobra res.{% else %}Mode de proves: al pagar, fes servir la targeta de test <b>4242 4242 4242 4242</b>, qualsevol data futura i qualsevol CVC. No es cobra res real.{% endif %}</div>
+    {% endif %}
+
+    <div class="bar">
+      <div class="sel">Següent pas: llegir i signar el contracte. Després pagues de forma segura amb Stripe.</div>
+      <button type="button" class="btn btn-verd btn-lg" onclick="obrirModalTaxa()">Continuar</button>
+    </div>
+  </form>
+  {% endif %}
+</div>
+
+<div id="modal-taxa" class="modal-taxa" style="display:none;">
+  <div class="modal-taxa-box">
+    <div class="mt-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg></div>
+    <h3>Taxes i cànon</h3>
+    <p>Per poder <strong>presentar-te a examen</strong> cal pagar aquests conceptes oficials, que <strong>no</strong> estan inclosos en el preu del pack. Pots afegir-los ara o pagar-los més endavant al teu centre.</p>
+    <div class="mt-opts">
+      <label class="mt-opt" id="opt-taxa">
+        <input type="checkbox" id="chk-taxa" checked>
+        <span class="mt-opt-txt"><strong>Taxa oficial DGT</strong><small>Obligatòria per examinar-te</small></span>
+        <span class="mt-opt-preu">+{{ eur2(taxa_dgt) }}€</span>
+      </label>
+      <label class="mt-opt" id="opt-canon">
+        <input type="checkbox" id="chk-canon" checked>
+        <span class="mt-opt-txt"><strong>Cànon de pistes</strong><small>Obligatori per a l'examen de maniobres</small></span>
+        <span class="mt-opt-preu">+{{ eur2(canon_pistes) }}€</span>
+      </label>
+    </div>
+    <div class="mt-actions">
+      <button type="button" class="btn btn-verd btn-lg" onclick="pagarSeleccio()">Continuar</button>
+    </div>
+    <button type="button" class="mt-close" onclick="tancarModalTaxa()">Cancel·lar</button>
+  </div>
+</div>
+
+<style>
+.modal-taxa{position:fixed;inset:0;background:rgba(16,24,48,.55);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal-taxa-box{background:#fff;border-radius:18px;max-width:460px;width:100%;padding:26px 26px 20px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-taxa-box .mt-ico{font-size:34px;margin-bottom:6px}
+.modal-taxa-box h3{margin:0 0 10px;color:var(--tinta,#14224F);font-size:1.25rem}
+.modal-taxa-box p{color:#4a5578;font-size:.95rem;margin:0 0 8px;line-height:1.5}
+.modal-taxa-box .mt-sub{font-weight:600;color:var(--tinta,#14224F)}
+.modal-taxa-box .mt-opts{display:flex;flex-direction:column;gap:10px;margin:16px 0 4px;text-align:left}
+.modal-taxa-box .mt-opt{display:flex;align-items:center;gap:11px;border:1.5px solid var(--vora,#e3e8f0);border-radius:12px;padding:12px 14px;cursor:pointer}
+.modal-taxa-box .mt-opt input{width:18px;height:18px;flex:none}
+.modal-taxa-box .mt-opt-txt{display:flex;flex-direction:column;flex:1}
+.modal-taxa-box .mt-opt-txt small{color:#8a93ab;font-size:.8rem}
+.modal-taxa-box .mt-opt-preu{font-weight:800;color:var(--blau,#2541b8);white-space:nowrap}
+.modal-taxa-box .mt-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.modal-taxa-box .mt-close{margin-top:12px;background:none;border:none;color:#8a93ab;font-size:.9rem;cursor:pointer;text-decoration:underline}
+</style>
+<script>
+function _edatMat(str){
+  if(!str) return null;
+  var d=new Date(str), t=new Date();
+  var e=t.getFullYear()-d.getFullYear();
+  var m=t.getMonth()-d.getMonth();
+  if(m<0||(m===0&&t.getDate()<d.getDate())) e--;
+  return e;
+}
+function _esMenorMat(){
+  var n=document.querySelector('input[name="naixement"]');
+  var e=n?_edatMat(n.value):null;
+  return e!==null && e<18;
+}
+function actualitzaA2(){
+  var p=document.querySelector('input[name="pack_id"]:checked');
+  var esA=!!(p && p.getAttribute('data-carnet')==='A');
+  var b=document.getElementById('bloc-a2'), i=document.getElementById('data_a2');
+  if(b) b.style.display=esA?'block':'none';
+  if(i) i.required=esA;
+}
+document.addEventListener('change', function(e){ if(e.target && e.target.name==='pack_id') actualitzaA2(); });
+document.addEventListener('click', function(e){ if(e.target && e.target.name==='pack_id') setTimeout(actualitzaA2, 0); });
+document.addEventListener('DOMContentLoaded', actualitzaA2);
+function actualitzaTutorMat(){
+  var block=document.getElementById('tutor-block');
+  if(!block) return;
+  var menor=_esMenorMat();
+  block.style.display=menor?'block':'none';
+  var tn=document.querySelector('input[name="tutor_nom"]');
+  var td=document.querySelector('input[name="tutor_dni"]');
+  if(tn) tn.required=menor;
+  if(td) td.required=menor;
+}
+(function(){
+  var n=document.querySelector('input[name="naixement"]');
+  if(n){ n.addEventListener('change', actualitzaTutorMat); actualitzaTutorMat(); }
+})();
+function _validaTutorMat(){
+  if(_esMenorMat()){
+    var tn=(document.querySelector('input[name="tutor_nom"]').value||'').trim();
+    var td=(document.querySelector('input[name="tutor_dni"]').value||'').trim();
+    var ok=document.getElementById('tutor_accepta') && document.getElementById('tutor_accepta').checked;
+    if(!tn||!td||!ok){
+      alert('L’alumne és menor d’edat: cal el nom i DNI del tutor/a legal i la seva autorització abans de pagar.');
+      var b=document.getElementById('tutor-block'); if(b) b.scrollIntoView({behavior:'smooth',block:'center'});
+      return false;
+    }
+  }
+  return true;
+}
+function _packTriat(){
+  return document.querySelector('input[name="pack_id"]:checked');
+}
+function obrirModalTaxa(){
+  var f = document.getElementById('form-matricula');
+  if (f.reportValidity && !f.reportValidity()) return;  // valida pack + dades requerides
+  if (!_validaTutorMat()) return;                        // menor: exigeix tutor abans de pagar
+  var p = _packTriat();
+  var teTaxa = p && p.getAttribute('data-taxa') === '1';
+  var teCanon = p && p.getAttribute('data-canon') === '1';
+  document.getElementById('opt-taxa').style.display = teTaxa ? 'flex' : 'none';
+  document.getElementById('opt-canon').style.display = teCanon ? 'flex' : 'none';
+  document.getElementById('chk-taxa').checked = teTaxa;
+  document.getElementById('chk-canon').checked = teCanon;
+  if (!teTaxa && !teCanon){ pagarSeleccio(); return; }
+  document.getElementById('modal-taxa').style.display='flex';
+}
+function tancarModalTaxa(){ document.getElementById('modal-taxa').style.display='none'; }
+function pagarSeleccio(){
+  var p = _packTriat();
+  var teTaxa = p && p.getAttribute('data-taxa') === '1';
+  var teCanon = p && p.getAttribute('data-canon') === '1';
+  document.getElementById('incloure_taxa').value = (teTaxa && document.getElementById('chk-taxa').checked) ? '1' : '0';
+  document.getElementById('incloure_canon').value = (teCanon && document.getElementById('chk-canon').checked) ? '1' : '0';
+  document.getElementById('form-matricula').submit();
+}
+</script>
+<script>
+// En triar un pack, només queden els packs d'aquell carnet; tornar a tocar el pack triat el desmarca
+// i torna a mostrar tots els carnets.
+(function(){
+  var grups = Array.prototype.slice.call(document.querySelectorAll('.cgroup[id^="carnet-"]'));
+  if (grups.length < 2) return;
+  function filtra(grup, quiet){
+    grups.forEach(function(g){
+      g.classList.toggle('carnet-amagat', !!grup && g !== grup);
+      g.classList.toggle('carnet-triat', !!grup && g === grup);
+    });
+    if (grup && !quiet){
+      var r = grup.getBoundingClientRect();
+      if (r.top < 70 || r.top > window.innerHeight * .6) window.scrollTo({top: window.scrollY + r.top - 90, behavior: 'smooth'});
+    }
+  }
+  document.querySelectorAll('.pk').forEach(function(lbl){
+    var inp = lbl.querySelector('input[name="pack_id"]');
+    if (!inp) return;
+    lbl.addEventListener('pointerdown', function(){ lbl._era = inp.checked; });
+    lbl.addEventListener('keydown', function(){ lbl._era = inp.checked; });
+    inp.addEventListener('click', function(){
+      if (lbl._era){ inp.checked = false; lbl._era = false; filtra(null); return; }
+      filtra(inp.closest('.cgroup'));
+    });
+  });
+  document.querySelectorAll('[data-tots-carnets]').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('input[name="pack_id"]:checked').forEach(function(x){ x.checked = false; });
+      filtra(null);
+    });
+  });
+  var ja = document.querySelector('input[name="pack_id"]:checked');
+  if (ja) filtra(ja.closest('.cgroup'), true);
+})();
+</script>
+{% if maps_api_key %}
+<style>
+  .ac-list{
+    position:absolute; left:0; right:0; top:calc(100% + 4px); z-index:50;
+    background:#fff; border:1px solid var(--vora-forta); border-radius:10px;
+    box-shadow:0 10px 30px rgba(20,34,79,.14);
+    max-height:210px; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  }
+  .ac-item{
+    display:flex; align-items:center; gap:9px; padding:9px 12px; cursor:pointer;
+    font-size:14px; color:var(--text); border-bottom:1px solid #f0f2f7; line-height:1.25;
+  }
+  .ac-item:last-child{border-bottom:none}
+  .ac-item:hover, .ac-item.sel{background:#f4f6fc}
+  .ac-item svg{width:16px;height:16px;color:var(--blau);flex:none}
+  .ac-item .ac-sub{color:var(--text-tenue);font-size:12px}
+  .ac-item .ac-main{font-weight:600}
+</style>
+<script>
+// Autocompletat d'adreça amb l'API de dades de Places (funciona amb claus noves)
+// i un desplegable propi, petit, sota l'input — sense overlay que tapi la pàgina.
+var _acLib=null, _acToken=null, _acTimer=null, _acSel=-1, _acSugs=[];
+async function initAutocompleteAdreca(){
+  var camp = document.getElementById('mf-adreca');
+  var list = document.getElementById('mf-adreca-list');
+  var hint = document.getElementById('mf-adreca-hint');
+  if (!camp || !list) return;
+  try {
+    _acLib = await google.maps.importLibrary('places');
+  } catch(e){
+    if (hint){ hint.textContent = "Escriu l'adreça manualment (cercador no disponible)."; }
+    return;
+  }
+
+  function tancar(){ list.style.display='none'; list.innerHTML=''; _acSel=-1; _acSugs=[]; }
+
+  function pin(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'; }
+
+  async function buscar(q){
+    if (!q || q.length < 3){ tancar(); return; }
+    try {
+      if (!_acToken) _acToken = new _acLib.AutocompleteSessionToken();
+      var res = await _acLib.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+        input: q, includedRegionCodes: ['es'], language: 'ca', sessionToken: _acToken
+      });
+      _acSugs = (res.suggestions || []).slice(0, 6);
+      if (!_acSugs.length){ tancar(); return; }
+      list.innerHTML = _acSugs.map(function(s, i){
+        var p = s.placePrediction;
+        var main = (p.mainText && p.mainText.text) || p.text.text || '';
+        var sub  = (p.secondaryText && p.secondaryText.text) || '';
+        return '<div class="ac-item" data-i="'+i+'">'+pin()+'<span><span class="ac-main">'+main+'</span>'+(sub?'<br><span class="ac-sub">'+sub+'</span>':'')+'</span></div>';
+      }).join('');
+      list.style.display='block'; _acSel=-1;
+    } catch(e){ tancar(); }
+  }
+
+  async function triar(i){
+    var s = _acSugs[i]; if (!s) return;
+    try {
+      var place = s.placePrediction.toPlace();
+      await place.fetchFields({ fields: ['addressComponents'] });
+      var comps = place.addressComponents || [];
+      var get = function(type){ var c = comps.find(function(x){ return (x.types||[]).indexOf(type)!==-1; }); return c ? (c.longText||c.long_name||'') : ''; };
+      var via=get('route'), num=get('street_number'), cp=get('postal_code');
+      var pob=get('locality')||get('postal_town')||get('administrative_area_level_2');
+      var adreca = via + (num ? (', '+num) : '');
+      if (adreca.trim()) camp.value = adreca;
+      if (cp) document.getElementById('mf-cp').value = cp;
+      if (pob) document.getElementById('mf-poblacio').value = pob;
+      if (hint){ hint.textContent = 'Adreça verificada amb Google Maps.'; hint.style.color = '#2f6d1a'; }
+    } catch(e){}
+    _acToken = null;  // tanca la sessió de facturació de Places
+    tancar();
+  }
+
+  camp.addEventListener('input', function(){
+    clearTimeout(_acTimer);
+    var q = camp.value;
+    _acTimer = setTimeout(function(){ buscar(q); }, 220);
+  });
+  list.addEventListener('mousedown', function(ev){
+    var it = ev.target.closest('.ac-item'); if (!it) return;
+    ev.preventDefault(); triar(parseInt(it.getAttribute('data-i'),10));
+  });
+  camp.addEventListener('keydown', function(ev){
+    if (list.style.display==='none') return;
+    var items = list.querySelectorAll('.ac-item');
+    if (ev.key==='ArrowDown'){ ev.preventDefault(); _acSel=Math.min(_acSel+1, items.length-1); }
+    else if (ev.key==='ArrowUp'){ ev.preventDefault(); _acSel=Math.max(_acSel-1, 0); }
+    else if (ev.key==='Enter'){ if(_acSel>=0){ ev.preventDefault(); triar(_acSel); } return; }
+    else if (ev.key==='Escape'){ tancar(); return; }
+    items.forEach(function(el,idx){ el.classList.toggle('sel', idx===_acSel); });
+  });
+  document.addEventListener('click', function(ev){
+    if (!ev.target.closest('#mf-adreca') && !ev.target.closest('#mf-adreca-list')) tancar();
+  });
+}
+window.gm_authFailure = function(){
+  var hint = document.getElementById('mf-adreca-hint');
+  if (hint){ hint.textContent = "Escriu l'adreça manualment (verificació no disponible)."; hint.style.color = 'var(--text-tenue)'; }
+};
+</script>
+<script async src="https://maps.googleapis.com/maps/api/js?key={{ maps_api_key }}&libraries=places&language=ca&region=ES&loading=async&callback=initAutocompleteAdreca"></script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "web/base_web.html" %}
+{% block title %}Pagament de prova · Autoescoles Rolan{% endblock %}
+{% block extra_css %}{% include "web/_pagina_css.html" %}{% endblock %}
+{% block content %}
+<div class="wrap cwrap">
+  <div class="note warn" style="margin-top:0">Mode de demostració: aquesta pàgina fa el paper de Stripe. A la web real, aquí hi haurà la pàgina segura de Stripe per pagar amb targeta. No es cobra res.</div>
+  <h1 style="margin-top:22px">Pagament</h1>
+  <p class="sub">{{ c.nom_complet if c }}</p>
+  <div class="card">
+    <ul class="files">
+      {% for nom, preu in s.linies %}<li><span>{{ nom }}</span><b>{{ eur2(preu) }} €</b></li>{% endfor %}
+      <li><span>Total</span><b>{{ eur2(s.amount_total / 100) }} €</b></li>
+    </ul>
+    <div class="docs" style="margin-top:16px">
+      <a class="btn btn-verd btn-lg" href="/pagament-demo/{{ s.id }}?accio=paga">Pagar {{ eur2(s.amount_total / 100) }} €</a>
+      <a class="btn btn-ghost btn-lg" href="/pagament-demo/{{ s.id }}?accio=cancela">Cancel·lar</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

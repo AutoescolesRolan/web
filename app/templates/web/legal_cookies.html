@@ -1,0 +1,43 @@
+{% extends "web/base_web.html" %}
+{% block title %}Política de cookies · Autoescoles Rolan{% endblock %}
+{% block content %}
+<style>
+.legal{max-width:820px;margin:0 auto;padding:40px 22px 20px}
+.legal h1{font-size:clamp(26px,4vw,36px);font-weight:800;margin-bottom:6px}
+.legal .upd{color:var(--text-tenue);font-size:13px;margin-bottom:26px}
+.legal h2{font-size:19px;font-weight:700;margin:26px 0 8px;color:var(--tinta)}
+.legal p,.legal li{color:var(--text-suau);line-height:1.65;font-size:15px}
+.legal table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+.legal th,.legal td{border:1px solid var(--vora);padding:8px 10px;text-align:left;vertical-align:top}
+.legal th{background:#f7f9fc}
+.legal .rev{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:14px 16px;font-size:13.5px;margin:18px 0}
+.legal .btn{display:inline-block;margin-top:14px}
+</style>
+<div class="legal">
+  <h1>Política de cookies</h1>
+  <p class="upd">Darrera actualització: {{ '2026' }}</p>
+
+  {% set _falta = not escola("escola_rao_social") or not escola("escola_domicili") %}{% if _falta %}
+  <div class="rev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><b>Esborrany per revisar.</b> Plantilla orientativa. Reviseu-la amb el vostre assessor legal i ajusteu la taula segons les cookies reals que finalment utilitzeu.</div>
+  {% endif %}
+
+  <h2>Què són les cookies</h2>
+  <p>Les cookies són petits fitxers que s'emmagatzemen al teu dispositiu quan visites un lloc web. Serveixen per fer-lo funcionar, recordar preferències o mesurar-ne l'ús.</p>
+
+  <h2>Cookies que utilitzem</h2>
+  <table>
+    <thead><tr><th>Cookie</th><th>Tipus</th><th>Finalitat</th><th>Durada</th></tr></thead>
+    <tbody>
+      <tr><td>rolan_web</td><td>Tècnica (necessària)</td><td>Recordar l'idioma triat i la matrícula en curs</td><td>14 dies</td></tr>
+      <tr><td>rolan_cookies</td><td>Tècnica (necessària)</td><td>Recordar la teva decisió sobre les cookies</td><td>1 any</td></tr>
+      <tr><td>Google Maps (tercers)</td><td>De tercers</td><td>Mostrar els mapes dels centres. Només es carreguen si acceptes les cookies.</td><td>Segons Google</td></tr>
+      <tr><td>Stripe (tercers)</td><td>De tercers</td><td>Processar els pagaments de forma segura (només durant el pagament)</td><td>Segons Stripe</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Gestió de les cookies</h2>
+  <p>Les cookies tècniques són necessàries perquè el web funcioni i no requereixen consentiment. Les de tercers (mapes) només es carreguen si les acceptes. Pots canviar la teva decisió en qualsevol moment des d'aquí:</p>
+  <button type="button" class="btn btn-primary" onclick="if(window.rolanResetCookies)window.rolanResetCookies()">Canviar preferència de cookies</button>
+  <p style="margin-top:14px">També pots configurar o eliminar les cookies des del teu navegador (Chrome, Firefox, Safari, Edge…).</p>
+</div>
+{% endblock %}

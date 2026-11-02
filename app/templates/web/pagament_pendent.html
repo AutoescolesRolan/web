@@ -1,0 +1,11 @@
+{% extends "web/base_web.html" %}
+{% block title %}Comprovant el pagament · Autoescoles Rolan{% endblock %}
+{% block extra_css %}{% include "web/_pagina_css.html" %}{% endblock %}
+{% block content %}
+<div class="wrap cwrap">
+  <h1>Estem comprovant el pagament</h1>
+  <p class="sub">Encara no tenim la confirmació de Stripe. Sol trigar uns segons: aquesta pàgina es tornarà a carregar sola.</p>
+  <div class="note warn">Si has tancat la pàgina de pagament sense pagar, no s'ha cobrat res. Pots <a href="{{ '/matricula/' ~ c.token ~ '/contracte' if c.tipus == 'matricula' else '/practiques/' ~ c.token }}" style="font-weight:700;color:inherit">tornar-ho a provar</a>. Si t'han fet el càrrec i no rebs el correu en uns minuts, truca'ns al {{ escola('escola_telefon', '934 647 857') }}.</div>
+</div>
+<script>setTimeout(function(){ location.reload(); }, 5000);</script>
+{% endblock %}

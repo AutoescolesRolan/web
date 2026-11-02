@@ -1,0 +1,36 @@
+{# Camp de telèfon de tota l'app: prefix de país + número.
+   Espanya (+34): exactament 9 xifres. Altres països: de 4 a 14 xifres. Opcional = es pot deixar buit.
+   El servidor ho torna a comprovar (app/telefon.py). #}
+{% macro camp(name, valor='', required=False, placeholder='', id='') -%}
+{%- set pv = telefon_separa(valor) -%}
+<span class="tel-camp" style="display:flex;gap:8px;align-items:stretch;width:100%">
+  <select name="{{ name }}__pais" class="tel-pais" aria-label="Prefix del país"
+          style="flex:none;width:auto;min-width:92px;font:inherit;font-size:14px;border:1px solid var(--vora-forta,#d5dbe8);border-radius:10px;padding:0 8px;background:#fff;color:inherit;cursor:pointer">
+    {%- for pre, codi in telefon_paisos %}
+    <option value="{{ pre }}" {{ 'selected' if pre == pv[0] }}>{{ codi }} +{{ pre }}</option>
+    {%- endfor %}
+  </select>
+  <input type="tel" name="{{ name }}" {% if id %}id="{{ id }}"{% endif %} class="tel-num" value="{{ pv[1] }}" inputmode="numeric" autocomplete="tel-national"
+         {{ 'required' if required }} placeholder="{{ placeholder or '612345678' }}" style="flex:1;min-width:0">
+</span>
+<script>
+(function () {
+  if (window.__telefon) return; window.__telefon = true;
+  function valida(inp) {
+    var sel = inp.parentNode.querySelector('.tel-pais'), es = !sel || sel.value === '34';
+    var v = inp.value.replace(/\D/g, '');
+    if (v !== inp.value) inp.value = v;
+    inp.maxLength = es ? 9 : 14;
+    var msg = '';
+    if (v && es && v.length !== 9) msg = 'El telèfon ha de tenir 9 xifres (o tria un altre prefix de país).';
+    else if (v && !es && (v.length < 4 || v.length > 14)) msg = 'Revisa el número de telèfon: ha de tenir entre 4 i 14 xifres, sense el prefix.';
+    inp.setCustomValidity(msg);
+  }
+  document.addEventListener('input', function (e) { if (e.target.classList && e.target.classList.contains('tel-num')) valida(e.target); });
+  document.addEventListener('change', function (e) {
+    if (e.target.classList && e.target.classList.contains('tel-pais')) { var i = e.target.parentNode.querySelector('.tel-num'); if (i) valida(i); }
+  });
+  document.addEventListener('DOMContentLoaded', function () { document.querySelectorAll('.tel-num').forEach(valida); });
+})();
+</script>
+{%- endmacro %}

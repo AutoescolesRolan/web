@@ -1,0 +1,16 @@
+{% extends "panell/base_panell.html" %}
+{% block title %}Entrar{% endblock %}
+{% block content %}
+<div style="max-width:380px;margin:50px auto 0">
+  <div style="text-align:center;margin-bottom:18px"><img src="/static/img/logo-rolan.png" alt="" width="72" height="72" style="border-radius:50%"></div>
+  <h1 style="text-align:center">Panell de la web</h1>
+  <p class="sub" style="text-align:center">Matrícules i compres rebudes a la web.</p>
+  {% if err == 'dades' %}<div class="avis err">El correu o la contrasenya no són correctes.</div>
+  {% elif err == 'massa' %}<div class="avis err">Massa intents seguits. Torna-ho a provar d'aquí a 15 minuts.</div>{% endif %}
+  <form class="card" method="post" action="/gestio/entrar" style="display:flex;flex-direction:column;gap:12px">
+    <div><label>Correu</label><input type="email" name="email" value="{{ email }}" required autocomplete="username" style="width:100%"></div>
+    <div><label>Contrasenya</label><input type="password" name="contrasenya" required autocomplete="current-password" style="width:100%"></div>
+    <button class="btn" type="submit" style="justify-content:center">Entrar</button>
+  </form>
+</div>
+{% endblock %}

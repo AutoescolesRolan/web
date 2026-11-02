@@ -1,0 +1,28 @@
+{% extends "panell/base_panell.html" %}
+{% block title %}Centres{% endblock %}
+{% block content %}
+<h1>Centres</h1>
+<p class="sub">El correu de cada centre és on arriben les matrícules, les compres i els missatges d'aquell centre.</p>
+{% if fet %}<div class="avis ok">Centres desats.</div>{% endif %}
+<form method="post" action="/gestio/centres">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% for c in centres %}
+  <div class="card">
+    <h2 style="margin-top:0">{{ c.nom }}</h2>
+    <div class="grid2">
+      <div><label>Nom</label><input type="text" name="nom_{{ c.id }}" value="{{ c.nom }}"></div>
+      <div><label>Correu de la secretaria</label><input type="email" name="email_{{ c.id }}" value="{{ c.email }}"></div>
+      <div><label>Adreça</label><input type="text" name="adreca_{{ c.id }}" value="{{ c.adreca }}"></div>
+      <div><label>Codi postal i població</label><input type="text" name="cp_localitat_{{ c.id }}" value="{{ c.cp_localitat }}"></div>
+      <div><label>Telèfon</label><input type="text" name="telefon_{{ c.id }}" value="{{ c.telefon }}"></div>
+      <div><label>Mòbil</label><input type="text" name="mobil_{{ c.id }}" value="{{ c.mobil }}"></div>
+      <div class="ple"><label>Text per buscar-lo a Google Maps</label><input type="text" name="maps_{{ c.id }}" value="{{ c.maps }}"></div>
+      <div><label>Horari de teòrica (català)</label><textarea name="horari_ca_{{ c.id }}" rows="4">{{ c.horari_ca }}</textarea></div>
+      <div><label>Horari de teòrica (castellà)</label><textarea name="horari_es_{{ c.id }}" rows="4">{{ c.horari_es }}</textarea></div>
+      <div class="ple"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="actiu_{{ c.id }}" value="1" {{ 'checked' if c.actiu }}> Surt a la web</label></div>
+    </div>
+  </div>
+  {% endfor %}
+  <p style="margin-top:16px"><button class="btn verd" type="submit">Desar els centres</button></p>
+</form>
+{% endblock %}

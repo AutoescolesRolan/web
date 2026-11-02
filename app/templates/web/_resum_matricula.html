@@ -1,0 +1,22 @@
+<div class="card resum">
+  <div class="rs-top">
+    <div class="rs-badge">{{ c.carnet_codi }}</div>
+    <div class="rs-info">
+      <div class="rs-eye">La teva matrícula</div>
+      <div class="rs-t">Carnet {{ c.carnet_codi }}{% if carnet %} <span>· {{ T(carnet.nom_ca, carnet.nom_es) }}</span>{% endif %}</div>
+      <div class="rs-p">{{ T(pack.nom_ca, pack.nom_es) if pack else c.producte }}{% if c.centre %} · {{ c.centre.nom }}{% endif %}</div>
+    </div>
+    <div class="rs-preu"><b>{{ eur(c.total) }}€</b><span>Total a pagar</span></div>
+  </div>
+  <ul class="rs-linies">
+    <li><span>Pack</span><b>{{ eur2(c.preu_base) }} €</b></li>
+    {% if c.descompte %}<li class="dte"><span>{{ c.promocio }}</span><b>−{{ eur2(c.descompte) }} €</b></li>{% endif %}
+    {% if c.taxa %}<li><span>Taxa oficial DGT</span><b>{{ eur2(c.taxa) }} €</b></li>{% endif %}
+    {% if c.canon %}<li><span>Cànon de pistes</span><b>{{ eur2(c.canon) }} €</b></li>{% endif %}
+  </ul>
+  {% if c.estat == 'signada' %}<a class="rs-doc" href="/matricula/{{ c.token }}/contracte.pdf" target="_blank" rel="noopener">{% else %}<button type="button" class="rs-doc" onclick="obrirContracte()">{% endif %}
+    <span class="rs-doc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h8"/><path d="M8 17h5"/></svg></span>
+    <span class="rs-doc-t"><b>Contracte de matrícula</b><span>{% if c.estat == 'signada' %}El contracte que has signat{% else %}Llegeix-lo complet abans de signar{% endif %}</span></span>
+    <span class="rs-doc-go">Llegir <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+  {% if c.estat == 'signada' %}</a>{% else %}</button>{% endif %}
+</div>

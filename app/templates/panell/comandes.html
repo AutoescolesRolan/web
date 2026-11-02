@@ -1,0 +1,41 @@
+{% extends "panell/base_panell.html" %}
+{% block title %}Comandes{% endblock %}
+{% block content %}
+<h1>Comandes de la web</h1>
+<p class="sub">Matrícules i packs de pràctiques pagats a la web. Cada comanda arriba també per correu a la secretaria del centre.</p>
+{% if falten %}<div class="avis warn">Abans de publicar la web, omple a <a href="/gestio/dades"><b>Dades i correus</b></a>: {{ falten|join(', ') }}. Surten a l'avís legal i al contracte.</div>{% endif %}
+<div class="kpis">
+  <div class="kpi"><b>{{ mes_n }}</b><span>Pagades aquest mes</span></div>
+  <div class="kpi"><b>{{ eur2(mes_total) }} €</b><span>Cobrat aquest mes</span></div>
+  <div class="kpi"><b>{{ files|length }}</b><span>Al llistat</span></div>
+  <div class="kpi"><b>{{ eur2(total) }} €</b><span>Total pagat del llistat</span></div>
+</div>
+<form class="filtres" method="get" action="/gestio">
+  <select name="estat"><option value="pagada" {{ 'selected' if estat == 'pagada' }}>Pagades</option><option value="pendent" {{ 'selected' if estat == 'pendent' }}>Sense pagar</option><option value="totes" {{ 'selected' if estat == 'totes' }}>Totes</option></select>
+  <select name="tipus"><option value="">Matrícules i pràctiques</option><option value="matricula" {{ 'selected' if tipus == 'matricula' }}>Matrícules</option><option value="practiques" {{ 'selected' if tipus == 'practiques' }}>Pràctiques</option></select>
+  {% if u.rol == 'admin' or not u.centre_id %}<select name="centre"><option value="">Tots els centres</option>{% for c in centres %}<option value="{{ c.id }}" {{ 'selected' if centre == c.id|string }}>{{ c.nom }}</option>{% endfor %}</select>{% endif %}
+  <input type="search" name="q" value="{{ q }}" placeholder="Nom, DNI, correu o rebut">
+  <button class="btn" type="submit">Filtrar</button>
+  <a class="btn ghost" href="/gestio/exporta.xlsx?estat={{ estat }}&tipus={{ tipus }}&centre={{ centre }}&q={{ q|urlencode }}">Descarregar Excel</a>
+</form>
+<div class="taula">
+<table>
+  <thead><tr><th>Data</th><th>Alumne/a</th><th>Centre</th><th>Producte</th><th class="num">Total</th><th>Estat</th><th>Correus</th></tr></thead>
+  <tbody>
+  {% for c in files %}
+  <tr class="clic" data-href="/gestio/comanda/{{ c.id }}">
+    <td style="white-space:nowrap">{{ ((c.pagat_en or c.creat_en)|local).strftime('%d/%m/%y %H:%M') }}</td>
+    <td><b>{{ c.nom_complet }}</b><div class="sub" style="font-size:12.5px">{{ c.dni }} · {{ c.telefon }}</div></td>
+    <td>{{ c.centre.nom if c.centre else '—' }}</td>
+    <td>{% if c.tipus == 'matricula' %}<span class="pill blau">Matrícula</span>{% else %}<span class="pill gris">Pràctiques</span>{% endif %}<div style="font-size:13px;margin-top:3px">{{ c.producte }}</div></td>
+    <td class="num"><b>{{ eur2(c.total) }} €</b>{% if c.descompte %}<div class="sub" style="font-size:12px">{{ c.promocio }}</div>{% endif %}</td>
+    <td>{% if c.estat == 'pagada' %}<span class="pill ok">Pagada</span><div class="sub" style="font-size:12px">{{ c.num_rebut }}</div>{% elif c.estat == 'signada' %}<span class="pill pend">Signada, sense pagar</span>{% else %}<span class="pill gris">A mitges</span>{% endif %}</td>
+    <td>{% if c.estat == 'pagada' %}{% if 'NO ·' in (c.correus or '') %}<span class="pill pend">Revisar</span>{% else %}<span class="pill ok">Enviats</span>{% endif %}{% endif %}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="sub" style="text-align:center;padding:26px">Encara no hi ha cap comanda amb aquests filtres.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

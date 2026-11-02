@@ -1,0 +1,50 @@
+{% extends "panell/base_panell.html" %}
+{% block title %}Promocions{% endblock %}
+{% block content %}
+<h1>Promocions</h1>
+<p class="sub">Un descompte en percentatge sobre el preu dels packs (les taxes no es toquen). Sense codi s'aplica sol i surt una franja a dalt de la web; amb codi, només si l'alumne l'escriu. No se sumen: s'aplica la que fa més descompte.</p>
+{% if err %}<div class="avis err">Revisa-ho: cal un nom, un descompte entre 1 i 90 % i que la data de fi sigui posterior a la d'inici.</div>{% endif %}
+{% if fet == 'desada' %}<div class="avis ok">Promoció desada.</div>{% elif fet == 'esborrada' %}<div class="avis ok">Promoció esborrada.</div>{% endif %}
+
+<div class="taula"><table>
+  <thead><tr><th>Promoció</th><th class="num">Descompte</th><th>Codi</th><th>S'aplica a</th><th>Dates</th><th>Estat</th><th></th></tr></thead>
+  <tbody>
+  {% for p in promos %}
+  <tr>
+    <td><b>{{ p.nom }}</b>{% if p.banner_ca %}<div class="sub" style="font-size:12px">{{ p.banner_ca }}</div>{% endif %}</td>
+    <td class="num">−{{ '%g'|format(p.percentatge) }}%</td>
+    <td>{{ p.codi or '—' }}</td>
+    <td>{{ {'tot':'Tot','matricula':'Matrícules','practiques':'Pràctiques'}.get(p.aplica) }}</td>
+    <td style="white-space:nowrap">{{ p.inici.strftime('%d/%m/%y %H:%M') }} → {{ p.fi.strftime('%d/%m/%y %H:%M') }}</td>
+    <td>{% if not p.activa %}<span class="pill gris">Aturada</span>{% elif p.inici <= ara <= p.fi %}<span class="pill ok">En marxa</span>{% elif ara < p.inici %}<span class="pill blau">Programada</span>{% else %}<span class="pill gris">Acabada</span>{% endif %}</td>
+    <td><a class="btn ghost sm" href="/gestio/promocions?edita={{ p.id }}">Editar</a></td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="sub" style="text-align:center;padding:22px">Encara no hi ha cap promoció.</td></tr>
+  {% endfor %}
+  </tbody>
+</table></div>
+
+{% set e = edita %}
+<h2>{% if e %}Editar «{{ e.nom }}»{% else %}Nova promoció{% endif %}</h2>
+<form class="card" method="post" action="/gestio/promocions">
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  {% if e %}<input type="hidden" name="id" value="{{ e.id }}">{% endif %}
+  <div class="grid2">
+    <div><label>Nom</label><input type="text" name="nom" value="{{ e.nom if e else 'Black Friday' }}" required maxlength="120"></div>
+    <div><label>Descompte (%)</label><input type="text" name="percentatge" value="{{ '%g'|format(e.percentatge) if e else '' }}" inputmode="decimal" required placeholder="20"></div>
+    <div><label>Comença</label><input type="datetime-local" name="inici" value="{{ e.inici.strftime('%Y-%m-%dT%H:%M') if e else '' }}" required></div>
+    <div><label>Acaba</label><input type="datetime-local" name="fi" value="{{ e.fi.strftime('%Y-%m-%dT%H:%M') if e else '' }}" required></div>
+    <div><label>S'aplica a</label><select name="aplica">{% for k, n in [('tot','Matrícules i pràctiques'),('matricula','Només matrícules'),('practiques','Només pràctiques')] %}<option value="{{ k }}" {{ 'selected' if e and e.aplica == k }}>{{ n }}</option>{% endfor %}</select></div>
+    <div><label>Codi (opcional)</label><input type="text" name="codi" value="{{ e.codi if e else '' }}" maxlength="40" placeholder="Buit = s'aplica sola" style="text-transform:uppercase"></div>
+    <div class="ple"><label>Text de la franja de dalt (català)</label><input type="text" name="banner_ca" value="{{ e.banner_ca if e else '' }}" maxlength="200" placeholder="Black Friday: −20% en tots els packs fins diumenge"></div>
+    <div class="ple"><label>Text de la franja de dalt (castellà)</label><input type="text" name="banner_es" value="{{ e.banner_es if e else '' }}" maxlength="200" placeholder="Black Friday: −20% en todos los packs hasta el domingo"></div>
+    <div class="ple"><label style="display:flex;gap:8px;align-items:center;font-weight:600"><input type="checkbox" name="activa" value="1" {{ 'checked' if (not e or e.activa) }}> Activa</label></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+    <button class="btn verd" type="submit">Desar</button>
+    {% if e %}<a class="btn ghost" href="/gestio/promocions">Cancel·lar</a>
+    <button class="btn perill" type="submit" name="accio" value="esborra" formnovalidate onclick="return confirm('Segur que vols esborrar aquesta promoció?')">Esborrar</button>{% endif %}
+  </div>
+</form>
+{% endblock %}
