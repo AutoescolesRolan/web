@@ -330,8 +330,8 @@ async def preus_desa(request: Request, db: Session = Depends(get_db)):
     for clau in ("taxa_dgt", "taxa_dgt_a", "canon_pistes", "preu_expedient"):
         if clau in f:
             ajustos.desa(db, clau, str(_float(f.get(clau))))
-    for clau in ("tarifes_cotxe", "tarifes_moto"):
-        if clau in f:
+    for clau in f.keys():
+        if clau.startswith(("tarifes_classes_", "tarifes_examens_")) and len(clau) < 40:
             ajustos.desa(db, clau, (f.get(clau) or "").strip())
     db.commit()
     return RedirectResponse("/gestio/preus?fet=1", status_code=303)
@@ -424,7 +424,8 @@ CLAUS_ESCOLA = [("escola_nom", "Nom comercial"), ("escola_rao_social", "Raó soc
                 ("escola_domicili", "Domicili fiscal"), ("escola_localitat", "Localitat"),
                 ("escola_telefon", "Telèfon general"), ("escola_email", "Correu general"),
                 ("escola_titular", "Titular"), ("escola_num_provincial", "Núm. d'autorització de la DGT"),
-                ("correus_admin", "Correus que reben còpia de totes les matrícules (separats per comes)")]
+                ("correus_admin", "Correus que reben còpia de totes les matrícules (separats per comes)"),
+                ("google_maps_api_key", "Clau de Google Maps (per completar l'adreça a la matrícula)")]
 
 
 @router.get("/dades", response_class=HTMLResponse)
@@ -437,7 +438,8 @@ def dades(request: Request, fet: str = "", db: Session = Depends(get_db)):
     return _r(request, "panell/dades.html", {"aj": ajustos.tots(db), "claus": CLAUS_ESCOLA, "fet": fet,
                                               "correu_ok": correu.configurat(), "stripe_ok": pagaments.configurat(),
                                               "stripe_test": pagaments.mode_proves(),
-                                              "url": comandes.url_publica()}, db)
+                                              "url": comandes.url_publica(),
+                                              "maps_ok": bool(__import__("app.web", fromlist=["x"]).clau_maps(db))}, db)
 
 
 @router.post("/dades")

@@ -78,7 +78,18 @@ def render(request, nom, ctx=None, db=None, status_code=200):
 
 @app.on_event("startup")
 def _inici():
-    _db.Base.metadata.create_all(_db.engine)
+    # La base de dades pot trigar a estar a punt (p. ex. en crear-la per primer cop a Render):
+    # s'hi torna a provar durant uns 2 minuts abans de rendir-se.
+    import time
+    for intent in range(25):
+        try:
+            _db.Base.metadata.create_all(_db.engine)
+            break
+        except Exception as e:
+            if intent == 24:
+                raise
+            print(f"[inici] la base de dades encara no respon ({type(e).__name__}); torno a provar en 5 s")
+            time.sleep(5)
     db = _db.SessionLocal()
     try:
         seed.omple(db)

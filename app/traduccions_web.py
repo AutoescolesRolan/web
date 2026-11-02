@@ -197,6 +197,9 @@ _T = {
     "política de privacitat": "política de privacidad",
     "tornar-ho a provar": "volver a intentarlo",
     "Black Friday": "Black Friday",
+    "Falta:": "Falta:",
+    "el centre": "el centro", "el pack": "el pack", "el nom": "el nombre", "els cognoms": "los apellidos",
+    "el correu": "el correo", "l'adreça": "la dirección", "el codi postal": "el código postal", "la població": "la población",
     "Mode de demostració: el pagament és simulat i no es cobra res.": "Modo de demostración: el pago es simulado y no se cobra nada.",
     "Mode de demostració: aquesta pàgina fa el paper de Stripe. A la web real, aquí hi haurà la pàgina segura de Stripe per pagar amb targeta. No es cobra res.":
         "Modo de demostración: esta página hace el papel de Stripe. En la web real, aquí estará la página segura de Stripe para pagar con tarjeta. No se cobra nada.",

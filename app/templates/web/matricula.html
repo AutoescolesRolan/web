@@ -50,10 +50,10 @@
   <div class="mhead">
     {% if carnet_sel %}
     <h1>Matricula't · Carnet {{ carnet_sel.codi }}</h1>
-    <p>{{ T(carnet_sel.nom_ca, carnet_sel.nom_es) }} · {{ T(carnet_sel.sub_ca, carnet_sel.sub_es) }}. Tria el pack que millor et vagi{% if stripe_on %} i paga per completar la matrícula{% else %}; l'autoescola et contactarà per confirmar-la{% endif %}. <a href="/matricula" style="color:var(--blau);font-weight:600">Veure tots els carnets</a></p>
+    <p>{{ T(carnet_sel.nom_ca, carnet_sel.nom_es) }}. Tria el pack que millor et vagi i paga per completar la matrícula. <a href="/matricula" style="color:var(--blau);font-weight:600">Veure tots els carnets</a></p>
     {% else %}
     <h1>Tria el teu carnet i pack</h1>
-    <p>Selecciona l'opció que millor et vagi{% if stripe_on %} i paga per completar la matrícula{% else %}. Quedarà com a sol·licitud i l'autoescola et contactarà per confirmar-la{% endif %}.</p>
+    <p>Selecciona l'opció que millor et vagi i paga per completar la matrícula.</p>
     {% endif %}
   </div>
 
@@ -67,7 +67,7 @@
   {% elif err == 'dni' %}
   <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">El DNI/NIE no és correcte: revisa el número i la lletra (també el del tutor/a, si n'hi ha).</div>
   {% elif err == 'camps' %}
-  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">Cal triar el centre i el pack i omplir totes les dades obligatòries.</div>
+  <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">Cal triar el centre i el pack i omplir totes les dades obligatòries.{% if falta %} Falta: <b>{{ falta|map('tx')|join(', ') }}</b>.{% endif %}</div>
   {% elif err == 'telefon' %}
   <div class="note" style="background:#fee2e2;border-color:#f3b6b8;color:#991b1b">El telèfon ha de tenir 9 xifres (o tria el prefix del teu país).</div>
   {% elif err == 'codi' %}
@@ -111,7 +111,7 @@
     {% for grup in cataleg %}
     <div class="cgroup" id="carnet-{{ grup.carnet.codi }}">
       <h2><span class="cbadge">{{ grup.carnet.codi }}</span> Carnet {{ grup.carnet.codi }}</h2>
-      <p class="cdesc">{{ T(grup.carnet.nom_ca, grup.carnet.nom_es) }} · {{ T(grup.carnet.sub_ca, grup.carnet.sub_es) }}</p>
+      <p class="cdesc">{{ T(grup.carnet.nom_ca, grup.carnet.nom_es) }}</p>
       <div class="packs">
         {% set _codi = grup.carnet.codi|upper %}
         {% set _pw = pw.get(_codi) %}
@@ -127,7 +127,7 @@
             <div class="pk-top"><span class="nm">{{ T(p.nom_ca, p.nom_es) }}</span><span class="chk">✓</span></div>
             {% set _pp = (_pw.packs|selectattr('id', 'equalto', p.id)|list|first) if _pw else none %}
             <span class="pr">{% if _pp and _pp.preu_abans %}<s class="abans">{{ _pp.preu_abans }}€</s>{% endif %}{{ _pp.preu_txt if _pp else eur(p.preu) }}€</span>
-            <span class="inc">{{ T(p.inclou_ca, p.inclou_es).splitlines()|join(' · ') }}</span>
+            <span class="inc">{% if p.classes %}{{ p.classes }} pràctiques{% else %}Sense pràctiques{% endif %}</span>
           </div>
         </label>
         {% endfor %}

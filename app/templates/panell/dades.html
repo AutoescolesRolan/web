@@ -9,6 +9,7 @@
   <dl class="dl">
     <dt>Pagaments (Stripe)</dt><dd>{% if stripe_ok %}<span class="pill ok">Connectat</span>{% if stripe_test %} <span class="pill pend">Mode de proves</span>{% endif %}{% else %}<span class="pill pend">Sense configurar</span>{% endif %}</dd>
     <dt>Enviament de correus</dt><dd>{% if correu_ok %}<span class="pill ok">Configurat</span>{% else %}<span class="pill pend">Sense configurar</span>{% endif %}</dd>
+    <dt>Google Maps (adreça)</dt><dd>{% if maps_ok %}<span class="pill ok">Configurat</span>{% else %}<span class="pill pend">Sense configurar</span>{% endif %}</dd>
     <dt>Adreça pública</dt><dd>{{ url or 'Sense configurar (PUBLIC_URL)' }}</dd>
   </dl>
 </div>
@@ -16,7 +17,7 @@
   <input type="hidden" name="csrf" value="{{ csrf }}">
   <div class="grid2">
     {% for clau, nom in claus %}
-    <div class="{{ 'ple' if clau == 'correus_admin' }}"><label>{{ nom }}</label><input type="text" name="{{ clau }}" value="{{ aj.get(clau, '') }}"></div>
+    <div class="{{ 'ple' if clau in ('correus_admin', 'google_maps_api_key') }}"><label>{{ nom }}</label><input type="text" name="{{ clau }}" value="{{ aj.get(clau, '') }}"></div>
     {% endfor %}
   </div>
   <p style="margin-top:14px"><button class="btn verd" type="submit">Desar</button></p>

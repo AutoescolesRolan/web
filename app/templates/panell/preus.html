@@ -42,11 +42,14 @@
   </div>
 
   <h2>Taula de preus de la pàgina «Preus»</h2>
-  <p class="sub">Una línia per concepte: <b>text en català | text en castellà | preu</b>.</p>
+  <p class="sub">Una línia per concepte: <b>text en català | text en castellà | preu</b>. Si un bloc es deixa buit, no surt.</p>
+  {% for c in carnets %}
   <div class="card grid2">
-    <div class="ple"><label>Cotxe</label><textarea name="tarifes_cotxe" rows="9">{{ aj.tarifes_cotxe }}</textarea></div>
-    <div class="ple"><label>Moto i ciclomotor</label><textarea name="tarifes_moto" rows="6">{{ aj.tarifes_moto }}</textarea></div>
+    <div class="ple"><b>Carnet {{ c.codi }}</b> · {{ c.nom_ca }}</div>
+    <div><label>Classes soltes</label><textarea name="tarifes_classes_{{ c.codi }}" rows="4">{{ aj.get('tarifes_classes_' ~ c.codi, '') }}</textarea></div>
+    <div><label>Exàmens i taxes</label><textarea name="tarifes_examens_{{ c.codi }}" rows="6">{{ aj.get('tarifes_examens_' ~ c.codi, '') }}</textarea></div>
   </div>
+  {% endfor %}
   <p style="margin-top:16px"><button class="btn verd" type="submit">Desar els preus</button></p>
 </form>
 {% endblock %}

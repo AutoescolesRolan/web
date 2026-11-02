@@ -105,51 +105,51 @@
 {% endif %}
 
 <div class="wrap">
-  <div class="sec-head"><span class="eyebrow"><span class="dot"></span>Desglossament</span><h2>{% if sel %}Preus del carnet {{ sel }}{% else %}Preus per carnet{% endif %}</h2><p>Classes soltes, exàmens i taxes (IVA inclòs). Les classes soltes i els exàmens es paguen al teu centre; els packs de pràctiques els pots comprar en línia.</p></div>
+  <div class="sec-head"><span class="eyebrow"><span class="dot"></span>Desglossament</span><h2>{% if sel %}Preus del carnet {{ sel }}{% else %}Preus per carnet{% endif %}</h2><p>Classes soltes, exàmens i taxes de cada carnet (IVA inclòs). Es paguen al teu centre; els packs de pràctiques els pots comprar en línia.</p></div>
   {% set _es = i18n_get_idioma(request) == 'es' %}
-  {% if (not sel or sel == 'B') and (tarifes_cotxe or packs_practiques) %}
+  {% for ci in desglossament %}
+  {% if (ci.classes or ci.examens or ci.packs) and (not sel or ci.codi == sel) %}
   <div class="carnet-preus">
-    <div class="cp-head"><span class="cp-badge">B</span><h3>Cotxe (turisme)</h3></div>
-    {% if tarifes_cotxe %}
-    <div class="cp-body un">
+    <div class="cp-head"><span class="cp-badge">{{ ci.codi }}</span><h3>{{ ci.carnet.nom_es if _es else ci.carnet.nom_ca }}</h3></div>
+    {% set un_bloc = not (ci.classes and ci.examens) %}
+    {% if ci.classes or ci.examens %}
+    <div class="cp-body{% if un_bloc %} un{% endif %}">
+      {% if ci.classes %}
       <div class="cp-block">
-        <div class="cp-tit">Classes, exàmens i taxes</div>
+        <div class="cp-tit">Classes soltes <span>per classe</span></div>
         <ul class="price-list">
-          {% for ca, es, preu in tarifes_cotxe %}<li class="price-row"><span class="lbl">{{ es if _es else ca }}</span><span class="val">{{ preu }}€</span></li>{% endfor %}
+          {% for ca, es, preu in ci.classes %}<li class="price-row"><span class="lbl">{{ es if _es else ca }}</span><span class="val">{{ preu }}€</span></li>{% endfor %}
         </ul>
       </div>
+      {% endif %}
+      {% if ci.examens %}
+      <div class="cp-block">
+        <div class="cp-tit">Exàmens i taxes</div>
+        <ul class="price-list">
+          {% for ca, es, preu in ci.examens %}<li class="price-row"><span class="lbl">{{ es if _es else ca }}</span><span class="val">{{ preu }}€</span></li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
     </div>
     {% endif %}
-    {% if packs_practiques %}
+    {% if ci.packs %}
     <div class="cp-packs">
       <div class="cp-tit">Packs de classes pràctiques <span>estalvia comprant en bloc</span></div>
       <div class="packs-grid">
-        {% for p in packs_practiques %}
+        {% for p in ci.packs %}
+        {% set _fr = {'MATI':'Matí','TARDA':'Tarda'}.get(p.franja, p.franja) %}
         <a class="pack-card" href="/practiques?pack={{ p.id }}" style="text-decoration:none">
-          <span class="pc-n">{{ p.classes }} classes</span>
-          <span class="pc-m">{{ {'MATI':'Matí','TARDA':'Tarda'}.get(p.franja, p.franja) }} · 45'</span>
+          <span class="pc-n">{{ p.classes }} classes {{ _fr|lower }}</span>
+          <span class="pc-m">{{ p.classes }} classes · {{ _fr }}</span>
           <span class="pc-p">{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</span>
         </a>
         {% endfor %}
       </div>
-      <p style="margin-top:12px"><a class="btn btn-verd btn-sm" href="/practiques">Comprar pràctiques en línia</a></p>
     </div>
     {% endif %}
   </div>
   {% endif %}
-  {% if (not sel or sel in ['AM','A1','A2','A']) and tarifes_moto %}
-  <div class="carnet-preus">
-    <div class="cp-head"><span class="cp-badge">{{ sel if sel else 'A' }}</span><h3>{% if sel %}{{ carnets[sel].nom_es if _es else carnets[sel].nom_ca }}{% else %}Moto i ciclomotor (AM, A1, A2, A){% endif %}</h3></div>
-    <div class="cp-body un">
-      <div class="cp-block">
-        <div class="cp-tit">Classes, exàmens i taxes</div>
-        <ul class="price-list">
-          {% for ca, es, preu in tarifes_moto %}<li class="price-row"><span class="lbl">{{ es if _es else ca }}</span><span class="val">{{ preu }}€</span></li>{% endfor %}
-        </ul>
-      </div>
-    </div>
-  </div>
-  {% endif %}
+  {% endfor %}
 </div>
 
 <style>

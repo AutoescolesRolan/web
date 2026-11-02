@@ -88,7 +88,7 @@
   <div class="sec-head"><span class="eyebrow"><span class="dot"></span>Molt a prop teu</span><h2>Els nostres centres</h2><p>Badalona, Sant Adrià de Besòs i el Masnou.</p></div>
   <div class="centres">
     {% for c in centres %}
-    <a class="centre" href="https://www.google.com/maps/search/?api=1&query={{ c.maps|urlencode }}" target="_blank" rel="noopener"><div class="map"><iframe data-cookie-src="https://maps.google.com/maps?q={{ c.maps|urlencode }}&z=16&output=embed" loading="lazy" title="{{ c.nom }}" referrerpolicy="no-referrer-when-downgrade"></iframe></div><div class="body"><h4>{{ c.nom }}</h4><p>{{ c.adreca }} · {{ c.cp_localitat.split(' ', 1)[-1] }}</p>{% if c.telefon %}<p>{{ c.telefon }}{% if c.mobil %} · {{ c.mobil }}{% endif %}</p>{% endif %}<span class="go">Veure a Google Maps ↗</span></div></a>
+    <a class="centre" href="https://www.google.com/maps/search/?api=1&query={{ c.maps|urlencode }}" target="_blank" rel="noopener"><div class="map"><iframe data-cookie-src="https://maps.google.com/maps?q={{ c.maps|urlencode }}&z=16&output=embed" loading="lazy" title="{{ c.nom }}" referrerpolicy="no-referrer-when-downgrade"></iframe></div><div class="body"><h4>{{ c.nom }}</h4><p>{{ {'badalona-centre': 'C/ Creu 49 · Badalona', 'sant-adria': 'C/ Mossèn Cinto Verdaguer 15', 'el-masnou': 'C/ Itàlia 29 · Maresme'}.get(c.codi, c.adreca) }}</p><span class="go">Veure a Google Maps ↗</span></div></a>
     {% endfor %}
   </div>
 </div></section>

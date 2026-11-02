@@ -101,6 +101,12 @@ def _packs_practiques(db):
     return out, promo
 
 
+def clau_maps(db) -> str:
+    """Clau de Google Maps per completar l'adreça mentre s'escriu (la mateixa que a l'ERP)."""
+    import os
+    return (os.environ.get("GOOGLE_MAPS_API_KEY") or "").strip() or ajustos.get(db, "google_maps_api_key")
+
+
 def _centres(db):
     return db.query(models.Centre).filter(models.Centre.actiu == True).order_by(models.Centre.ordre).all()
 
@@ -117,10 +123,14 @@ def preus_pagina(request: Request, carnet: str = "", db: Session = Depends(get_d
     if sel not in ORDRE:
         sel = ""
     packs, _ = _packs_practiques(db)
-    return _r(request, "web/preus.html", {
-        "pw": preus_carnets_web(db), "sel": sel, "packs_practiques": packs,
-        "tarifes_cotxe": ajustos.tarifes(db, "tarifes_cotxe"), "tarifes_moto": ajustos.tarifes(db, "tarifes_moto"),
-        "carnets": {c.codi: c for c in db.query(models.Carnet).all()}}, db=db)
+    carnets = {c.codi: c for c in db.query(models.Carnet).filter(models.Carnet.actiu == True).all()}
+    desglossament = [{"codi": codi, "carnet": carnets[codi],
+                      "classes": ajustos.tarifes(db, f"tarifes_classes_{codi}"),
+                      "examens": ajustos.tarifes(db, f"tarifes_examens_{codi}"),
+                      "packs": packs if codi == "B" else []}
+                     for codi in ORDRE if codi in carnets]
+    return _r(request, "web/preus.html", {"pw": preus_carnets_web(db), "sel": sel, "desglossament": desglossament},
+              db=db)
 
 
 @router.get("/centres")
@@ -233,7 +243,7 @@ def _ctx_matricula(db, request, carnet="", pack="", dades=None, err="", extra=No
            "taxa_dgt": _num(db, "taxa_dgt", 94.05), "taxa_dgt_a": _num(db, "taxa_dgt_a", 28.87),
            "canon_pistes": _num(db, "canon_pistes", 33),
            "stripe_on": pagaments.configurat(), "stripe_test": pagaments.mode_proves(),
-           "avui_iso": date.today().isoformat()}
+           "avui_iso": date.today().isoformat(), "maps_api_key": clau_maps(db)}
     ctx.update(extra or {})
     return ctx
 
@@ -262,9 +272,12 @@ async def matricula_desa(request: Request, db: Session = Depends(get_db)):
         return RedirectResponse("/", status_code=303)
     pack = db.get(models.Pack, int(d["pack_id"])) if d["pack_id"].isdigit() else None
     centre = db.query(models.Centre).filter(models.Centre.codi == d["seccion"], models.Centre.actiu == True).first()
-    if not (pack and pack.actiu and centre and d["nom"] and d["cognoms"] and "@" in d["email"]
-            and d["adreca"] and d["cp"] and d["poblacio"]):
-        return error("camps")
+    falta = [nom for ok, nom in (
+        (centre, "el centre"), (pack and pack.actiu, "el pack"), (d["nom"], "el nom"), (d["cognoms"], "els cognoms"),
+        ("@" in d["email"], "el correu"), (d["adreca"], "l'adreça"), (d["cp"], "el codi postal"),
+        (d["poblacio"], "la població")) if not ok]
+    if falta:
+        return error("camps", falta=falta)
     tel = _tel(d["telefon"], d["telefon__pais"])
     if not tel:
         return error("telefon")
