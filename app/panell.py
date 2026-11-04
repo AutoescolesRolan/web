@@ -154,7 +154,7 @@ def _envia_codi(db, u) -> bool:
            f"<p>Caduca d'aquí a {MINUTS_CODI} minuts. Si no has intentat entrar tu, canvia la contrasenya i avisa l'admin.</p>")
     text = (f"El teu codi per entrar al panell de la web és: {codi}\n\nCaduca d'aquí a {MINUTS_CODI} minuts. "
             "Si no has intentat entrar tu, canvia la contrasenya i avisa l'admin.\n")
-    ok, msg = correu.envia(u.email, f"{codi} és el teu codi d'accés · Autoescoles Rolan",
+    ok, msg = correu.envia(u.email, "Codi d'accés al panell · Autoescoles Rolan",
                            comandes._html_correu(cos), text)
     if not ok:
         print(f"[panell] no s'ha pogut enviar el codi d'accés a {u.email}: {msg}")
