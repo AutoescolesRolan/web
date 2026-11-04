@@ -137,10 +137,9 @@
       <div class="cp-tit">Packs de classes pràctiques <span>estalvia comprant en bloc</span></div>
       <div class="packs-grid">
         {% for p in ci.packs %}
-        {% set _fr = {'MATI':'Matí','TARDA':'Tarda'}.get(p.franja, p.franja) %}
         <div class="pack-card">
-          <span class="pc-n">{{ p.classes }} classes {{ _fr|lower }}</span>
-          <span class="pc-m">{{ p.classes }} classes · {{ _fr }}</span>
+          <span class="pc-n">{{ p.classes }} classes</span>
+          <span class="pc-m">Classes de 45'</span>
           <span class="pc-p">{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</span>
         </div>
         {% endfor %}

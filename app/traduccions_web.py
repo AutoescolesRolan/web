@@ -2,6 +2,7 @@
 S'afegeixen al diccionari general (app/traduccions.py)."""
 
 _T = {
+    "Classes de 45'": "Clases de 45'",
     "Tots inclouen matrícula, curs intensiu i tramitació d'expedient.": "Todos incluyen matrícula, curso intensivo y tramitación de expediente.",
     "No es cediran dades a tercers excepte per obligació legal o per a la prestació del servei, a través d'encarregats del tractament: la passarel·la de pagament (Stripe; les dades de la targeta les tracta directament Stripe i l'autoescola no les rep), el proveïdor d'allotjament de la web (Render), el proveïdor d'enviament de correus":
         "No se cederán datos a terceros excepto por obligación legal o para la prestación del servicio, a través de encargados del tratamiento: la pasarela de pago (Stripe; los datos de la tarjeta los trata directamente Stripe y la autoescuela no los recibe), el proveedor de alojamiento de la web (Render), el proveedor de envío de correos",
