@@ -498,5 +498,12 @@ async def usuaris_desa(request: Request, db: Session = Depends(get_db)):
             u.contrasenya = hash_pw(pw)
         elif accio == "activa" and u.id != jo.id:
             u.actiu = not u.actiu
+        elif accio == "edita":
+            rol = "admin" if f.get("rol") == "admin" else "secretaria"
+            if u.id == jo.id and rol != "admin":
+                return RedirectResponse("/gestio/usuaris?err=jo", status_code=303)   # no et pots treure l'admin a tu
+            u.nom = (f.get("nom") or "").strip()[:160]
+            u.rol = rol
+            u.centre_id = int(f.get("centre_id")) if str(f.get("centre_id") or "").isdigit() else None
     db.commit()
     return RedirectResponse("/gestio/usuaris?fet=1", status_code=303)

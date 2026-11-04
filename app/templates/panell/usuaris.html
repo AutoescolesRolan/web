@@ -5,15 +5,21 @@
 <p class="sub">Les secretàries amb un centre assignat només veuen les comandes del seu centre.</p>
 {% if fet %}<div class="avis ok">Fet.</div>{% endif %}
 {% if err == 'nou' %}<div class="avis err">No s'ha pogut crear: revisa el correu (que no estigui repetit) i que la contrasenya tingui com a mínim 10 caràcters.</div>
+{% elif err == 'jo' %}<div class="avis err">No et pots treure el rol d'admin a tu mateixa.</div>
 {% elif err == 'pw' %}<div class="avis err">La contrasenya ha de tenir com a mínim 10 caràcters.</div>{% endif %}
 <div class="taula"><table>
-  <thead><tr><th>Persona</th><th>Rol</th><th>Centre</th><th>Estat</th><th>Canviar la contrasenya</th><th></th></tr></thead>
+  <thead><tr><th>Persona</th><th>Rol i centre</th><th>Estat</th><th>Canviar la contrasenya</th><th></th></tr></thead>
   <tbody>
   {% for x in usuaris %}
   <tr>
     <td><b>{{ x.nom or '—' }}</b><div class="sub" style="font-size:12.5px">{{ x.email }}</div></td>
-    <td>{{ 'Admin' if x.rol == 'admin' else 'Secretaria' }}</td>
-    <td>{{ x.centre.nom if x.centre else 'Tots' }}</td>
+    <td><form method="post" action="/gestio/usuaris" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ x.id }}"><input type="hidden" name="accio" value="edita"><input type="hidden" name="nom" value="{{ x.nom }}">
+      {% if x.id == u.id %}<input type="hidden" name="rol" value="admin"><span style="font-weight:600;padding:0 4px">Admin</span>
+      {% else %}<select name="rol" style="width:auto"><option value="secretaria" {{ 'selected' if x.rol != 'admin' }}>Secretaria</option><option value="admin" {{ 'selected' if x.rol == 'admin' }}>Admin</option></select>{% endif %}
+      <select name="centre_id" style="width:auto"><option value="">Tots els centres</option>{% for c in centres %}<option value="{{ c.id }}" {{ 'selected' if x.centre_id == c.id }}>{{ c.nom }}</option>{% endfor %}</select>
+      <button class="btn ghost sm">Desar</button>
+    </form></td>
     <td>{% if x.actiu %}<span class="pill ok">Pot entrar</span>{% else %}<span class="pill gris">Desactivat</span>{% endif %}</td>
     <td><form method="post" action="/gestio/usuaris" style="display:flex;gap:6px"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ x.id }}"><input type="hidden" name="accio" value="contrasenya"><input type="password" name="contrasenya" placeholder="Nova (mín. 10)" minlength="10" required autocomplete="new-password" style="width:150px"><button class="btn ghost sm">Canviar</button></form></td>
     <td>{% if x.id != u.id %}<form method="post" action="/gestio/usuaris"><input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ x.id }}"><button class="btn ghost sm" name="accio" value="activa">{{ 'Desactivar' if x.actiu else 'Activar' }}</button></form>{% endif %}</td>
