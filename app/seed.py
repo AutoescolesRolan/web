@@ -16,24 +16,26 @@ AJUSTOS = {
     "escola_num_provincial": "",        # número d'autorització de la DGT
     "taxa_dgt": "94.05",                # taxa d'examen de la DGT (B, AM, A1, A2)
     "taxa_dgt_a": "28.87",              # taxa del carnet A
-    "canon_pistes": "33.00",            # cànon de pistes (motos)
+    "canon_pistes": "35.00",            # cànon de pistes (motos)
     "preu_expedient": "125",            # renovació d'expedient (text de la pàgina de preus)
     "correus_admin": "",                # qui rep còpia de totes les matrícules (separats per comes)
 }
 
 _TAXA = "Taxa oficial DGT | Tasa oficial DGT | 94,05"
-_TEORIC = "Examen teòric | Examen teórico | 47,99"
-_TEORIC_B = "Examen teòric | Examen teórico | 55,99"     # nov. 2026: només el carnet B
+_TEORIC = "Examen teòric | Examen teórico | 55,99"       # nov. 2026
+_TEORIC_B = _TEORIC
 _TRAM = "Tramitació d'expedient | Tramitación de expediente | 125"
-_CANON = "Cànon de pistes (obligatori per a l'examen de maniobres) | Canon de pistas (obligatorio para el examen de maniobras) | 33"
-_MANIOBRES = "Examen de maniobres | Examen de maniobras | 61"
-_CIRCULACIO = "Examen de circulació | Examen de circulación | 75"
-_PR_MAN = "Pràctiques maniobres | Prácticas maniobras | 33,50"
-_PR_CIRC = "Pràctiques circulació | Prácticas circulación | 53"
+_CANON = "Cànon de pistes (obligatori per a l'examen de maniobres) | Canon de pistas (obligatorio para el examen de maniobras) | 35"
+_MANIOBRES = "Examen de maniobres | Examen de maniobras | 65,99"
+_CIRCULACIO = "Examen de circulació | Examen de circulación | 75,99"
+_CLASSES_B_ANTIGUES = "\n".join(["Classe matí (6h–14h) | Clase mañana (6h–14h) | 36",
+                                 "Classe tarda (14h–21h) | Clase tarde (14h–21h) | 42",
+                                 "Classe dissabtes/festius | Clase sábados/festivos | 49"])
+_CLASSE_B = "Classe de 45' | Clase de 45' | 44,99"     # nov. 2026: un sol preu
+_PR_MAN = "Pràctiques maniobres | Prácticas maniobras | 36,99"
+_PR_CIRC = "Pràctiques circulació | Prácticas circulación | 55"
 TARIFES = {   # «text català | text castellà | preu» per línia; es canvien al panell (Preus)
-    "tarifes_classes_B": "\n".join(["Classe matí (6h–14h) | Clase mañana (6h–14h) | 36",
-                                     "Classe tarda (14h–21h) | Clase tarde (14h–21h) | 42",
-                                     "Classe dissabtes/festius | Clase sábados/festivos | 49"]),
+    "tarifes_classes_B": _CLASSE_B,
     "tarifes_examens_B": "\n".join([_TAXA, _TEORIC_B, "Examen pràctic | Examen práctico | 72,50", _TRAM]),
     "tarifes_classes_AM": _PR_MAN,
     "tarifes_examens_AM": "\n".join([_TAXA, _TEORIC, _MANIOBRES, _TRAM, _CANON]),
@@ -68,7 +70,9 @@ CENTRES = [
 ]
 
 _T_B = ("Taxes de la DGT no incloses (94,05 €)", "Tasas de la DGT no incluidas (94,05 €)")
-_T_MOTO = ("Taxes no incloses (94,05 € + cànon de pistes 33 €)", "Tasas no incluidas (94,05 € + canon de pistas 33 €)")
+_T_MOTO = ("Taxes no incloses (94,05 € + cànon de pistes 35 €)", "Tasas no incluidas (94,05 € + canon de pistas 35 €)")
+
+_T_A = ("Taxes no incloses (28,87 € + cànon de pistes 35 €)", "Tasas no incluidas (28,87 € + canon de pistas 35 €)")
 
 CARNETS = [
     dict(codi="B", nom_ca="Cotxe (turisme)", nom_es="Coche (turismo)", sub_ca="Turisme · a partir de 18 anys",
@@ -92,23 +96,22 @@ CARNETS = [
     dict(codi="A", nom_ca="Motocicleta A (des de A2)", nom_es="Motocicleta A (desde A2)", sub_ca="Més de 2 anys amb l'A2",
          sub_es="Más de 2 años con el A2", edat=20, ordre=5,
          examens_ca="Pràctic de maniobres i circulació", examens_es="Práctico de maniobras y circulación",
-         taxes_ca="Taxes no incloses (28,87 € + cànon de pistes 33 €)",
-         taxes_es="Tasas no incluidas (28,87 € + canon de pistas 33 €)"),
+         taxes_ca=_T_A[0], taxes_es=_T_A[1]),
 ]
 
 _BASE_B_CA = ["Matrícula", "Curs intensiu de teòrica", "Tramitació de l'expedient"]   # nov. 2026: sense examen teòric
 _BASE_B_ES = ["Matrícula", "Curso intensivo de teórica", "Tramitación del expediente"]
-_MOTO_COMPLET_CA = ["Matrícula", "Tramitació de l'expedient", "1r examen teòric comú + específic",
+_MOTO_COMPLET_CA = ["Matrícula", "Tramitació de l'expedient", "1r examen teòric (B + específica)",
                     "1r examen de maniobres", "1r examen de circulació", "2 pràctiques de maniobres",
-                    "3 pràctiques de circulació"]
-_MOTO_COMPLET_ES = ["Matrícula", "Tramitación del expediente", "1.er examen teórico común + específico",
+                    "2 pràctiques de circulació"]
+_MOTO_COMPLET_ES = ["Matrícula", "Tramitación del expediente", "1.er examen teórico (B + específica)",
                     "1.er examen de maniobras", "1.er examen de circulación", "2 prácticas de maniobras",
-                    "3 prácticas de circulación"]
-_MOTO_ESP_CA = ["Matrícula", "Tramitació de l'expedient", "1r examen teòric específic", "1r examen de maniobres",
-                "1r examen de circulació", "2 pràctiques de maniobres", "3 pràctiques de circulació"]
-_MOTO_ESP_ES = ["Matrícula", "Tramitación del expediente", "1.er examen teórico específico",
+                    "2 prácticas de circulación"]
+_MOTO_ESP_CA = ["Matrícula", "Tramitació de l'expedient", "1r examen teòric", "1r examen de maniobres",
+                "1r examen de circulació", "2 pràctiques de maniobres", "2 pràctiques de circulació"]
+_MOTO_ESP_ES = ["Matrícula", "Tramitación del expediente", "1.er examen teórico",
                 "1.er examen de maniobras", "1.er examen de circulación", "2 prácticas de maniobras",
-                "3 prácticas de circulación"]
+                "2 prácticas de circulación"]
 
 PACKS = {
     "B": [
@@ -125,7 +128,7 @@ PACKS = {
              contracte="B.docx", destacat=True),
     ],
     "AM": [
-        dict(codi="AM", nom_ca="Pack AM · Ciclomotor", nom_es="Pack AM · Ciclomotor", classes=2, preu=319,
+        dict(codi="AM", nom_ca="Pack AM · Ciclomotor", nom_es="Pack AM · Ciclomotor", classes=2, preu=325,
              inclou_ca=["Matrícula", "Tramitació de l'expedient", "1r examen teòric", "2 pràctiques de maniobres",
                         "1r examen de maniobres"],
              inclou_es=["Matrícula", "Tramitación del expediente", "1.er examen teórico", "2 prácticas de maniobras",
@@ -135,24 +138,24 @@ PACKS = {
         dict(codi="A1-C", nom_ca="Sense carnet previ · Complet", nom_es="Sin carnet previo · Completo", classes=4,
              preu=595, inclou_ca=_MOTO_COMPLET_CA, inclou_es=_MOTO_COMPLET_ES, contracte="A1A2_dues_teoriques.docx"),
         dict(codi="A1-E", nom_ca="Ja tinc el carnet B · Només específica",
-             nom_es="Ya tengo el carnet B · Solo específica", classes=2, preu=499,
+             nom_es="Ya tengo el carnet B · Solo específica", classes=4, preu=499,
              inclou_ca=_MOTO_ESP_CA, inclou_es=_MOTO_ESP_ES, contracte="A2_especifica_499.docx"),
     ],
     "A2": [
         dict(codi="A2-C", nom_ca="Sense carnet previ · Complet", nom_es="Sin carnet previo · Completo", classes=4,
              preu=595, inclou_ca=_MOTO_COMPLET_CA, inclou_es=_MOTO_COMPLET_ES, contracte="A1A2_dues_teoriques.docx"),
         dict(codi="A2-E", nom_ca="Ja tinc el carnet B · Només específica",
-             nom_es="Ya tengo el carnet B · Solo específica", classes=2, preu=499,
+             nom_es="Ya tengo el carnet B · Solo específica", classes=4, preu=499,
              inclou_ca=_MOTO_ESP_CA, inclou_es=_MOTO_ESP_ES, contracte="A2_especifica_499.docx"),
         dict(codi="A2-D", nom_ca="Tinc l'A1 fa +2 anys · Només circulació",
-             nom_es="Tengo el A1 desde hace +2 años · Solo circulación", classes=2, preu=389,
+             nom_es="Tengo el A1 desde hace +2 años · Solo circulación", classes=2, preu=399,
              inclou_ca=["Matrícula", "Tramitació de l'expedient", "2 pràctiques de circulació",
                         "1r examen de circulació"],
              inclou_es=["Matrícula", "Tramitación del expediente", "2 prácticas de circulación",
                         "1.er examen de circulación"], contracte="A2_directe_circulacio.docx"),
     ],
     "A": [
-        dict(codi="A", nom_ca="Pack A · 2 maniobres + 4 circulació", nom_es="Pack A · 2 maniobras + 4 circulación", classes=6, preu=345,
+        dict(codi="A", nom_ca="Pack A · 2 maniobres + 4 circulació", nom_es="Pack A · 2 maniobras + 4 circulación", classes=6, preu=365,
              inclou_ca=["3 h de teòrica", "2 pràctiques de maniobres", "4 pràctiques de circulació"],
              inclou_es=["3 h de teórica", "2 prácticas de maniobras", "4 prácticas de circulación"],
              contracte="A.docx"),
@@ -193,6 +196,10 @@ PREUS_ANTICS = {   # nov. 2026: preus nous dels exàmens del carnet B (només si
 
 
 def _canvis_preus_nov_2026(db):
+    a = db.get(models.Ajust, "tarifes_classes_B")
+    if a and (a.valor or "").strip() == _CLASSES_B_ANTIGUES:
+        a.valor = _CLASSE_B
+        print("[inici] preu de la classe del B actualitzat")
     for a in db.query(models.Ajust).filter(models.Ajust.clau.in_(["tarifes_examens_B", "tarifes_classes_B"])).all():
         linies = (a.valor or "").split("\n")
         noves = [PREUS_ANTICS.get(l.strip(), l) for l in linies]
@@ -210,6 +217,29 @@ def _canvis_preus_nov_2026(db):
             p.inclou_es = "\n".join(n["inclou_es"])
         db.add(models.Ajust(clau=marca_b, valor="1"))
         print("[inici] packs del carnet B actualitzats")
+    # preus de moto i cànon (full de preus de nov. 2026): packs, desglossament i taxes, un sol cop
+    marca_m = "fet_preus_moto_nov_2026"
+    if not db.get(models.Ajust, marca_m):
+        nous = {p["codi"]: p for codi in ("AM", "A1", "A2", "A") for p in PACKS[codi]}
+        for p in db.query(models.Pack).filter(models.Pack.codi.in_(list(nous))).all():
+            n = nous[p.codi]
+            p.preu, p.classes = n["preu"], n["classes"]
+            p.inclou_ca = "\n".join(n["inclou_ca"])
+            p.inclou_es = "\n".join(n["inclou_es"])
+        for codi in ("AM", "A1", "A2", "A"):
+            for tipus in ("classes", "examens"):
+                clau = f"tarifes_{tipus}_{codi}"
+                a = db.get(models.Ajust, clau)
+                if a:
+                    a.valor = TARIFES[clau]
+        a = db.get(models.Ajust, "canon_pistes")
+        if a and (a.valor or "").replace(",", ".").strip() in ("33", "33.0", "33.00"):
+            a.valor = "35.00"
+        nous_c = {c["codi"]: c for c in CARNETS}
+        for c in db.query(models.Carnet).filter(models.Carnet.codi.in_(["AM", "A1", "A2", "A"])).all():
+            c.taxes_ca, c.taxes_es = nous_c[c.codi]["taxes_ca"], nous_c[c.codi]["taxes_es"]
+        db.add(models.Ajust(clau=marca_m, valor="1"))
+        print("[inici] preus de moto actualitzats")
     # els packs de pràctiques de matí deixen de sortir (un sol cop: si després es tornen a activar, es respecta)
     marca = "fet_packs_mati_nov_2026"
     if not db.get(models.Ajust, marca):

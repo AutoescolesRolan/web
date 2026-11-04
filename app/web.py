@@ -63,7 +63,7 @@ def _data(txt):
 # ------------------------------------------------------------------ preus per a les plantilles
 def preus_carnets_web(db) -> dict:
     """Preus de la web (inici, /preus i matrícula), amb la promoció vigent si n'hi ha."""
-    taxa, taxa_a, canon = _num(db, "taxa_dgt", 94.05), _num(db, "taxa_dgt_a", 28.87), _num(db, "canon_pistes", 33)
+    taxa, taxa_a, canon = _num(db, "taxa_dgt", 94.05), _num(db, "taxa_dgt_a", 28.87), _num(db, "canon_pistes", 35)
     promo = preus.promo_automatica(db, "matricula")
     pct = float(promo.percentatge or 0) if promo else 0
     out = {}
@@ -241,7 +241,7 @@ def _ctx_matricula(db, request, carnet="", pack="", dades=None, err="", extra=No
            "seccions": _centres(db), "pack_actual": p.id if p else (int(dades.get("pack_id") or 0) if dades and (dades.get("pack_id") or "").isdigit() else None),
            "dades": dades or {}, "err": err, "pw": pw, "promo": pw["_promo"],
            "taxa_dgt": _num(db, "taxa_dgt", 94.05), "taxa_dgt_a": _num(db, "taxa_dgt_a", 28.87),
-           "canon_pistes": _num(db, "canon_pistes", 33),
+           "canon_pistes": _num(db, "canon_pistes", 35),
            "stripe_on": pagaments.configurat(), "stripe_test": pagaments.mode_proves(),
            "avui_iso": date.today().isoformat(), "maps_api_key": clau_maps(db)}
     ctx.update(extra or {})
@@ -318,7 +318,7 @@ async def matricula_desa(request: Request, db: Session = Depends(get_db)):
     es_moto = carnet.codi in ("AM", "A1", "A2", "A")
     taxa = (_num(db, "taxa_dgt_a", 28.87) if carnet.codi == "A" else _num(db, "taxa_dgt", 94.05)) \
         if d["incloure_taxa"] == "1" else 0
-    canon = _num(db, "canon_pistes", 33) if (es_moto and d["incloure_canon"] == "1") else 0
+    canon = _num(db, "canon_pistes", 35) if (es_moto and d["incloure_canon"] == "1") else 0
     if d["observacions"]:
         obs.append(d["observacions"][:1000])
     adreca = ", ".join(x for x in (d["adreca"], d["adreca2"]) if x)
