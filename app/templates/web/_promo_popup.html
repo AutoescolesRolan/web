@@ -1,0 +1,79 @@
+{# Pop-up de la promoció automàtica (p. ex. Black Friday). Un cop per visita, als 2 s, amb compte enrere fins a la data real de fi. #}
+{% if promo_popup %}{% set pp = promo_popup %}
+<div class="pp-fons" id="pp" hidden role="dialog" aria-modal="true" aria-labelledby="pp-titol" data-fi="{{ pp.fi_ms }}" data-id="{{ pp.id }}">
+  <div class="pp">
+    <button class="pp-tanca" type="button" id="pp-tanca" aria-label="{{ T('Tancar', 'Cerrar') }}">×</button>
+    <div class="pp-eti">{% if pp.setmana %}Només aquesta setmana{% else %}Oferta per temps limitat{% endif %}</div>
+    <h2 class="pp-titol" id="pp-titol">{{ pp.nom }}</h2>
+    <div class="pp-pct">−{{ pp.pct }}%<small>{{ T('a tots els packs', 'en todos los packs') }}</small></div>
+    <p class="pp-sub">Matricula't ara i estalvia en qualsevol carnet.</p>
+    <div class="pp-ce" aria-label="{{ T('Temps que queda', 'Tiempo que queda') }}">
+      <div><b data-u="d">00</b><small>{{ T('dies', 'días') }}</small></div>
+      <div><b data-u="h">00</b><small>{{ T('hores', 'horas') }}</small></div>
+      <div><b data-u="m">00</b><small>{{ T('min', 'min') }}</small></div>
+      <div><b data-u="s">00</b><small>{{ T('seg', 'seg') }}</small></div>
+    </div>
+    <a class="pp-cta" href="/matricula" id="pp-cta">{{ T("Matricula't amb", "Matricúlate con") }} −{{ pp.pct }}%</a>
+    <a class="pp-sec" href="/preus">{{ T('Veure els preus', 'Ver los precios') }}</a>
+  </div>
+</div>
+<style>
+.pp-fons{position:fixed;inset:0;z-index:2500;background:rgba(11,20,51,.55);display:grid;place-items:center;padding:16px;overflow-y:auto}
+.pp-fons[hidden]{display:none}
+.pp{position:relative;width:min(420px,100%);background:#0B1433;color:#fff;border-radius:22px;padding:30px 26px 22px;text-align:center;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.45);font-family:var(--body);animation:pp-entra .35s ease-out}
+.pp::before{content:"";position:absolute;inset:-40% -20% auto;height:70%;background:radial-gradient(closest-side,rgba(139,197,63,.35),transparent);pointer-events:none}
+.pp-tanca{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;background:rgba(255,255,255,.1);color:#fff;font-size:22px;line-height:1;display:grid;place-items:center;z-index:1}
+.pp-tanca:focus-visible,.pp-cta:focus-visible,.pp-sec:focus-visible{outline:2px solid #8BC53F;outline-offset:3px}
+.pp-eti{position:relative;font:700 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:#8BC53F}
+.pp-titol{position:relative;font:800 54px/.92 var(--disp);margin:10px 0 2px;letter-spacing:-.02em;text-transform:uppercase;color:#fff;text-wrap:balance}
+.pp-pct{position:relative;font:800 64px/1 var(--disp);color:#8BC53F;margin:6px 0 4px}
+.pp-pct small{font-size:20px;color:#fff;margin-left:6px;font-weight:700}
+.pp-sub{position:relative;margin:0 0 16px;color:#C7CFEA;font-size:14px}
+.pp-ce{position:relative;display:flex;justify-content:center;gap:8px;margin-bottom:18px}
+.pp-ce div{display:flex;flex-direction:column;align-items:center;min-width:58px;border-radius:12px;padding:8px 6px 6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.pp-ce b{font:800 30px/1 var(--disp);font-variant-numeric:tabular-nums}
+.pp-ce small{font:600 10.5px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;margin-top:5px;color:#AEB8DD}
+.pp-cta{position:relative;display:block;text-align:center;font:700 16px var(--body);border-radius:12px;padding:14px;background:#8BC53F;color:#173a05;text-decoration:none;animation:pp-pulsa 2.4s ease-in-out infinite}
+.pp-cta:hover{background:#9AD34C}
+.pp-sec{position:relative;display:inline-block;margin-top:12px;color:#C7CFEA;font:600 13.5px var(--body);text-underline-offset:3px}
+@keyframes pp-entra{from{transform:translateY(14px) scale(.98);opacity:.4}to{transform:none;opacity:1}}
+@keyframes pp-pulsa{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@media (prefers-reduced-motion: reduce){.pp,.pp-cta{animation:none}}
+@media (max-width:420px){.pp{padding:26px 18px 18px}.pp-titol{font-size:44px}.pp-pct{font-size:54px}.pp-ce div{min-width:0;flex:1}.pp-ce b{font-size:26px}}
+</style>
+<script>
+(function () {
+  var fons = document.getElementById('pp'); if (!fons) return;
+  var fi = +fons.getAttribute('data-fi'), clau = 'rolan_promo_vista_' + fons.getAttribute('data-id');
+  try { if (sessionStorage.getItem(clau)) return; } catch (e) {}
+  var abans = null, rellotge = null;
+  function dos(n) { return (n < 10 ? '0' : '') + n; }
+  function tic() {
+    var r = fi - Date.now();
+    if (r <= 0) { tanca(); return; }
+    var v = { d: Math.floor(r / 864e5), h: Math.floor(r / 36e5) % 24, m: Math.floor(r / 6e4) % 60, s: Math.floor(r / 1e3) % 60 };
+    fons.querySelectorAll('b[data-u]').forEach(function (b) { b.textContent = dos(v[b.getAttribute('data-u')]); });
+  }
+  function obre() {
+    if (fi - Date.now() <= 0) return;
+    try { sessionStorage.setItem(clau, '1'); } catch (e) {}
+    abans = document.activeElement;
+    tic(); rellotge = setInterval(tic, 1000);
+    fons.hidden = false;
+    document.getElementById('pp-tanca').focus();
+    if (window.rolanEvent) window.rolanEvent('view_promotion', { promotion_name: document.getElementById('pp-titol').textContent });
+  }
+  function tanca() {
+    fons.hidden = true; clearInterval(rellotge);
+    if (abans && abans.focus) abans.focus();
+  }
+  document.getElementById('pp-tanca').addEventListener('click', tanca);
+  fons.addEventListener('click', function (e) { if (e.target === fons) tanca(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !fons.hidden) tanca(); });
+  document.getElementById('pp-cta').addEventListener('click', function () {
+    if (window.rolanEvent) window.rolanEvent('select_promotion', { promotion_name: document.getElementById('pp-titol').textContent });
+  });
+  setTimeout(obre, 2000);
+})();
+</script>
+{% endif %}

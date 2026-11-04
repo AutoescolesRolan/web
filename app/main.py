@@ -60,6 +60,23 @@ from . import assistent as _assistent  # noqa: E402
 templates.env.globals["assistent_actiu"] = _assistent.actiu
 
 
+_SENSE_POPUP = ("/matricula", "/pagament", "/comanda", "/practiques", "/stripe")
+
+
+def _promo_popup(p, request):
+    """Dades del pop-up de la promoció (només si n'hi ha una d'automàtica per a les matrícules)."""
+    if not p or (p.aplica or "tot") not in ("tot", "matricula") or not (p.percentatge or 0) > 0 or not p.fi:
+        return None
+    if request.url.path.startswith(_SENSE_POPUP):
+        return None
+    fi = p.fi.replace(tzinfo=preus.TZ)          # les dates de les promocions són hora de Barcelona
+    queda = fi - datetime.now(preus.TZ)
+    if queda.total_seconds() <= 0:
+        return None
+    return {"id": p.id, "nom": p.nom, "pct": f"{p.percentatge:g}", "fi_ms": int(fi.timestamp() * 1000),
+            "setmana": queda.days < 7}
+
+
 def render(request, nom, ctx=None, db=None, status_code=200):
     ctx = dict(ctx or {})
     ctx["request"] = request
@@ -71,6 +88,7 @@ def render(request, nom, ctx=None, db=None, status_code=200):
         ctx.setdefault("escola", lambda clau, defecte="": (aj.get(clau) or defecte))
         ctx.setdefault("correu_escola", ajustos.correu_general(db))
         ctx.setdefault("promo_banner", preus.banner(db))
+        ctx.setdefault("promo_popup", _promo_popup(ctx["promo_banner"], request))
         ctx.setdefault("ga_id", ajustos.ga_id(db))
         ctx.setdefault("centres_peu", db.query(models.Centre).filter(models.Centre.actiu == True)
                        .order_by(models.Centre.ordre).all())

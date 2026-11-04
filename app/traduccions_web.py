@@ -2,6 +2,9 @@
 S'afegeixen al diccionari general (app/traduccions.py)."""
 
 _T = {
+    "Només aquesta setmana": "Solo esta semana",
+    "Oferta per temps limitat": "Oferta por tiempo limitado",
+    "Matricula't ara i estalvia en qualsevol carnet.": "Matricúlate ahora y ahorra en cualquier carnet.",
     "Enviar un únic recordatori si comences una matrícula a la web i no l'acabes": "Enviar un único recordatorio si empiezas una matrícula en la web y no la terminas",
     "Nom, correu i matrícula començada": "Nombre, correo y matrícula empezada",
     "Interès legítim / mesures precontractuals a petició teva": "Interés legítimo / medidas precontractuales a petición tuya",
