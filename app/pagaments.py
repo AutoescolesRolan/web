@@ -62,7 +62,7 @@ def crea_sessio(comanda, linies, url_ok: str, url_cancel: str):
     total = sum(i["price_data"]["unit_amount"] for i in items)
     kw = dict(
         mode="payment", line_items=items, success_url=url_ok, cancel_url=url_cancel,
-        client_reference_id=comanda.token, customer_email=comanda.email or None,
+        customer_email=comanda.email or None,
         metadata={"comanda": comanda.token, "tipus": comanda.tipus, "import_cents": str(total), "moneda": "eur"},
         payment_intent_data={"description": f"{comanda.producte} · {comanda.nom_complet}"[:500],
                              "metadata": {"comanda": comanda.token}},

@@ -103,7 +103,6 @@
         <div class="fld fld-wide"><label>Observacions <span style="font-weight:400;color:var(--text-tenue)">(opcional)</span></label><input type="text" name="observacions" value="{{ dades.observacions }}" maxlength="500" placeholder="Disponibilitat, professor…"></div>
       </div>
       <label class="accepta"><input type="checkbox" name="accepta_condicions" value="1" required><span>Accepto les <a href="/condicions" target="_blank" rel="noopener" style="color:var(--blau);font-weight:600">condicions de contractació</a> i he llegit la <a href="/privacitat" target="_blank" rel="noopener" style="color:var(--blau);font-weight:600">política de privacitat</a>.</span></label>
-      <label class="accepta"><input type="checkbox" name="inici_immediat" value="1"><span>Vull començar les classes abans que acabin els 14 dies del dret de desistiment. Entenc que, si després en desisteixo, pagaré les classes que ja hagi fet. <span style="color:var(--text-tenue)">(Opcional)</span></span></label>
     </div>
 
     {% if stripe_test %}<div class="note warn">{% if mode_demo() %}Mode de demostració: el pagament és simulat i no es cobra res.{% else %}Mode de proves: al pagar, fes servir la targeta de test <b>4242 4242 4242 4242</b>, qualsevol data futura i qualsevol CVC. No es cobra res real.{% endif %}</div>{% endif %}

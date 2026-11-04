@@ -105,7 +105,7 @@
 {% endif %}
 
 <div class="wrap">
-  <div class="sec-head"><span class="eyebrow"><span class="dot"></span>Desglossament</span><h2>{% if sel %}Preus del carnet {{ sel }}{% else %}Preus per carnet{% endif %}</h2><p>Classes soltes, exàmens i taxes de cada carnet (IVA inclòs). Es paguen al teu centre; els packs de pràctiques els pots comprar en línia.</p></div>
+  <div class="sec-head"><span class="eyebrow"><span class="dot"></span>Desglossament</span><h2>{% if sel %}Preus del carnet {{ sel }}{% else %}Preus per carnet{% endif %}</h2><p>Classes soltes, exàmens i taxes de cada carnet (IVA inclòs). Es paguen al teu centre.</p></div>
   {% set _es = i18n_get_idioma(request) == 'es' %}
   {% for ci in desglossament %}
   {% if (ci.classes or ci.examens or ci.packs) and (not sel or ci.codi == sel) %}
@@ -138,11 +138,11 @@
       <div class="packs-grid">
         {% for p in ci.packs %}
         {% set _fr = {'MATI':'Matí','TARDA':'Tarda'}.get(p.franja, p.franja) %}
-        <a class="pack-card" href="/practiques?pack={{ p.id }}" style="text-decoration:none">
+        <div class="pack-card">
           <span class="pc-n">{{ p.classes }} classes {{ _fr|lower }}</span>
           <span class="pc-m">{{ p.classes }} classes · {{ _fr }}</span>
           <span class="pc-p">{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</span>
-        </a>
+        </div>
         {% endfor %}
       </div>
     </div>
@@ -174,8 +174,7 @@
 .cp-buit{color:var(--text-tenue);padding:11px 0;margin:0}
 .cp-packs{margin-top:18px;padding-top:16px;border-top:2px solid var(--verd-suau)}
 .packs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
-.pack-card{display:flex;flex-direction:column;gap:2px;background:var(--verd-suau);border:1px solid #d5ebbb;border-radius:14px;padding:15px 17px;transition:transform .12s,box-shadow .12s}
-.pack-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(139,197,63,.25)}
+.pack-card{display:flex;flex-direction:column;gap:2px;background:var(--verd-suau);border:1px solid #d5ebbb;border-radius:14px;padding:15px 17px}
 .pack-card .pc-n{font-weight:700;color:var(--tinta);font-size:15px}
 .pack-card .pc-m{font-size:12.5px;color:#5f7a3a}
 .pack-card .pc-p{margin-top:6px;font-family:var(--disp);font-weight:800;font-size:22px;color:var(--blau)}

@@ -17,6 +17,7 @@
     <dt>Telèfon</dt><dd>{{ c.telefon }}</dd>
     {% if c.adreca %}<dt>Adreça</dt><dd>{{ c.adreca }} · {{ c.cp }} {{ c.localitat }}</dd>{% endif %}
     {% if c.tutor_nom %}<dt>Tutor/a legal</dt><dd>{{ c.tutor_nom }} · {{ c.tutor_dni }}</dd>{% endif %}
+    {% if c.contacte_preferit %}<dt>Contactar per</dt><dd><b>{{ {'whatsapp':'WhatsApp','correu':'Correu electrònic','trucada':'Trucada'}.get(c.contacte_preferit, c.contacte_preferit) }}</b></dd>{% endif %}
     {% if c.franja %}<dt>Horari preferit</dt><dd>{{ {'MATI':'Matí','TARDA':'Tarda'}.get(c.franja, c.franja) }}</dd>{% endif %}
     {% if c.observacions %}<dt>Observacions</dt><dd style="white-space:pre-wrap">{{ c.observacions }}</dd>{% endif %}
     <dt>Idioma</dt><dd>{{ 'Castellà' if c.idioma == 'es' else 'Català' }}</dd>

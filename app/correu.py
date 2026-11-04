@@ -17,7 +17,16 @@ ENVIATS = []          # només per a les proves: els correus «enviats» sense c
 
 
 def _remitent():
-    return (os.environ.get("MAIL_FROM") or "").strip() or "Autoescoles Rolan <onboarding@resend.dev>"
+    """Remitent dels correus. Si MAIL_FROM només porta l'adreça (sense nom), s'hi posa «Autoescoles Rolan»
+    perquè a la safata no surti només «matricules»."""
+    valor = (os.environ.get("MAIL_FROM") or "").strip().strip('"').strip("'").strip()
+    if not valor:
+        return "Autoescoles Rolan <onboarding@resend.dev>"
+    if "<" not in valor:
+        return f"Autoescoles Rolan <{valor}>"
+    nom, adreca = valor.split("<", 1)
+    nom = nom.strip().strip('"').strip("'").strip() or "Autoescoles Rolan"
+    return f"{nom} <{adreca.strip()}"
 
 
 def configurat() -> bool:

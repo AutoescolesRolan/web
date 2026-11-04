@@ -33,7 +33,10 @@
     <b style="color:var(--tinta)">I ara què?</b>
     <ol class="passos">
       {% if c.tipus == 'matricula' %}
-      <li>La secretaria de {{ c.centre.nom if c.centre else 'el teu centre' }} es posarà en contacte amb tu per començar.</li>
+      {% if c.contacte_preferit == 'whatsapp' %}<li>La secretaria de {{ c.centre.nom if c.centre else 'el teu centre' }} et contactarà per WhatsApp per començar.</li>
+      {% elif c.contacte_preferit == 'correu' %}<li>La secretaria de {{ c.centre.nom if c.centre else 'el teu centre' }} et contactarà per correu per començar.</li>
+      {% elif c.contacte_preferit == 'trucada' %}<li>La secretaria de {{ c.centre.nom if c.centre else 'el teu centre' }} et trucarà per començar.</li>
+      {% else %}<li>La secretaria de {{ c.centre.nom if c.centre else 'el teu centre' }} es posarà en contacte amb tu per començar.</li>{% endif %}
       <li>Per a l'expedient necessitaràs: DNI/NIE original, certificat mèdic per al permís i 2 fotos de carnet.</li>
       {% if not c.taxa %}<li>Per presentar-te a l'examen falta la taxa de la DGT, que pots pagar al centre.</li>{% endif %}
       {% else %}

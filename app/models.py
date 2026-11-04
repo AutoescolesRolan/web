@@ -124,6 +124,7 @@ class Comanda(Base):
     canon: Mapped[float] = mapped_column(Float, default=0)            # cànon de pistes afegit al pagament
     total: Mapped[float] = mapped_column(Float, default=0)
     franja: Mapped[str] = mapped_column(String(20), default="")        # preferència d'horari
+    contacte_preferit: Mapped[str] = mapped_column(String(20), default="")  # whatsapp | correu | trucada
     # alumne
     nom: Mapped[str] = mapped_column(String(120), default="")
     cognoms: Mapped[str] = mapped_column(String(160), default="")

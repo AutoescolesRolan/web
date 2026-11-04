@@ -102,6 +102,28 @@ def _adjunts(c):
     return adj
 
 
+VIES_CONTACTE = {"whatsapp": ("WhatsApp", "WhatsApp"), "correu": ("Correu electrònic", "Correo electrónico"),
+                 "trucada": ("Trucada", "Llamada")}
+
+
+def via_contacte(c, es=False) -> str:
+    v = VIES_CONTACTE.get(c.contacte_preferit or "")
+    return (v[1] if es else v[0]) if v else ""
+
+
+def _frase_contacte(c, es):
+    via = c.contacte_preferit or ""
+    if es:
+        return {"whatsapp": "La secretaría de tu centro te contactará por WhatsApp para empezar.",
+                "correu": "La secretaría de tu centro te contactará por correo para empezar.",
+                "trucada": "La secretaría de tu centro te llamará para empezar."}.get(
+            via, "La secretaría de tu centro se pondrá en contacto contigo para empezar.")
+    return {"whatsapp": "La secretaria del teu centre et contactarà per WhatsApp per començar.",
+            "correu": "La secretaria del teu centre et contactarà per correu per començar.",
+            "trucada": "La secretaria del teu centre et trucarà per començar."}.get(
+        via, "La secretaria del teu centre es posarà en contacte amb tu per començar.")
+
+
 def correu_alumne(db, c):
     es = c.idioma == "es"
     centre = c.centre
@@ -112,12 +134,12 @@ def correu_alumne(db, c):
         assumpte = "Matrícula confirmada · Autoescoles Rolan"
         if es:
             intro = f"¡Hola, {c.nom}! Ya estás matriculado/a en Autoescoles Rolan. Te adjuntamos el contrato firmado y el recibo del pago."
-            passos = ["La secretaría de tu centro se pondrá en contacto contigo para empezar.",
+            passos = [_frase_contacte(c, True),
                       "Para el expediente necesitarás: DNI/NIE original, certificado médico para el permiso y 2 fotos tamaño carnet.",
                       "Para presentarte al examen, si no la has pagado ahora, falta la tasa de la DGT."]
         else:
             intro = f"Hola, {c.nom}! Ja estàs matriculat/da a Autoescoles Rolan. T'adjuntem el contracte signat i el rebut del pagament."
-            passos = ["La secretaria del teu centre es posarà en contacte amb tu per començar.",
+            passos = [_frase_contacte(c, False),
                       "Per a l'expedient necessitaràs: DNI/NIE original, certificat mèdic per al permís i 2 fotos de carnet.",
                       "Per presentar-te a l'examen, si no l'has pagada ara, falta la taxa de la DGT."]
         if c.taxa:
@@ -152,7 +174,7 @@ def correu_equip(db, c):
                 + f"{c.nom_complet} ({centre.nom if centre else 'sense centre'})")
     dades = [("Nom", c.nom_complet), ("DNI/NIE", c.dni),
              ("Data de naixement", c.naixement.strftime("%d/%m/%Y") if c.naixement else ""),
-             ("Correu", c.email), ("Telèfon", c.telefon),
+             ("Correu", c.email), ("Telèfon", c.telefon), ("Contactar per", via_contacte(c)),
              ("Adreça", " · ".join(x for x in (c.adreca, f"{c.cp} {c.localitat}".strip()) if x)),
              ("Tutor/a legal", f"{c.tutor_nom} · {c.tutor_dni}" if c.tutor_nom else ""),
              ("Horari preferit", {"MATI": "Matí", "TARDA": "Tarda"}.get(c.franja, c.franja)),
@@ -166,12 +188,22 @@ def correu_equip(db, c):
                 ("Pagament Stripe", c.stripe_pagament)]
     base = url_publica()
     enllac = f"{base}/gestio/comanda/{c.id}" if base else ""
+    via = via_contacte(c)
+    on = {"whatsapp": c.telefon, "trucada": c.telefon, "correu": c.email}.get(c.contacte_preferit or "", "")
+    avis_via = {"whatsapp": "Vol que el/la contacteu per WhatsApp", "correu": "Vol que el/la contacteu per correu electrònic",
+                "trucada": "Vol que el/la truqueu"}.get(c.contacte_preferit or "", "")
+    if avis_via:
+        avis_via += (f" ({on})" if on else "") + "."
     html = (f"<p>Hi ha una nova {tipus} pagada a la web. Cal fer la factura a Holded i obrir l'expedient.</p>"
+            + (f'<p style="background:#EEF8E4;border:1px solid #cfe8b0;border-radius:10px;padding:10px 14px;'
+               f'color:#14224F;font-weight:700">{_html.escape(avis_via)}</p>' if avis_via else "")
+            + ""
             f'<p style="font-weight:700;color:#14224F;margin:14px 0 0">Alumne/a</p>{_taula(dades)}'
             f'<p style="font-weight:700;color:#14224F;margin:14px 0 0">Pagament</p>{_taula(pagament)}'
             + (_boto(enllac, "Obrir al panell") if enllac else "")
             + "<p>Si respons aquest correu, la resposta arriba a l'alumne/a.</p>")
-    text = (f"Nova {tipus} pagada a la web. Cal fer la factura a Holded i obrir l'expedient.\n\nAlumne/a\n"
+    text = (f"Nova {tipus} pagada a la web. Cal fer la factura a Holded i obrir l'expedient.\n"
+            + (f"{avis_via}\n" if avis_via else "") + "\nAlumne/a\n"
             f"{_text_taula(dades)}\n\nPagament\n{_text_taula(pagament)}\n"
             + (f"\nPanell: {enllac}\n" if enllac else "") + "\nSi respons aquest correu, la resposta arriba a l'alumne/a.\n")
     return assumpte, _html_correu(html), text

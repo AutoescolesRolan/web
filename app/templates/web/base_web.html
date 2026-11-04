@@ -129,7 +129,6 @@ s.abans{color:var(--text-tenue);font-weight:600;font-size:.78em;margin:0 5px 0 2
   </div>
   <div class="nav-right">
     {% block nav_right %}
-    <a class="btn btn-ghost" href="/practiques">Comprar pràctiques</a>
     <a class="btn btn-verd" href="/matricula">Matricula't</a>
     {% endblock %}
   </div>
@@ -140,7 +139,6 @@ s.abans{color:var(--text-tenue);font-weight:600;font-size:.78em;margin:0 5px 0 2
     <a href="/#centres">Centres</a>
     <a href="/qui-som">Qui som</a>
     <a href="/contacte">Contacte</a>
-    <a href="/practiques">Comprar pràctiques</a>
     <a href="/matricula" class="mm-cta">Matricula't</a>
   </div>
 </nav>
@@ -168,7 +166,7 @@ s.abans{color:var(--text-tenue);font-weight:600;font-size:.78em;margin:0 5px 0 2
       <p style="font-size:13.5px;max-width:280px;margin-top:10px">Formant conductors des de 1987 al Barcelonès i el Maresme.</p>
     </div>
     <div><h5>Autoescola</h5><a href="/">Inici</a><a href="/preus">Preus</a><a href="/#centres">Centres</a><a href="/qui-som">Qui som</a></div>
-    <div><h5>Alumnes</h5><a href="/matricula">Matricula't</a><a href="/practiques">Comprar pràctiques</a><a href="/contacte">Contacte</a></div>
+    <div><h5>Alumnes</h5><a href="/matricula">Matricula't</a><a href="/contacte">Contacte</a></div>
     <div><h5>Legal</h5><a href="/avis-legal">Avís legal</a><a href="/privacitat">Política de privacitat</a><a href="/cookies">Política de cookies</a><a href="/condicions">Condicions de contractació</a></div>
   </div>
   <div class="foot-bot">{% set _ll = i18n_get_idioma(request) %}<span class="peu-idioma" role="group" aria-label="Idioma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><a href="/idioma/ca" class="{{ 'on' if _ll == 'ca' }}" lang="ca" hreflang="ca">Català</a>·<a href="/idioma/es" class="{{ 'on' if _ll == 'es' }}" lang="es" hreflang="es">Castellano</a></span><span>© {{ any_actual() }} {{ escola('escola_nom', 'Autoescoles Rolan')|title }}{% if escola('escola_nif') %} · NIF {{ escola('escola_nif') }}{% endif %}{% if escola('escola_telefon') %} · {{ escola('escola_telefon') }}{% endif %}{% if escola('escola_email') %} · {{ escola('escola_email') }}{% endif %}</span></div>
