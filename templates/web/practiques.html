@@ -1,0 +1,117 @@
+{% extends "web/base_web.html" %}
+{% import "_telefon.html" as tel %}
+{% block title %}Comprar pràctiques · Autoescoles Rolan{% endblock %}
+{% block extra_css %}
+.mwrap{max-width:920px;margin:0 auto;padding:34px 22px 60px}
+.mhead h1{font-size:30px}.mhead p{color:var(--text-suau);margin-top:8px;max-width:620px}
+.cgroup{margin-top:26px}
+.cgroup > h2{font-size:17px;margin-bottom:4px}
+.cdesc{color:var(--text-tenue);font-size:13px;margin:0 0 14px}
+.packs{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.pk{display:block;cursor:pointer}
+.pk input{position:absolute;opacity:0;pointer-events:none}
+.pk .box{position:relative;background:#fff;border:1.5px solid var(--vora);border-radius:15px;padding:16px 18px;height:100%;transition:.15s;display:flex;flex-direction:column;gap:3px}
+.pk:hover .box{border-color:var(--blau)}
+.pk input:checked + .box{border-color:var(--verd);box-shadow:0 8px 24px rgba(139,197,63,.20);background:linear-gradient(180deg,#fff,var(--verd-suau))}
+.pk .pk-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.pk .nm{font-weight:700;color:var(--tinta);font-size:15px}
+.pk .chk{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--vora-forta);display:grid;place-items:center;color:#fff;font-size:11px}
+.pk input:checked + .box .chk{background:var(--verd);border-color:var(--verd)}
+.pk .franja{align-self:flex-start;display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:100px;background:var(--verd-suau);color:#3d5c15}
+.pk .pr{font-family:var(--disp);font-weight:800;font-size:24px;color:var(--blau);margin-top:6px}
+.centres-tria{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ctr{cursor:pointer}.ctr input{position:absolute;opacity:0;pointer-events:none}
+.ctr .box{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--vora);border-radius:13px;padding:14px 16px;transition:.15s}
+.ctr:hover .box{border-color:var(--blau)}
+.ctr input:checked + .box{border-color:var(--verd);box-shadow:0 6px 18px rgba(139,197,63,.20);background:linear-gradient(180deg,#fff,var(--verd-suau))}
+.ctr .chk{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--vora-forta);display:grid;place-items:center;color:#fff;font-size:11px}
+.ctr input:checked + .box .chk{background:var(--verd);border-color:var(--verd)}
+.ctr .nm{font-weight:700;color:var(--tinta);font-size:14px}
+.dades-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:620px}
+.fld label{display:block;font-size:13px;font-weight:600;color:var(--tinta);margin-bottom:6px}
+.fld input{width:100%;border:1px solid var(--vora-forta);border-radius:10px;padding:11px 14px;font-family:var(--body);font-size:14.5px}
+.fld input:focus{outline:none;border-color:var(--blau);box-shadow:0 0 0 3px rgba(37,65,184,.12)}
+.fld-wide{grid-column:1 / -1}
+.accepta{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;font-size:13.5px;color:var(--text);max-width:680px}
+.accepta input{margin-top:3px}
+.note{border-radius:12px;padding:12px 16px;font-size:13.5px;margin-top:18px}
+.note.err{background:#fee2e2;border:1px solid #f3b6b8;color:#991b1b}
+.note.ok{background:var(--verd-suau);border:1px solid #cfe6b0;color:#3d5c15}
+.note.warn{background:var(--warn-bg);border:1px solid #f6d9a0;color:#8a5a12}
+.bar{position:sticky;bottom:16px;margin-top:26px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--tinta);color:#fff;border-radius:14px;padding:14px 20px;box-shadow:var(--ombra-alt);flex-wrap:wrap}
+.bar .sel{font-size:14px}.bar .sel b{color:var(--verd)}
+@media(max-width:720px){.bar{position:static;flex-direction:column;align-items:stretch;text-align:center}.bar .btn{justify-content:center;width:100%}}
+@media(max-width:640px){.centres-tria{grid-template-columns:1fr}.dades-grid{grid-template-columns:1fr}}
+{% endblock %}
+{% block content %}
+<div class="wrap mwrap">
+  <div class="mhead">
+    <h1>Comprar classes pràctiques</h1>
+    <p>Ja ets alumne de cotxe? Compra un pack de classes de 45 minuts i paga'l en línia. La secretaria del teu centre l'afegirà al teu expedient.</p>
+  </div>
+
+  {% if err == 'camps' %}<div class="note err">Cal triar el pack i el centre, omplir totes les dades i acceptar les condicions.</div>
+  {% elif err == 'telefon' %}<div class="note err">El telèfon ha de tenir 9 xifres (o tria el prefix del teu país).</div>
+  {% elif err == 'dni' %}<div class="note err">El DNI/NIE no és correcte: revisa el número i la lletra.</div>
+  {% elif err == 'codi' %}<div class="note err">Aquest codi de descompte no és vàlid o ja ha caducat. Revisa'l o deixa'l en blanc.</div>{% endif %}
+  {% if promo %}<div class="note ok">{{ T(promo.banner_ca, promo.banner_es) or promo.nom }} · −{{ '%g'|format(promo.percentatge) }}%.</div>{% endif %}
+
+  {% if not packs %}
+  <div class="note warn">Ara mateix no hi ha packs de pràctiques a la venda en línia. Demana'ls al teu centre.</div>
+  {% else %}
+  <form method="post" action="/practiques">
+    <input type="text" name="web" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+    <div class="cgroup">
+      <h2>Tria el pack</h2>
+      <p class="cdesc">Classes pràctiques de cotxe de 45 minuts. Matí: de 6 h a 14 h. Tarda: de 14 h a 21 h.</p>
+      <div class="packs">
+        {% for p in packs %}
+        <label class="pk">
+          <input type="radio" name="pack_id" value="{{ p.id }}" {{ 'checked' if dades.pack_id == p.id|string }} required>
+          <div class="box">
+            <div class="pk-top"><span class="nm">{{ p.classes }} classes</span><span class="chk">✓</span></div>
+            <span class="franja">{{ {'MATI':'Matí','TARDA':'Tarda'}.get(p.franja, p.franja) }}</span>
+            <span class="pr">{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</span>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="cgroup">
+      <h2>El teu centre</h2>
+      <div class="centres-tria">
+        {% for s in seccions %}
+        <label class="ctr">
+          <input type="radio" name="seccion" value="{{ s.codi }}" {{ 'checked' if dades.seccion == s.codi }} required>
+          <span class="box"><span class="chk">✓</span><span class="nm">{{ s.nom }}</span></span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="cgroup">
+      <h2>Les teves dades</h2>
+      <p class="cdesc">Les mateixes amb què et vas matricular, perquè la secretaria trobi el teu expedient.</p>
+      <div class="dades-grid">
+        <div class="fld"><label>Nom</label><input type="text" name="nom" value="{{ dades.nom }}" autocomplete="given-name" maxlength="120" required></div>
+        <div class="fld"><label>Cognoms</label><input type="text" name="cognoms" value="{{ dades.cognoms }}" autocomplete="family-name" maxlength="160" required></div>
+        <div class="fld"><label>DNI / NIE</label><input type="text" name="dni" value="{{ dades.dni }}" placeholder="12345678Z" required></div>
+        <div class="fld"><label>Correu electrònic</label><input type="email" name="email" value="{{ dades.email }}" autocomplete="email" maxlength="160" required></div>
+        <div class="fld"><label>Telèfon</label>{{ tel.camp("telefon", dades.telefon, required=True) }}</div>
+        <div class="fld"><label>Codi de descompte <span style="font-weight:400;color:var(--text-tenue)">(opcional)</span></label><input type="text" name="codi_promo" value="{{ dades.codi_promo }}" maxlength="40" autocomplete="off" style="text-transform:uppercase"></div>
+        <div class="fld fld-wide"><label>Observacions <span style="font-weight:400;color:var(--text-tenue)">(opcional)</span></label><input type="text" name="observacions" value="{{ dades.observacions }}" maxlength="500" placeholder="Disponibilitat, professor…"></div>
+      </div>
+      <label class="accepta"><input type="checkbox" name="accepta_condicions" value="1" required><span>Accepto les <a href="/condicions" target="_blank" rel="noopener" style="color:var(--blau);font-weight:600">condicions de contractació</a> i he llegit la <a href="/privacitat" target="_blank" rel="noopener" style="color:var(--blau);font-weight:600">política de privacitat</a>.</span></label>
+    </div>
+
+    {% if stripe_test %}<div class="note warn">{% if mode_demo() %}Mode de demostració: el pagament és simulat i no es cobra res.{% else %}Mode de proves: al pagar, fes servir la targeta de test <b>4242 4242 4242 4242</b>, qualsevol data futura i qualsevol CVC. No es cobra res real.{% endif %}</div>{% endif %}
+    {% if not stripe_on %}<div class="note warn">Ara mateix no es pot pagar en línia. Truca'ns al {{ escola('escola_telefon', '934 647 857') }}.</div>{% endif %}
+    <div class="bar">
+      <div class="sel">Pagament segur amb Stripe. Rebràs el rebut per correu.</div>
+      <button type="submit" class="btn btn-verd btn-lg"{{ ' disabled' if not stripe_on }}>Pagar</button>
+    </div>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

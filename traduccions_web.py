@@ -2,6 +2,13 @@
 S'afegeixen al diccionari general (app/traduccions.py)."""
 
 _T = {
+    "Consulta preus i comença la teva matrícula.": "Consulta precios y empieza tu matrícula.",
+    "Classes soltes, exàmens i taxes de cada carnet (IVA inclòs). Es paguen al teu centre.":
+        "Clases sueltas, exámenes y tasas de cada carnet (IVA incluido). Se pagan en tu centro.",
+    "Aquest lloc web té per objecte oferir informació sobre els serveis de formació viària d'Autoescoles Rolan i permetre la matrícula en línia.":
+        "Este sitio web tiene por objeto ofrecer información sobre los servicios de formación vial de Autoescoles Rolan y permitir la matrícula en línea.",
+    "La matrícula als carnets B, AM, A1, A2 i A, amb el pack triat. Els preus inclouen l'IVA. Les taxes de la DGT i el cànon de pistes no estan inclosos en el preu dels packs: es poden afegir al pagament o pagar-los més endavant al centre.":
+        "La matrícula en los carnets B, AM, A1, A2 y A, con el pack elegido. Los precios incluyen el IVA. Las tasas de la DGT y el canon de pistas no están incluidos en el precio de los packs: se pueden añadir al pago o pagarlos más adelante en el centro.",
     "% al preu del pack.": "% en el precio del pack.",
     "(Opcional)": "(Opcional)",
     "(opcional)": "(opcional)",

@@ -1,0 +1,57 @@
+{% extends "web/base_web.html" %}
+{% block title %}Condicions de contractació · Autoescoles Rolan{% endblock %}
+{% block content %}
+<style>
+.legal{max-width:820px;margin:0 auto;padding:40px 22px 20px}
+.legal h1{font-size:clamp(26px,4vw,36px);font-weight:800;margin-bottom:6px}
+.legal .upd{color:var(--text-tenue);font-size:13px;margin-bottom:26px}
+.legal h2{font-size:19px;font-weight:700;margin:26px 0 8px;color:var(--tinta)}
+.legal p,.legal li{color:var(--text-suau);line-height:1.65;font-size:15px}
+.legal ul{margin:8px 0 8px 18px}
+.legal .rev{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:14px 16px;font-size:13.5px;margin:18px 0}
+.legal .box{background:#f7f9fc;border:1px solid var(--vora);border-radius:12px;padding:16px 18px;margin:10px 0}
+</style>
+<div class="legal">
+  <h1>Condicions de contractació</h1>
+  <p class="upd">Darrera actualització: {{ '2026' }}</p>
+
+  {% set _falta = not escola("escola_rao_social") or not escola("escola_domicili") %}{% if _falta %}
+  <div class="rev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><b>Esborrany per revisar.</b> Condicions de contractació a distància (Text refós de la Llei general per a la defensa dels consumidors i usuaris, RDL 1/2007). Cal que les revisi el vostre assessor legal i completar les dades marcades amb <b>[...]</b> abans de publicar-les.</div>
+  {% endif %}
+
+  <h2>1. Qui ven</h2>
+  <div class="box"><ul>
+    <li><b>Titular:</b> {{ escola('escola_rao_social') or (escola('escola_nom', 'Autoescoles Rolan') ~ ' [raó social completa]') }} · NIF {{ escola('escola_nif') }}</li>
+    <li><b>Domicili:</b> {{ escola('escola_domicili') or '[adreça fiscal completa], Badalona' }}</li>
+    <li><b>Contacte:</b> {{ escola('escola_telefon') }} · {{ correu_escola }}</li>
+  </ul></div>
+
+  <h2>2. Què es pot contractar a la web</h2>
+  <p>La matrícula als carnets B, AM, A1, A2 i A, amb el pack triat. Els preus inclouen l'IVA. Les taxes de la DGT i el cànon de pistes no estan inclosos en el preu dels packs: es poden afegir al pagament o pagar-los més endavant al centre.</p>
+
+  <h2>3. Com es contracta</h2>
+  <ul>
+    <li>Tries el centre, el carnet i el pack, i omples les teves dades.</li>
+    <li>Llegeixes el contracte de matrícula i el signes a la pantalla (si l'alumne és menor d'edat, el signa el tutor/a legal).</li>
+    <li>Pagues amb targeta a la pàgina segura de Stripe.</li>
+    <li>Reps per correu el contracte signat i el rebut del pagament. La factura te l'envia l'autoescola.</li>
+  </ul>
+  <p>El contracte es formalitza en català i en queda una còpia a l'autoescola.</p>
+
+  <h2>4. Pagament</h2>
+  <p>El pagament es fa amb targeta (i, si el teu dispositiu ho permet, Apple Pay o Google Pay) a través de Stripe. L'autoescola no rep ni guarda les dades de la targeta.</p>
+
+  <h2>5. Dret de desistiment</h2>
+  <p>Com que la contractació es fa a distància, tens 14 dies naturals des del dia del pagament per desistir-ne sense haver de donar cap motiu. Per fer-ho, comunica-ho a l'autoescola per correu ({{ correu_escola }}) o al teu centre, indicant el teu nom, el DNI/NIE i el número de rebut. Et retornarem l'import pel mateix mitjà de pagament en un termini màxim de 14 dies.</p>
+  <p>Si demanes expressament començar la formació abans que acabi aquest termini i després en desisteixes, hauràs de pagar la part del servei que ja s'hagi prestat (art. 108 del Text refós). Si el servei ja s'ha prestat del tot, no hi ha dret de desistiment (art. 103).</p>
+
+  <h2>6. Promocions</h2>
+  <p>Les promocions només són vàlides entre les dates indicades, s'apliquen al preu del pack (no a les taxes) i no són acumulables entre si.</p>
+
+  <h2>7. Reclamacions</h2>
+  <p>Pots fer qualsevol consulta o reclamació per correu ({{ correu_escola }}) o al teu centre. Als centres tens a la teva disposició fulls oficials de reclamació.</p>
+
+  <h2>8. Legislació aplicable</h2>
+  <p>Aquestes condicions es regeixen per la legislació espanyola i per la normativa de consum aplicable.</p>
+</div>
+{% endblock %}

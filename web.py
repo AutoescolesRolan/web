@@ -410,7 +410,6 @@ async def contracte_signa(token: str, request: Request, db: Session = Depends(ge
         c.signat_en = datetime.utcnow()
         c.ip_signatura = _ip(request)[:64]
         c.acceptacions = ";".join([f"imatge={f.get('consent_imatge')}", f"comercial={f.get('consent_comercial')}",
-                                   f"inici_immediat={'si' if f.get('inici_immediat') == '1' else 'no'}",
                                    "contracte=si", "condicions=si"])
         c.contracte_pdf = documents.contracte_pdf(db, c, _pack(db, c))
         c.estat = "signada"
@@ -432,6 +431,8 @@ def _base(request):
 
 
 def _a_pagar(request, db, c):
+    if c.tipus == "practiques" and not VENDA_PRACTIQUES:
+        return RedirectResponse("/preus", status_code=303)
     tornada = f"/matricula/{c.token}/contracte" if c.tipus == "matricula" else f"/practiques/{c.token}"
     if not pagaments.configurat():
         return RedirectResponse(f"{tornada}?err=nopago", status_code=303)
@@ -470,7 +471,7 @@ def torna_a_pagar(token: str, request: Request, db: Session = Depends(get_db)):
     if c.estat == "pagada":
         return RedirectResponse(f"/comanda/{c.token}", status_code=303)
     if c.estat != "signada":
-        return RedirectResponse(f"/matricula/{c.token}/contracte" if c.tipus == "matricula" else "/practiques", status_code=303)
+        return RedirectResponse(f"/matricula/{c.token}/contracte" if c.tipus == "matricula" else "/preus", status_code=303)
     return _a_pagar(request, db, c)
 
 
@@ -547,8 +548,15 @@ def comanda_doc(token: str, doc: str, db: Session = Depends(get_db)):
 
 
 # ------------------------------------------------------------------ pràctiques
+# Decisió de l'escola (nov. 2026): els packs de pràctiques NO es venen a la web, perquè només els ha de
+# poder pagar qui ja està matriculat (es paguen al centre). El codi es conserva per si es reactiva.
+VENDA_PRACTIQUES = False
+
+
 @router.get("/practiques", response_class=HTMLResponse)
 def practiques(request: Request, pack: int = 0, db: Session = Depends(get_db)):
+    if not VENDA_PRACTIQUES:
+        return RedirectResponse("/preus", status_code=303)
     packs, promo = _packs_practiques(db)
     return _r(request, "web/practiques.html", {"packs": packs, "promo": promo, "seccions": _centres(db),
                                                 "dades": {"pack_id": str(pack) if pack else ""},
@@ -558,6 +566,8 @@ def practiques(request: Request, pack: int = 0, db: Session = Depends(get_db)):
 
 @router.post("/practiques", response_class=HTMLResponse)
 async def practiques_desa(request: Request, db: Session = Depends(get_db)):
+    if not VENDA_PRACTIQUES:
+        return RedirectResponse("/preus", status_code=303)
     f = await request.form()
     d = {k: (f.get(k) or "").strip() for k in ("pack_id", "seccion", "nom", "cognoms", "email", "telefon",
                                                "telefon__pais", "dni", "codi_promo", "observacions", "web")}
@@ -593,7 +603,7 @@ async def practiques_desa(request: Request, db: Session = Depends(get_db)):
         preu_base=calc["preu_base"], descompte=calc["descompte"], promocio=calc["promocio"], total=calc["total"],
         franja=p.franja, nom=d["nom"][:120], cognoms=d["cognoms"][:160], dni=dni, email=d["email"][:160],
         telefon=tel, observacions=d["observacions"][:1000],
-        acceptacions=f"condicions=si;inici_immediat={'si' if f.get('inici_immediat') == '1' else 'no'}")
+        acceptacions="condicions=si")
     db.add(c)
     db.commit()
     return _a_pagar(request, db, c)
@@ -603,8 +613,10 @@ async def practiques_desa(request: Request, db: Session = Depends(get_db)):
 def practiques_comanda(token: str, request: Request, cancelat: str = "", err: str = "", db: Session = Depends(get_db)):
     c = _comanda(db, token, "practiques")
     if not c:
-        return RedirectResponse("/practiques", status_code=303)
+        return RedirectResponse("/preus", status_code=303)
     if c.estat == "pagada":
         return RedirectResponse(f"/comanda/{c.token}", status_code=303)
+    if not VENDA_PRACTIQUES:
+        return RedirectResponse("/preus", status_code=303)
     return _r(request, "web/practiques_pagar.html", {"c": c, "cancelat": cancelat, "err": err,
                                                       "stripe_on": pagaments.configurat()}, db=db)

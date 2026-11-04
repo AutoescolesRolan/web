@@ -1,0 +1,53 @@
+{% extends "web/base_web.html" %}
+{% block title %}Avís legal · Autoescoles Rolan{% endblock %}
+{% block content %}
+<style>
+.legal{max-width:820px;margin:0 auto;padding:40px 22px 20px}
+.legal h1{font-size:clamp(26px,4vw,36px);font-weight:800;margin-bottom:6px}
+.legal .upd{color:var(--text-tenue);font-size:13px;margin-bottom:26px}
+.legal h2{font-size:19px;font-weight:700;margin:26px 0 8px;color:var(--tinta)}
+.legal p,.legal li{color:var(--text-suau);line-height:1.65;font-size:15px}
+.legal ul{margin:8px 0 8px 18px}
+.legal .rev{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:12px;padding:14px 16px;font-size:13.5px;margin:18px 0}
+.legal .box{background:#f7f9fc;border:1px solid var(--vora);border-radius:12px;padding:16px 18px;margin:10px 0}
+</style>
+<div class="legal">
+  <h1>Avís legal</h1>
+  <p class="upd">Darrera actualització: {{ '2026' }}</p>
+
+  {% set _falta = not escola("escola_rao_social") or not escola("escola_domicili") %}{% if _falta %}
+  <div class="rev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:1.05em;height:1.05em;vertical-align:-0.15em;margin-right:.4em;flex:none"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><b>Esborrany per revisar.</b> Aquest text és una plantilla estàndard (LSSI-CE, Llei 34/2002). Cal que el revisi el vostre assessor legal i que es completin les dades marcades amb <b>[...]</b> abans de publicar-lo.</div>
+  {% endif %}
+
+  <h2>1. Dades identificatives</h2>
+  <div class="box">
+    <p>En compliment de l'article 10 de la Llei 34/2002, d'11 de juliol, de serveis de la societat de la informació i de comerç electrònic (LSSI-CE):</p>
+    <ul>
+      <li><b>Titular:</b> {{ escola('escola_rao_social') or (escola('escola_nom', 'Autoescoles Rolan') ~ ' [raó social completa]') }}</li>
+      <li><b>NIF:</b> {{ escola('escola_nif') }}</li>
+      <li><b>Domicili:</b> {{ escola('escola_domicili') or '[adreça fiscal completa], Badalona' }}</li>
+      <li><b>Telèfon:</b> {{ escola('escola_telefon') }}</li>
+      <li><b>Correu electrònic:</b> {{ correu_escola }}</li>
+      <li><b>Núm. de registre DGT / autorització:</b> {{ escola('escola_num_provincial') or "[número d'autorització administrativa]" }}</li>
+    </ul>
+  </div>
+
+  <h2>2. Objecte</h2>
+  <p>Aquest lloc web té per objecte oferir informació sobre els serveis de formació viària d'Autoescoles Rolan i permetre la matrícula en línia.</p>
+
+  <h2>3. Condicions d'ús</h2>
+  <p>L'accés i l'ús d'aquest lloc web atribueix la condició d'usuari i implica l'acceptació d'aquest avís legal. L'usuari es compromet a fer un ús adequat dels continguts i serveis i a no emprar-los per a activitats il·lícites o contràries a la bona fe.</p>
+
+  <h2>4. Propietat intel·lectual i industrial</h2>
+  <p>Tots els continguts d'aquest lloc web (textos, imatges, logotips, disseny) són titularitat d'Autoescoles Rolan o de tercers que n'han autoritzat l'ús, i estan protegits per la normativa de propietat intel·lectual i industrial. Queda prohibida la seva reproducció sense autorització.</p>
+
+  <h2>5. Responsabilitat</h2>
+  <p>Autoescoles Rolan no es fa responsable de l'ús incorrecte del lloc web ni dels danys derivats de causes fora del seu control. Es reserva el dret de modificar els continguts sense previ avís.</p>
+
+  <h2>6. Protecció de dades</h2>
+  <p>El tractament de les dades personals es regeix per la nostra <a href="/privacitat">Política de privacitat</a>.</p>
+
+  <h2>7. Legislació aplicable</h2>
+  <p>Aquest avís legal es regeix per la legislació espanyola. Per a qualsevol controvèrsia, les parts se sotmeten als jutjats i tribunals que corresponguin segons la normativa aplicable.</p>
+</div>
+{% endblock %}

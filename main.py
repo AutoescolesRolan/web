@@ -123,7 +123,7 @@ def robots():
 def sitemap():
     base = (os.environ.get("PUBLIC_URL") or "").rstrip("/")
     urls = "".join(f"<url><loc>{base}{p}</loc></url>" for p in
-                   ("/", "/preus", "/matricula", "/practiques", "/qui-som", "/contacte", "/condicions"))
+                   ("/", "/preus", "/matricula", "/qui-som", "/contacte", "/condicions"))
     return Response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
                     + urls + "</urlset>", media_type="application/xml")
 

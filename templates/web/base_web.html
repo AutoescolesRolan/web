@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="{{ i18n_get_idioma(request) if request is defined else 'ca' }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Autoescoles Rolan{% endblock %}</title>
+<link rel="icon" href="/static/img/logo-rolan.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blau:#2541B8;--blau-fosc:#1A2E82;--tinta:#14224F;
+  --verd:#8BC53F;--verd-fosc:#6FA82E;--verd-suau:#EEF7E1;--groc:#F4B740;
+  --paper:#F6F7FB;--blanc:#FFFFFF;--vora:#E6E9F2;--vora-forta:#D5DAE8;
+  --text:#14224F;--text-suau:#66708C;--text-tenue:#9AA2B8;
+  --danger:#E5484D;--danger-bg:#FDECEC;--warn:#F2A93B;--warn-bg:#FEF3DB;--ok:#6FA82E;--ok-bg:#EEF7E1;
+  --radi:16px;--ombra:0 1px 2px rgba(20,34,79,.04),0 6px 22px rgba(20,34,79,.06);
+  --ombra-alt:0 14px 40px rgba(20,34,79,.16);
+  --disp:'Bricolage Grotesque',system-ui,sans-serif;--body:'Inter',system-ui,sans-serif;
+  /* El degradat verd/blau de la portada, a totes les pàgines */
+  /* Pàgines secundàries: els tons suaus de la web original (la portada fa servir el més intens) */
+  --fons-pantalla:radial-gradient(75vw 65vh at 88% -8%,#EAF7D8 0,transparent 70%),radial-gradient(65vw 65vh at 2% 0%,#E7EDFF 0,transparent 70%),radial-gradient(60vw 55vh at 0% 105%,#EEF8E2 0,transparent 70%),radial-gradient(65vw 60vh at 100% 105%,#EBF0FF 0,transparent 70%);
+  --fons-degradat:radial-gradient(1300px 560px at 82% -10%,#D3F0AE 0,transparent 62%),radial-gradient(1000px 540px at 6% 0%,#CDD8FF 0,transparent 62%);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;background:var(--paper);min-height:100vh}
+/* Fons de totes les pàgines: el degradat verd/blau de la portada, fix a la pantalla perquè
+   es vegi sempre (també en fer scroll i a l'iPhone, que no suporta background-attachment:fixed) */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--fons-pantalla)}
+h1,h2,h3,h4{font-family:var(--disp);line-height:1.1;letter-spacing:-.01em;color:var(--tinta)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--vora)}
+.nav-in{display:flex;align-items:center;gap:20px;height:66px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:800;font-size:17.5px;color:var(--tinta);white-space:nowrap}
+.brand img{width:40px;height:40px;border-radius:50%;box-shadow:0 4px 12px rgba(37,65,184,.28)}
+.nav-links{display:flex;gap:2px;margin-left:6px}
+.nav-links a{padding:8px 12px;border-radius:9px;font-weight:500;font-size:14.5px;color:var(--text-suau)}
+.nav-links a:hover{background:var(--paper);color:var(--tinta)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--body);font-weight:600;font-size:14.5px;border:none;border-radius:10px;padding:10px 17px;cursor:pointer;transition:.15s;white-space:nowrap}
+.btn-ghost{background:transparent;color:var(--tinta);border:1px solid var(--vora-forta)}
+.btn-ghost:hover{border-color:var(--blau);color:var(--blau)}
+.btn-primary{background:var(--blau);color:#fff;box-shadow:0 6px 16px rgba(37,65,184,.26)}
+.btn-primary:hover{background:var(--blau-fosc)}
+.btn-verd{background:var(--verd);color:#173a05;box-shadow:0 6px 16px rgba(139,197,63,.32)}
+.btn-secondary{background:#EEF1FC;color:var(--blau-fosc);border:1px solid #DCE2F6}
+.btn-secondary:hover{background:#E3E8FA}
+.btn-sm{padding:8px 14px;font-size:13px}
+.btn-verd:hover{background:var(--verd-fosc);color:#fff}
+.btn-lg{padding:14px 24px;font-size:16px;border-radius:12px}
+footer{background:var(--tinta);color:#aeb8dd;padding:44px 0 26px;margin-top:60px}
+.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:28px}
+@media(max-width:900px){.foot-grid{grid-template-columns:1fr 1fr}}
+footer .brand{color:#fff}footer .brand span{color:#fff}
+footer h5{color:#fff;font-size:14px;margin-bottom:12px;font-family:var(--body);font-weight:600}
+footer a{display:block;font-size:13.5px;color:#aeb8dd;padding:3px 0}
+footer a:hover{color:var(--verd)}
+.foot-bot{border-top:1px solid rgba(255,255,255,.1);margin-top:30px;padding-top:20px;font-size:12.5px}
+.road{height:12px;background:repeating-linear-gradient(90deg,var(--verd) 0 30px,transparent 30px 56px);opacity:.95}
+.nav-burger{display:none;background:none;border:none;color:var(--tinta);cursor:pointer;padding:6px;align-items:center;justify-content:center}
+#mobile-menu{display:none;flex-direction:column;padding:6px 20px 14px;gap:2px;background:#fff;border-bottom:1px solid var(--vora)}
+#mobile-menu a{padding:13px 8px;font-weight:600;font-size:16px;color:var(--tinta);border-radius:9px;text-decoration:none}
+#mobile-menu a:hover{background:var(--paper)}
+#mobile-menu .mm-cta{background:var(--verd);color:#173a05;text-align:center;font-weight:800;margin-top:8px}
+@media(max-width:640px){.nav-links{display:none}.foot-grid{grid-template-columns:1fr 1fr}
+  .nav-right{display:none}
+  .nav-burger{display:flex;order:0}
+  .brand{order:2;margin-left:auto}
+  #mobile-menu.obert{display:flex}
+  .hero .hero-in{padding-left:20px;padding-right:20px}
+}
+@media(max-width:600px){
+  .nav-in{gap:10px}
+  .nav-in .btn{padding:8px 12px;font-size:13px}
+  .brand span{font-size:15px}
+  .brand img{width:34px;height:34px}
+  .nav-right{gap:7px}
+  .nav-greet{display:none}
+}
+@media(max-width:360px){
+  .brand span{display:none}
+}
+/* Selector de fitxer amb estil de la web */
+.file-field{display:inline-flex;align-items:center;gap:10px;cursor:pointer;max-width:100%;vertical-align:middle}
+.file-field > input[type=file]{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}
+.file-field .ff-btn{display:inline-flex;align-items:center;gap:7px;background:var(--blau);border:none;color:#fff;font-weight:600;font-size:13px;padding:9px 15px;border-radius:10px;white-space:nowrap;transition:background .14s;flex:none;box-shadow:0 4px 12px rgba(37,65,184,.22)}
+.file-field:hover .ff-btn{background:var(--blau-fosc)}
+.file-field .ff-name{font-size:12.5px;color:var(--text-tenue);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-field .ff-name.has{color:var(--tinta);font-weight:600}
+{% block extra_css %}{% endblock %}
+
+/* ---- Mòbil: sense zoom en escriure ni moviment lateral ----
+   iOS fa zoom a qualsevol camp amb lletra de menys de 16 px, i llavors la pàgina «balla» de costat. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{overflow-x:clip;max-width:100%}
+@media (max-width: 820px){
+  input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),select,textarea{font-size:16px!important}
+  img,video,iframe{max-width:100%}
+}
+
+.promo-banner{display:block;text-align:center;background:var(--tinta);color:#fff;font-weight:700;font-size:14px;padding:9px 16px;text-decoration:none;background-image:repeating-linear-gradient(90deg,var(--verd) 0 30px,transparent 30px 56px);background-size:100% 4px;background-repeat:no-repeat;background-position:bottom}
+.promo-banner:hover{color:var(--verd)}
+s.abans{color:var(--text-tenue);font-weight:600;font-size:.78em;margin:0 5px 0 2px;text-decoration-thickness:2px;text-decoration-color:#E5484D}
+.peu-idioma{display:inline-flex;gap:4px;align-items:center;color:#d6dcf3}
+.peu-idioma svg{width:15px;height:15px;flex:none;margin-right:2px}
+.peu-idioma a{display:inline-block!important;padding:6px 8px!important;border-radius:8px;font-size:13px!important}
+.peu-idioma a{color:inherit!important;text-decoration:none}
+.peu-idioma a.on{font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.peu-idioma a:hover{background:rgba(255,255,255,.08);color:#fff!important}
+.foot-bot{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+</style>
+</head>
+<body>
+{% if promo_banner is defined and promo_banner %}{% set _pb = (promo_banner.banner_es if i18n_get_idioma(request) == 'es' else promo_banner.banner_ca) or promo_banner.nom %}
+<a class="promo-banner" href="/preus">{{ _pb }}</a>
+{% endif %}
+<nav class="nav"><div class="wrap nav-in">
+  <button id="nav-burger" class="nav-burger" aria-label="Menú"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <a class="brand" href="/" id="brand-link"><img src="/static/img/logo-rolan.png" alt="Autoescoles Rolan"><span>Autoescoles Rolan</span></a>
+  <div class="nav-links">
+    <a href="/">Inici</a>
+    <a href="/preus">Preus</a>
+    <a href="/#centres">Centres</a>
+    <a href="/qui-som">Qui som</a>
+    <a href="/contacte">Contacte</a>
+  </div>
+  <div class="nav-right">
+    {% block nav_right %}
+    <a class="btn btn-verd" href="/matricula">Matricula't</a>
+    {% endblock %}
+  </div>
+</div>
+  <div id="mobile-menu">
+    <a href="/">Inici</a>
+    <a href="/preus">Preus</a>
+    <a href="/#centres">Centres</a>
+    <a href="/qui-som">Qui som</a>
+    <a href="/contacte">Contacte</a>
+    <a href="/matricula" class="mm-cta">Matricula't</a>
+  </div>
+</nav>
+<script>
+(function(){
+  var burger = document.getElementById('nav-burger');
+  var menu = document.getElementById('mobile-menu');
+  if(!burger || !menu) return;
+  function esMobil(){ return window.matchMedia('(max-width:640px)').matches; }
+  burger.addEventListener('click', function(e){ e.stopPropagation(); menu.classList.toggle('obert'); });
+  document.addEventListener('click', function(e){
+    if(esMobil() && menu.classList.contains('obert') && !menu.contains(e.target) && !burger.contains(e.target)){
+      menu.classList.remove('obert');
+    }
+  });
+})();
+</script>
+
+{% block content %}{% endblock %}
+
+<footer><div class="wrap">
+  <div class="foot-grid">
+    <div>
+      <a class="brand" href="/" style="margin-bottom:12px"><img src="/static/img/logo-rolan.png" alt="Rolan"><span>Autoescoles Rolan</span></a>
+      <p style="font-size:13.5px;max-width:280px;margin-top:10px">Formant conductors des de 1987 al Barcelonès i el Maresme.</p>
+    </div>
+    <div><h5>Autoescola</h5><a href="/">Inici</a><a href="/preus">Preus</a><a href="/#centres">Centres</a><a href="/qui-som">Qui som</a></div>
+    <div><h5>Alumnes</h5><a href="/matricula">Matricula't</a><a href="/contacte">Contacte</a></div>
+    <div><h5>Legal</h5><a href="/avis-legal">Avís legal</a><a href="/privacitat">Política de privacitat</a><a href="/cookies">Política de cookies</a><a href="/condicions">Condicions de contractació</a></div>
+  </div>
+  <div class="foot-bot">{% set _ll = i18n_get_idioma(request) %}<span class="peu-idioma" role="group" aria-label="Idioma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><a href="/idioma/ca" class="{{ 'on' if _ll == 'ca' }}" lang="ca" hreflang="ca">Català</a>·<a href="/idioma/es" class="{{ 'on' if _ll == 'es' }}" lang="es" hreflang="es">Castellano</a></span><span>© {{ any_actual() }} {{ escola('escola_nom', 'Autoescoles Rolan')|title }}{% if escola('escola_nif') %} · NIF {{ escola('escola_nif') }}{% endif %}{% if escola('escola_telefon') %} · {{ escola('escola_telefon') }}{% endif %}{% if escola('escola_email') %} · {{ escola('escola_email') }}{% endif %}</span></div>
+</div></footer>
+
+<div id="cookie-banner" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:2000;background:#0f1830;color:#e7ecfb;padding:16px 20px;box-shadow:0 -8px 30px rgba(0,0,0,.35)">
+  <div style="max-width:1000px;margin:0 auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+    <p style="margin:0;font-size:13.5px;line-height:1.5;flex:1;min-width:240px">Fem servir cookies tècniques (necessàries) i, si les acceptes, cookies de tercers per mostrar els mapes dels centres. Consulta la <a href="/cookies" style="color:#8BC53F">política de cookies</a>.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" onclick="rolanCookies(false)" style="background:#33405f;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13.5px;cursor:pointer">Només necessàries</button>
+      <button type="button" onclick="rolanCookies(true)" style="background:#8BC53F;color:#173a05;border:none;border-radius:10px;padding:9px 16px;font-weight:700;font-size:13.5px;cursor:pointer">Acceptar totes</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function getCookie(n){var m=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)');return m?m.pop():'';}
+  function setCookie(n,v){var d=new Date();d.setFullYear(d.getFullYear()+1);document.cookie=n+'='+v+';expires='+d.toUTCString()+';path=/;SameSite=Lax';}
+  function carregaMapes(){
+    document.querySelectorAll('iframe[data-cookie-src]').forEach(function(f){
+      if(!f.src || f.src==='about:blank'){ f.src=f.getAttribute('data-cookie-src'); }
+      var w=f.closest('.map'); if(w) w.classList.add('loaded');
+    });
+  }
+  window.rolanCookies=function(accepta){
+    setCookie('rolan_cookies', accepta?'all':'necessary');
+    document.getElementById('cookie-banner').style.display='none';
+    if(accepta) carregaMapes();
+  };
+  window.rolanResetCookies=function(){ setCookie('rolan_cookies',''); location.reload(); };
+  document.addEventListener('DOMContentLoaded',function(){
+    var estat=getCookie('rolan_cookies');
+    if(estat==='all'){ carregaMapes(); }
+    else if(estat==='necessary'){ /* no carreguem mapes */ }
+    else { document.getElementById('cookie-banner').style.display='block'; }
+  });
+})();
+</script>
+<script>
+document.addEventListener('change', function(e){
+  var inp = e.target;
+  if(inp && inp.type === 'file'){
+    var w = inp.closest('.file-field'); if(!w) return;
+    var n = w.querySelector('.ff-name'); if(!n) return;
+    if(inp.files && inp.files.length){ n.textContent = inp.files[0].name; n.classList.add('has'); }
+    else { n.textContent = n.getAttribute('data-empty') || 'Cap fitxer triat'; n.classList.remove('has'); }
+  }
+});
+</script>
+<script src="/static/js/avisos.js?v=1"></script>
+<script src="/static/js/mobil.js?v=2" defer></script>
+</body>
+</html>
