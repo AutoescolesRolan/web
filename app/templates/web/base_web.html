@@ -174,7 +174,7 @@ s.abans{color:var(--text-tenue);font-weight:600;font-size:.78em;margin:0 5px 0 2
 
 <div id="cookie-banner" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:2000;background:#0f1830;color:#e7ecfb;padding:16px 20px;box-shadow:0 -8px 30px rgba(0,0,0,.35)">
   <div style="max-width:1000px;margin:0 auto;display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between">
-    <p style="margin:0;font-size:13.5px;line-height:1.5;flex:1;min-width:240px">Fem servir cookies tècniques (necessàries) i, si les acceptes, cookies de tercers per mostrar els mapes dels centres. Consulta la <a href="/cookies" style="color:#8BC53F">política de cookies</a>.</p>
+    <p style="margin:0;font-size:13.5px;line-height:1.5;flex:1;min-width:240px">{% if ga_id %}Fem servir cookies tècniques (necessàries) i, si les acceptes, cookies de tercers per mostrar els mapes dels centres i per saber quantes persones visiten la web (Google Analytics). Consulta la{% else %}Fem servir cookies tècniques (necessàries) i, si les acceptes, cookies de tercers per mostrar els mapes dels centres. Consulta la{% endif %} <a href="/cookies" style="color:#8BC53F">política de cookies</a>.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button type="button" onclick="rolanCookies(false)" style="background:#33405f;color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13.5px;cursor:pointer">Només necessàries</button>
       <button type="button" onclick="rolanCookies(true)" style="background:#8BC53F;color:#173a05;border:none;border-radius:10px;padding:9px 16px;font-weight:700;font-size:13.5px;cursor:pointer">Acceptar totes</button>
@@ -191,15 +191,57 @@ s.abans{color:var(--text-tenue);font-weight:600;font-size:.78em;margin:0 5px 0 2
       var w=f.closest('.map'); if(w) w.classList.add('loaded');
     });
   }
-  window.rolanCookies=function(accepta){
-    setCookie('rolan_cookies', accepta?'all':'necessary');
-    document.getElementById('cookie-banner').style.display='none';
-    if(accepta) carregaMapes();
+  // Google Analytics: només amb el consentiment. Les adreces privades (amb el codi de la matrícula)
+  // s'envien sense el codi, i el panell intern no es mesura mai.
+  var GA_ID = {{ (ga_id or '')|tojson }};
+  function netaRuta(p){
+    return p.replace(/^\/(matricula|practiques)\/[A-Za-z0-9_-]{16,}(\/[a-z.]+)?.*$/, function(_, a, b){ return '/' + a + (b ? b.replace('.pdf','') : '/pagament'); })
+            .replace(/^\/comanda\/[A-Za-z0-9_-]{16,}.*$/, '/comanda')
+            .replace(/^\/pagament(-demo)?\/.*$/, '/pagament');
+  }
+  function netaUrl(u){
+    try { var x = new URL(u); if (x.origin !== location.origin) return x.origin + '/'; return x.origin + netaRuta(x.pathname); }
+    catch(e){ return ''; }
+  }
+  function carregaAnalytics(){
+    if (!GA_ID || window.__rolanGA) return;
+    window.__rolanGA = true;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ dataLayer.push(arguments); };
+    gtag('js', new Date());
+    gtag('config', GA_ID, { page_location: location.origin + netaRuta(location.pathname),
+                            page_referrer: document.referrer ? netaUrl(document.referrer) : '' });
+    (window.rolanEvents || []).forEach(function(ev){ gtag('event', ev[0], ev[1] || {}); });
+    var s = document.createElement('script'); s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA_ID);
+    document.head.appendChild(s);
+  }
+  window.rolanEvent = function(nom, dades){
+    if (window.gtag && window.__rolanGA) { gtag('event', nom, dades || {}); }
   };
-  window.rolanResetCookies=function(){ setCookie('rolan_cookies',''); location.reload(); };
+  window.rolanCookies=function(accepta){
+    setCookie('rolan_cookies', accepta?'all2':'necessary');   // all2: inclou analítica
+    document.getElementById('cookie-banner').style.display='none';
+    if(accepta){ carregaMapes(); carregaAnalytics(); }
+  };
+  window.rolanResetCookies=function(){
+    setCookie('rolan_cookies','');
+    // esborra les cookies de Google Analytics si n'hi havia
+    document.cookie.split(';').forEach(function(c){
+      var n = c.split('=')[0].trim();
+      if (n === '_ga' || n.indexOf('_ga_') === 0) {
+        var dom = location.hostname.replace(/^www\./, '');
+        ['', ';domain=' + location.hostname, ';domain=.' + dom].forEach(function(d){
+          document.cookie = n + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/' + d;
+        });
+      }
+    });
+    location.reload();
+  };
   document.addEventListener('DOMContentLoaded',function(){
     var estat=getCookie('rolan_cookies');
-    if(estat==='all'){ carregaMapes(); }
+    if(estat==='all2'){ carregaMapes(); carregaAnalytics(); }
+    else if(estat==='all'){ carregaMapes(); if(GA_ID){ document.getElementById('cookie-banner').style.display='block'; } }  // va acceptar abans que hi hagués analítica
     else if(estat==='necessary'){ /* no carreguem mapes */ }
     else { document.getElementById('cookie-banner').style.display='block'; }
   });

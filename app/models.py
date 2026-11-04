@@ -187,3 +187,25 @@ class Usuari(Base):
     centre_id: Mapped[int | None] = mapped_column(ForeignKey("centres.id"), nullable=True)
     actiu: Mapped[bool] = mapped_column(Boolean, default=True)
     centre: Mapped[Centre | None] = relationship()
+
+
+class CodiAcces(Base):
+    """Codi de 6 xifres enviat per correu per entrar al panell (segon factor)."""
+    __tablename__ = "codis_acces"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    usuari_id: Mapped[int] = mapped_column(ForeignKey("usuaris.id"), index=True)
+    sal: Mapped[str] = mapped_column(String(64))
+    hash: Mapped[str] = mapped_column(String(128))
+    creat_en: Mapped[datetime] = mapped_column(DateTime, default=ara)
+    caduca: Mapped[datetime] = mapped_column(DateTime)
+    intents: Mapped[int] = mapped_column(Integer, default=0)
+    usat: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class DispositiuConfiat(Base):
+    """Navegador on s'ha marcat «Recorda aquest dispositiu»: no demana el codi durant 30 dies."""
+    __tablename__ = "dispositius_confiats"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    usuari_id: Mapped[int] = mapped_column(ForeignKey("usuaris.id"), index=True)
+    hash: Mapped[str] = mapped_column(String(128), unique=True)
+    caduca: Mapped[datetime] = mapped_column(DateTime)

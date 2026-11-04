@@ -12,7 +12,7 @@
   <tbody>
   {% for x in usuaris %}
   <tr>
-    <td><b>{{ x.nom or '—' }}</b><div class="sub" style="font-size:12.5px">{{ x.email }}</div></td>
+    <td><b>{{ x.nom or '—' }}</b>{% if x.id == u.id %} <span class="pill ok" style="margin-left:4px">Tu</span>{% endif %}<div class="sub" style="font-size:12.5px">{{ x.email }}</div></td>
     <td><form method="post" action="/gestio/usuaris" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
       <input type="hidden" name="csrf" value="{{ csrf }}"><input type="hidden" name="id" value="{{ x.id }}"><input type="hidden" name="accio" value="edita"><input type="hidden" name="nom" value="{{ x.nom }}">
       {% if x.id == u.id %}<input type="hidden" name="rol" value="admin"><span style="font-weight:600;padding:0 4px">Admin</span>

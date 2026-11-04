@@ -23,6 +23,7 @@ AJUSTOS = {
 
 _TAXA = "Taxa oficial DGT | Tasa oficial DGT | 94,05"
 _TEORIC = "Examen teòric | Examen teórico | 47,99"
+_TEORIC_B = "Examen teòric | Examen teórico | 55,99"     # nov. 2026: només el carnet B
 _TRAM = "Tramitació d'expedient | Tramitación de expediente | 125"
 _CANON = "Cànon de pistes (obligatori per a l'examen de maniobres) | Canon de pistas (obligatorio para el examen de maniobras) | 33"
 _MANIOBRES = "Examen de maniobres | Examen de maniobras | 61"
@@ -33,7 +34,7 @@ TARIFES = {   # «text català | text castellà | preu» per línia; es canvien 
     "tarifes_classes_B": "\n".join(["Classe matí (6h–14h) | Clase mañana (6h–14h) | 36",
                                      "Classe tarda (14h–21h) | Clase tarde (14h–21h) | 42",
                                      "Classe dissabtes/festius | Clase sábados/festivos | 49"]),
-    "tarifes_examens_B": "\n".join([_TAXA, _TEORIC, "Examen pràctic | Examen práctico | 69,50", _TRAM]),
+    "tarifes_examens_B": "\n".join([_TAXA, _TEORIC_B, "Examen pràctic | Examen práctico | 72,50", _TRAM]),
     "tarifes_classes_AM": _PR_MAN,
     "tarifes_examens_AM": "\n".join([_TAXA, _TEORIC, _MANIOBRES, _TRAM, _CANON]),
     "tarifes_classes_A1": "\n".join([_PR_MAN, _PR_CIRC]),
@@ -95,8 +96,8 @@ CARNETS = [
          taxes_es="Tasas no incluidas (28,87 € + canon de pistas 33 €)"),
 ]
 
-_BASE_B_CA = ["Matrícula", "Curs intensiu de teòrica", "Tramitació de l'expedient", "1r examen teòric"]
-_BASE_B_ES = ["Matrícula", "Curso intensivo de teórica", "Tramitación del expediente", "1.er examen teórico"]
+_BASE_B_CA = ["Matrícula", "Curs intensiu de teòrica", "Tramitació de l'expedient"]   # nov. 2026: sense examen teòric
+_BASE_B_ES = ["Matrícula", "Curso intensivo de teórica", "Tramitación del expediente"]
 _MOTO_COMPLET_CA = ["Matrícula", "Tramitació de l'expedient", "1r examen teòric comú + específic",
                     "1r examen de maniobres", "1r examen de circulació", "2 pràctiques de maniobres",
                     "3 pràctiques de circulació"]
@@ -113,14 +114,14 @@ PACKS = {
     "B": [
         dict(codi="B1", nom_ca="Pack 1 · Sense pràctiques", nom_es="Pack 1 · Sin prácticas", classes=0, preu=199,
              inclou_ca=_BASE_B_CA, inclou_es=_BASE_B_ES, contracte="B.docx"),
-        dict(codi="B2", nom_ca="Pack 2 · 6 pràctiques", nom_es="Pack 2 · 6 prácticas", classes=6, preu=399,
-             inclou_ca=_BASE_B_CA + ["6 pràctiques de 45'"], inclou_es=_BASE_B_ES + ["6 prácticas de 45'"],
+        dict(codi="B2", nom_ca="Pack 2 · 5 pràctiques", nom_es="Pack 2 · 5 prácticas", classes=5, preu=399,
+             inclou_ca=_BASE_B_CA + ["5 pràctiques de 45'"], inclou_es=_BASE_B_ES + ["5 prácticas de 45'"],
              contracte="B.docx"),
-        dict(codi="B3", nom_ca="Pack 3 · 13 pràctiques", nom_es="Pack 3 · 13 prácticas", classes=13, preu=599,
-             inclou_ca=_BASE_B_CA + ["13 pràctiques de 45'"], inclou_es=_BASE_B_ES + ["13 prácticas de 45'"],
+        dict(codi="B3", nom_ca="Pack 3 · 12 pràctiques", nom_es="Pack 3 · 12 prácticas", classes=12, preu=599,
+             inclou_ca=_BASE_B_CA + ["12 pràctiques de 45'"], inclou_es=_BASE_B_ES + ["12 prácticas de 45'"],
              contracte="B.docx"),
-        dict(codi="B4", nom_ca="Pack 4 · 21 pràctiques", nom_es="Pack 4 · 21 prácticas", classes=21, preu=799,
-             inclou_ca=_BASE_B_CA + ["21 pràctiques de 45'"], inclou_es=_BASE_B_ES + ["21 prácticas de 45'"],
+        dict(codi="B4", nom_ca="Pack 4 · 20 pràctiques", nom_es="Pack 4 · 20 prácticas", classes=20, preu=799,
+             inclou_ca=_BASE_B_CA + ["20 pràctiques de 45'"], inclou_es=_BASE_B_ES + ["20 prácticas de 45'"],
              contracte="B.docx", destacat=True),
     ],
     "AM": [
@@ -182,6 +183,40 @@ def _actualitza(db):
     e = db.get(models.Ajust, "escola_email")
     if e and not (e.valor or "").strip():
         e.valor = AJUSTOS["escola_email"]
+    _canvis_preus_nov_2026(db)
+
+
+PREUS_ANTICS = {   # nov. 2026: preus nous dels exàmens del carnet B (només si encara hi ha el preu antic)
+    "Examen teòric | Examen teórico | 47,99": "Examen teòric | Examen teórico | 55,99",
+    "Examen pràctic | Examen práctico | 69,50": "Examen pràctic | Examen práctico | 72,50",
+}
+
+
+def _canvis_preus_nov_2026(db):
+    for a in db.query(models.Ajust).filter(models.Ajust.clau.in_(["tarifes_examens_B", "tarifes_classes_B"])).all():
+        linies = (a.valor or "").split("\n")
+        noves = [PREUS_ANTICS.get(l.strip(), l) for l in linies]
+        if noves != linies:
+            a.valor = "\n".join(noves)
+            print(f"[inici] preus actualitzats a {a.clau}")
+    # packs inicials del B: 5 / 12 / 20 pràctiques i sense examen teòric (un sol cop)
+    marca_b = "fet_packs_b_nov_2026"
+    if not db.get(models.Ajust, marca_b):
+        nous = {p["codi"]: p for p in PACKS["B"]}
+        for p in db.query(models.Pack).filter(models.Pack.codi.in_(list(nous))).all():
+            n = nous[p.codi]
+            p.nom_ca, p.nom_es, p.classes = n["nom_ca"], n["nom_es"], n["classes"]
+            p.inclou_ca = "\n".join(n["inclou_ca"])
+            p.inclou_es = "\n".join(n["inclou_es"])
+        db.add(models.Ajust(clau=marca_b, valor="1"))
+        print("[inici] packs del carnet B actualitzats")
+    # els packs de pràctiques de matí deixen de sortir (un sol cop: si després es tornen a activar, es respecta)
+    marca = "fet_packs_mati_nov_2026"
+    if not db.get(models.Ajust, marca):
+        for p in db.query(models.PackPractiques).filter(models.PackPractiques.franja == "MATI").all():
+            p.actiu = False
+        db.add(models.Ajust(clau=marca, valor="1"))
+        print("[inici] packs de pràctiques de matí amagats")
 
 
 def omple(db):
@@ -211,8 +246,8 @@ def omple(db):
             p["inclou_es"] = "\n".join(p["inclou_es"])
             db.add(models.Pack(carnet_id=carnet.id, ordre=i, actiu=True, **p))
     if not db.query(models.PackPractiques).first():
-        for n, mati, tarda in PRACTIQUES:
-            db.add(models.PackPractiques(classes=n, franja="MATI", preu=mati, actiu=True))
+        for n, mati, tarda in PRACTIQUES:      # nov. 2026: només es mostren els packs de tarda
+            db.add(models.PackPractiques(classes=n, franja="MATI", preu=mati, actiu=False))
             db.add(models.PackPractiques(classes=n, franja="TARDA", preu=tarda, actiu=True))
     _actualitza(db)
     db.commit()

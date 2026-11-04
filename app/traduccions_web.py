@@ -2,6 +2,24 @@
 S'afegeixen al diccionari general (app/traduccions.py)."""
 
 _T = {
+    "Tots inclouen matrícula, curs intensiu i tramitació d'expedient.": "Todos incluyen matrícula, curso intensivo y tramitación de expediente.",
+    "No es cediran dades a tercers excepte per obligació legal o per a la prestació del servei, a través d'encarregats del tractament: la passarel·la de pagament (Stripe; les dades de la targeta les tracta directament Stripe i l'autoescola no les rep), el proveïdor d'allotjament de la web (Render), el proveïdor d'enviament de correus":
+        "No se cederán datos a terceros excepto por obligación legal o para la prestación del servicio, a través de encargados del tratamiento: la pasarela de pago (Stripe; los datos de la tarjeta los trata directamente Stripe y la autoescuela no los recibe), el proveedor de alojamiento de la web (Render), el proveedor de envío de correos",
+    "i, si escau, la DGT. Amb cadascun es formalitza el corresponent contracte d'encarregat de tractament.":
+        "y, si procede, la DGT. Con cada uno se formaliza el correspondiente contrato de encargado del tratamiento.",
+    "Les cookies tècniques són necessàries perquè el web funcioni i no requereixen consentiment. Les de tercers (mapes":
+        "Las cookies técnicas son necesarias para que la web funcione y no requieren consentimiento. Las de terceros (mapas",
+    ") només es carreguen si les acceptes. Pots canviar la teva decisió en qualsevol moment des d'aquí:":
+        ") solo se cargan si las aceptas. Puedes cambiar tu decisión en cualquier momento desde aquí:",
+    "Fem servir cookies tècniques (necessàries) i, si les acceptes, cookies de tercers per mostrar els mapes dels centres i per saber quantes persones visiten la web (Google Analytics). Consulta la":
+        "Usamos cookies técnicas (necesarias) y, si las aceptas, cookies de terceros para mostrar los mapas de los centros y para saber cuántas personas visitan la web (Google Analytics). Consulta la",
+    "Google Analytics: saber quantes persones visiten la web i quines pàgines miren, de forma agregada. Només es carreguen si acceptes les cookies.":
+        "Google Analytics: saber cuántas personas visitan la web y qué páginas miran, de forma agregada. Solo se cargan si aceptas las cookies.",
+    "Analítica (de tercers)": "Analítica (de terceros)",
+    "2 anys": "2 años",
+    "i analítica": "y analítica",
+    ", Google (estadístiques de visites amb Google Analytics, només si acceptes les cookies d'analítica; no s'hi envien les teves dades de matrícula)":
+        ", Google (estadísticas de visitas con Google Analytics, solo si aceptas las cookies de analítica; no se envían tus datos de matrícula)",
     "Com vols que et contactem?": "¿Cómo quieres que te contactemos?",
     "Correu electrònic": "Correo electrónico",
     "Trucada": "Llamada",

@@ -6,6 +6,7 @@
   <h1 style="text-align:center">Panell de la web</h1>
   <p class="sub" style="text-align:center">Matrícules i compres rebudes a la web.</p>
   {% if err == 'dades' %}<div class="avis err">El correu o la contrasenya no són correctes.</div>
+  {% elif err == 'correu' %}<div class="avis err">No s'ha pogut enviar el codi d'accés al teu correu. Torna-ho a provar d'aquí a una estona.</div>
   {% elif err == 'massa' %}<div class="avis err">Massa intents seguits. Torna-ho a provar d'aquí a 15 minuts.</div>{% endif %}
   <form class="card" method="post" action="/gestio/entrar" style="display:flex;flex-direction:column;gap:12px">
     <div><label>Correu</label><input type="email" name="email" value="{{ email }}" required autocomplete="username" style="width:100%"></div>

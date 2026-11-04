@@ -1,0 +1,24 @@
+{% extends "panell/base_panell.html" %}
+{% block title %}Codi d'accés{% endblock %}
+{% block content %}
+<div style="max-width:380px;margin:50px auto 0">
+  <div style="text-align:center;margin-bottom:18px"><img src="/static/img/logo-rolan.png" alt="" width="72" height="72" style="border-radius:50%"></div>
+  <h1 style="text-align:center">Codi d'accés</h1>
+  <p class="sub" style="text-align:center">T'hem enviat un codi de 6 xifres a <b>{{ correu_amagat }}</b>.</p>
+  {% if err == 'codi' %}<div class="avis err">El codi no és correcte.</div>
+  {% elif err == 'caducat' %}<div class="avis err">Aquest codi ja no és vàlid. Demana'n un de nou.</div>
+  {% elif err == 'espera' %}<div class="avis err">Espera un minut abans de demanar un altre codi.</div>
+  {% elif err == 'correu' %}<div class="avis err">No s'ha pogut enviar el codi. Torna-ho a provar d'aquí a una estona.</div>
+  {% elif reenviat %}<div class="avis ok">T'hem enviat un codi nou.</div>{% endif %}
+  <form class="card" method="post" action="/gestio/codi" style="display:flex;flex-direction:column;gap:12px">
+    <div><label>Codi</label><input type="text" name="codi" inputmode="numeric" pattern="[0-9 ]{6,7}" maxlength="7" autocomplete="one-time-code" required autofocus style="width:100%;font-size:22px;letter-spacing:6px;text-align:center"></div>
+    <label style="display:flex;gap:8px;align-items:center;font-weight:400;font-size:13.5px"><input type="checkbox" name="recorda" value="1"> Recorda aquest dispositiu {{ dies }} dies</label>
+    <button class="btn" type="submit" style="justify-content:center">Entrar</button>
+  </form>
+  <form method="post" action="/gestio/codi" style="text-align:center;margin-top:12px">
+    <input type="hidden" name="accio" value="reenvia">
+    <button class="btn ghost sm" type="submit">Envia'm un altre codi</button>
+    <p style="margin-top:12px"><a href="/gestio/entrar" style="font-size:13px">Tornar</a></p>
+  </form>
+</div>
+{% endblock %}

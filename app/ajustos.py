@@ -47,3 +47,11 @@ def falten_dades_legals(db) -> list:
     noms = {"escola_rao_social": "Raó social", "escola_domicili": "Domicili fiscal",
             "escola_num_provincial": "Número d'autorització de la DGT"}
     return [n for k, n in noms.items() if not get(db, k)]
+
+
+def ga_id(db) -> str:
+    """ID de mesura de Google Analytics 4 (G-XXXXXXX), o "" si no n'hi ha o no és vàlid."""
+    import os
+    import re
+    v = (get(db, "google_analytics_id", "") or os.environ.get("GOOGLE_ANALYTICS_ID") or "").strip().upper()
+    return v if re.fullmatch(r"G-[A-Z0-9]{4,20}", v) else ""

@@ -31,12 +31,13 @@
       <tr><td>rolan_web</td><td>Tècnica (necessària)</td><td>Recordar l'idioma triat i la matrícula en curs</td><td>14 dies</td></tr>
       <tr><td>rolan_cookies</td><td>Tècnica (necessària)</td><td>Recordar la teva decisió sobre les cookies</td><td>1 any</td></tr>
       <tr><td>Google Maps (tercers)</td><td>De tercers</td><td>Mostrar els mapes dels centres. Només es carreguen si acceptes les cookies.</td><td>Segons Google</td></tr>
+      {% if ga_id %}<tr><td>_ga, _ga_*</td><td>Analítica (de tercers)</td><td>Google Analytics: saber quantes persones visiten la web i quines pàgines miren, de forma agregada. Només es carreguen si acceptes les cookies.</td><td>2 anys</td></tr>{% endif %}
       <tr><td>Stripe (tercers)</td><td>De tercers</td><td>Processar els pagaments de forma segura (només durant el pagament)</td><td>Segons Stripe</td></tr>
     </tbody>
   </table>
 
   <h2>Gestió de les cookies</h2>
-  <p>Les cookies tècniques són necessàries perquè el web funcioni i no requereixen consentiment. Les de tercers (mapes) només es carreguen si les acceptes. Pots canviar la teva decisió en qualsevol moment des d'aquí:</p>
+  <p>Les cookies tècniques són necessàries perquè el web funcioni i no requereixen consentiment. Les de tercers (mapes{% if ga_id %} i analítica{% endif %}) només es carreguen si les acceptes. Pots canviar la teva decisió en qualsevol moment des d'aquí:</p>
   <button type="button" class="btn btn-primary" onclick="if(window.rolanResetCookies)window.rolanResetCookies()">Canviar preferència de cookies</button>
   <p style="margin-top:14px">També pots configurar o eliminar les cookies des del teu navegador (Chrome, Firefox, Safari, Edge…).</p>
 </div>

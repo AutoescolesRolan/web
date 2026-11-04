@@ -47,4 +47,13 @@
   </div>
   <p class="sub" style="font-size:13px;margin-top:18px">Guarda aquest enllaç o el correu: és la manera de tornar a descarregar els documents.</p>
 </div>
+{% if nou and c.estat == 'pagada' %}
+<script>
+window.rolanEvents = (window.rolanEvents || []).concat([['purchase', {
+  transaction_id: {{ (c.num_rebut or c.id|string)|tojson }}, value: {{ '%.2f'|format(c.total) }}, currency: 'EUR',
+  items: [{ item_id: {{ (c.carnet_codi or c.tipus)|tojson }}, item_name: {{ c.producte|tojson }}, item_category: {{ c.tipus|tojson }},
+            price: {{ '%.2f'|format(c.total) }}, quantity: 1 }]
+}]]);
+</script>
+{% endif %}
 {% endblock %}

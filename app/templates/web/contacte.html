@@ -34,6 +34,7 @@
 
   {% if fet %}
   <div class="card"><div class="note ok" style="margin:0">Missatge enviat. Et respondrem al correu que ens has indicat tan aviat com puguem.</div></div>
+  <script>window.rolanEvents = (window.rolanEvents || []).concat([['generate_lead', {}]]);</script>
   {% else %}
   <form class="card" method="post" action="/contacte">
     {% if err == 'camps' %}<div class="note err" style="margin:0 0 14px">Cal triar el centre, escriure el nom, un correu vàlid i el missatge, i acceptar la política de privacitat.</div>

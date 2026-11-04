@@ -230,4 +230,12 @@
   });
 </script>
 {% endif %}
+{% if c.estat != 'pagada' %}
+<script>
+window.rolanEvents = (window.rolanEvents || []).concat([['begin_checkout', {
+  value: {{ '%.2f'|format(c.total) }}, currency: 'EUR',
+  items: [{ item_id: {{ c.carnet_codi|tojson }}, item_name: {{ c.producte|tojson }}, item_category: 'matricula', price: {{ '%.2f'|format(c.total) }}, quantity: 1 }]
+}]]);
+</script>
+{% endif %}
 {% endblock %}

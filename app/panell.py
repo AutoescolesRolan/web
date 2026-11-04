@@ -4,7 +4,8 @@ import io
 import os
 import secrets
 import time
-from datetime import datetime
+import hashlib
+from datetime import datetime, timedelta
 
 import bcrypt
 from fastapi import APIRouter, Depends, Request
@@ -110,8 +111,127 @@ async def entrar_post(request: Request, db: Session = Depends(get_db)):
         return _r(request, "panell/entrar.html", {"err": "dades", "email": email}, db, 401)
     _INTENTS.pop(ip, None)
     request.session.clear()
+    if dos_factors_actiu() and not _dispositiu_confiat(request, db, u):
+        if not _envia_codi(db, u):
+            return _r(request, "panell/entrar.html", {"err": "correu", "email": email}, db, 503)
+        request.session["pendent_uid"] = u.id
+        request.session["pendent_des_de"] = int(ara)
+        return RedirectResponse("/gestio/codi", status_code=303)
     request.session["uid"] = u.id
     return RedirectResponse("/gestio", status_code=303)
+
+
+# ------------------------------------------------------------------ segon factor (codi per correu)
+MINUTS_CODI = 10
+INTENTS_CODI = 5
+DIES_DISPOSITIU = 30
+COOKIE_DISPOSITIU = "rolan_gestio_disp"
+
+
+def dos_factors_actiu() -> bool:
+    """El codi per correu es demana sempre que el correu estigui configurat (es pot apagar amb DOS_FACTORS=off)."""
+    from . import correu
+    if (os.environ.get("DOS_FACTORS") or "").strip().lower() in ("0", "off", "no", "false"):
+        return False
+    return correu.configurat()
+
+
+def _hash(*parts) -> str:
+    return hashlib.sha256("|".join(parts).encode()).hexdigest()
+
+
+def _envia_codi(db, u) -> bool:
+    from . import correu
+    db.query(models.CodiAcces).filter(models.CodiAcces.usuari_id == u.id,
+                                      models.CodiAcces.usat == False).update({"usat": True})
+    codi = f"{secrets.randbelow(1_000_000):06d}"
+    sal = secrets.token_hex(16)
+    db.add(models.CodiAcces(usuari_id=u.id, sal=sal, hash=_hash(sal, codi),
+                            caduca=datetime.utcnow() + timedelta(minutes=MINUTS_CODI)))
+    db.commit()
+    cos = (f"<p>Hola{', ' + u.nom if u.nom else ''}!</p><p>El teu codi per entrar al panell de la web és:</p>"
+           f'<p style="font-size:30px;font-weight:800;letter-spacing:6px;color:#14224F;margin:14px 0">{codi}</p>'
+           f"<p>Caduca d'aquí a {MINUTS_CODI} minuts. Si no has intentat entrar tu, canvia la contrasenya i avisa l'admin.</p>")
+    text = (f"El teu codi per entrar al panell de la web és: {codi}\n\nCaduca d'aquí a {MINUTS_CODI} minuts. "
+            "Si no has intentat entrar tu, canvia la contrasenya i avisa l'admin.\n")
+    ok, msg = correu.envia(u.email, f"{codi} és el teu codi d'accés · Autoescoles Rolan",
+                           comandes._html_correu(cos), text)
+    if not ok:
+        print(f"[panell] no s'ha pogut enviar el codi d'accés a {u.email}: {msg}")
+    return ok
+
+
+def _dispositiu_confiat(request, db, u) -> bool:
+    tok = request.cookies.get(COOKIE_DISPOSITIU) or ""
+    if not tok:
+        return False
+    d = db.query(models.DispositiuConfiat).filter(models.DispositiuConfiat.hash == _hash("disp", tok)).first()
+    return bool(d and d.usuari_id == u.id and d.caduca > datetime.utcnow())
+
+
+def _pendent(request, db):
+    uid = request.session.get("pendent_uid")
+    des_de = request.session.get("pendent_des_de") or 0
+    if not uid or time.time() - des_de > MINUTS_CODI * 60 * 3:
+        return None
+    u = db.get(models.Usuari, uid)
+    return u if u and u.actiu else None
+
+
+def _amaga(email):
+    nom, _, dom = email.partition("@")
+    return (nom[:2] + "•" * max(1, len(nom) - 2)) + "@" + dom
+
+
+@router.get("/codi", response_class=HTMLResponse)
+def codi(request: Request, err: str = "", reenviat: str = "", db: Session = Depends(get_db)):
+    u = _pendent(request, db)
+    if not u:
+        return _redir_login()
+    return _r(request, "panell/codi.html", {"correu_amagat": _amaga(u.email), "err": err, "reenviat": reenviat,
+                                             "dies": DIES_DISPOSITIU, "minuts": MINUTS_CODI}, db)
+
+
+@router.post("/codi")
+async def codi_post(request: Request, db: Session = Depends(get_db)):
+    u = _pendent(request, db)
+    if not u:
+        return _redir_login()
+    f = await request.form()
+    if f.get("accio") == "reenvia":
+        darrer = (db.query(models.CodiAcces).filter(models.CodiAcces.usuari_id == u.id)
+                  .order_by(models.CodiAcces.id.desc()).first())
+        if darrer and (datetime.utcnow() - darrer.creat_en).total_seconds() < 60:
+            return RedirectResponse("/gestio/codi?err=espera", status_code=303)
+        if not _envia_codi(db, u):
+            return RedirectResponse("/gestio/codi?err=correu", status_code=303)
+        request.session["pendent_des_de"] = int(time.time())
+        return RedirectResponse("/gestio/codi?reenviat=1", status_code=303)
+    escrit = "".join(ch for ch in str(f.get("codi") or "") if ch.isdigit())
+    c = (db.query(models.CodiAcces).filter(models.CodiAcces.usuari_id == u.id, models.CodiAcces.usat == False)
+         .order_by(models.CodiAcces.id.desc()).first())
+    if not c or c.caduca < datetime.utcnow() or c.intents >= INTENTS_CODI:
+        return RedirectResponse("/gestio/codi?err=caducat", status_code=303)
+    if not secrets.compare_digest(_hash(c.sal, escrit), c.hash):
+        c.intents += 1
+        if c.intents >= INTENTS_CODI:
+            c.usat = True
+        db.commit()
+        return RedirectResponse("/gestio/codi?err=" + ("caducat" if c.usat else "codi"), status_code=303)
+    c.usat = True
+    request.session.clear()
+    request.session["uid"] = u.id
+    resp = RedirectResponse("/gestio", status_code=303)
+    if f.get("recorda") == "1":
+        tok = secrets.token_urlsafe(32)
+        db.add(models.DispositiuConfiat(usuari_id=u.id, hash=_hash("disp", tok),
+                                        caduca=datetime.utcnow() + timedelta(days=DIES_DISPOSITIU)))
+        resp.set_cookie(COOKIE_DISPOSITIU, tok, max_age=DIES_DISPOSITIU * 86400, httponly=True, samesite="lax",
+                        secure=os.environ.get("HTTPS_ONLY", "").lower() in ("1", "true", "si"), path="/gestio")
+    db.query(models.DispositiuConfiat).filter(models.DispositiuConfiat.caduca < datetime.utcnow()).delete()
+    db.query(models.CodiAcces).filter(models.CodiAcces.caduca < datetime.utcnow() - timedelta(days=1)).delete()
+    db.commit()
+    return resp
 
 
 @router.get("/sortir")
@@ -425,7 +545,8 @@ CLAUS_ESCOLA = [("escola_nom", "Nom comercial"), ("escola_rao_social", "Raó soc
                 ("escola_telefon", "Telèfon general"), ("escola_email", "Correu general"),
                 ("escola_titular", "Titular"), ("escola_num_provincial", "Núm. d'autorització de la DGT"),
                 ("correus_admin", "Correus que reben còpia de totes les matrícules (separats per comes)"),
-                ("google_maps_api_key", "Clau de Google Maps (per completar l'adreça a la matrícula)")]
+                ("google_maps_api_key", "Clau de Google Maps (per completar l'adreça a la matrícula)"),
+                ("google_analytics_id", "ID de Google Analytics (comença per G-)")]
 
 
 @router.get("/dades", response_class=HTMLResponse)
@@ -439,7 +560,8 @@ def dades(request: Request, fet: str = "", db: Session = Depends(get_db)):
                                               "correu_ok": correu.configurat(), "stripe_ok": pagaments.configurat(),
                                               "stripe_test": pagaments.mode_proves(),
                                               "url": comandes.url_publica(),
-                                              "maps_ok": bool(__import__("app.web", fromlist=["x"]).clau_maps(db))}, db)
+                                              "maps_ok": bool(__import__("app.web", fromlist=["x"]).clau_maps(db)),
+                                              "ga_id": ajustos.ga_id(db), "dos_factors": dos_factors_actiu()}, db)
 
 
 @router.post("/dades")
@@ -496,8 +618,10 @@ async def usuaris_desa(request: Request, db: Session = Depends(get_db)):
             if len(pw) < 10:
                 return RedirectResponse("/gestio/usuaris?err=pw", status_code=303)
             u.contrasenya = hash_pw(pw)
+            db.query(models.DispositiuConfiat).filter(models.DispositiuConfiat.usuari_id == u.id).delete()
         elif accio == "activa" and u.id != jo.id:
             u.actiu = not u.actiu
+            db.query(models.DispositiuConfiat).filter(models.DispositiuConfiat.usuari_id == u.id).delete()
         elif accio == "edita":
             rol = "admin" if f.get("rol") == "admin" else "secretaria"
             if u.id == jo.id and rol != "admin":

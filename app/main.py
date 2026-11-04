@@ -69,6 +69,7 @@ def render(request, nom, ctx=None, db=None, status_code=200):
         ctx.setdefault("escola", lambda clau, defecte="": (aj.get(clau) or defecte))
         ctx.setdefault("correu_escola", ajustos.correu_general(db))
         ctx.setdefault("promo_banner", preus.banner(db))
+        ctx.setdefault("ga_id", ajustos.ga_id(db))
         ctx.setdefault("centres_peu", db.query(models.Centre).filter(models.Centre.actiu == True)
                        .order_by(models.Centre.ordre).all())
     else:

@@ -91,12 +91,12 @@
 {% if (not sel or sel == 'B') and pw.get('B') and pw['B'].packs %}
 {% set pb = pw['B'].packs %}
 <div class="wrap">
-  <div class="sec-head{% if sel == 'B' %} sec-b{% endif %}"><span class="eyebrow"><span class="dot"></span>Carnet B{% if sel == 'B' %} · Cotxe · des de 18 anys{% endif %}</span><h2>Tria el teu pack</h2><p>Tots inclouen matrícula, curs intensiu, tramitació d'expedient i 1r examen teòric.{% if sel == 'B' %} <span class="tax-b">Taxes DGT no incloses ({{ pw._taxa }}€).</span>{% endif %}</p></div>
+  <div class="sec-head{% if sel == 'B' %} sec-b{% endif %}"><span class="eyebrow"><span class="dot"></span>Carnet B{% if sel == 'B' %} · Cotxe · des de 18 anys{% endif %}</span><h2>Tria el teu pack</h2><p>Tots inclouen matrícula, curs intensiu i tramitació d'expedient.{% if sel == 'B' %} <span class="tax-b">Taxes DGT no incloses ({{ pw._taxa }}€).</span>{% endif %}</p></div>
   <div class="packs" id="packs" style="scroll-margin-top:90px">
     {% for p in pb %}
     <div class="pack{% if p.destacat %} feat{% endif %}">{% if p.destacat %}<span class="tag">El més triat</span>{% endif %}<h4>{{ p.curt }}</h4><div class="pp">{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</div>
       <div class="inc">{% if p.classes %}+ {{ p.classes }} pràctiques{% else %}Sense pràctiques{% endif %}</div>
-      <ul>{% if loop.first %}<li>Matrícula</li><li>Curs intensiu</li><li>Tramitació expedient</li><li>1r examen teòric</li>{% else %}<li>Tot el del {{ pb[0].curt }}</li>{% if p.classes %}<li>{{ p.classes }} classes pràctiques</li>{% endif %}{% endif %}</ul>
+      <ul>{% if loop.first %}<li>Matrícula</li><li>Curs intensiu</li><li>Tramitació expedient</li>{% else %}<li>Tot el del {{ pb[0].curt }}</li>{% if p.classes %}<li>{{ p.classes }} classes pràctiques</li>{% endif %}{% endif %}</ul>
       <a class="btn {% if p.destacat %}btn-verd{% else %}btn-ghost{% endif %}" style="justify-content:center" href="/matricula?carnet=B{% if p.codigo %}&amp;pack={{ p.codigo }}{% endif %}">Triar</a></div>
     {% endfor %}
   </div>
