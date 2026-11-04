@@ -546,7 +546,8 @@ CLAUS_ESCOLA = [("escola_nom", "Nom comercial"), ("escola_rao_social", "Raó soc
                 ("escola_titular", "Titular"), ("escola_num_provincial", "Núm. d'autorització de la DGT"),
                 ("correus_admin", "Correus que reben còpia de totes les matrícules (separats per comes)"),
                 ("google_maps_api_key", "Clau de Google Maps (per completar l'adreça a la matrícula)"),
-                ("google_analytics_id", "ID de Google Analytics (comença per G-)")]
+                ("google_analytics_id", "ID de Google Analytics (comença per G-)"),
+                ("recordatori_hores", "Recordatori de matrícula sense pagar: hores d'espera (0 = no s'envia)")]
 
 
 @router.get("/dades", response_class=HTMLResponse)

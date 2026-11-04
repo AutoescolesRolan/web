@@ -240,3 +240,72 @@ def envia_correus(db, c, nomes=None):
     c.correus = ((c.correus or "") + "\n" + "\n".join(registre)).strip()
     db.commit()
     return registre
+
+
+
+# ------------------------------------------------------------------ recordatori de matrícula sense pagar
+MAX_HORES_RECORDATORI = 48     # només matrícules començades fa menys de 2 dies
+
+
+def correu_recordatori(db, c):
+    es = c.idioma == "es"
+    enllac = f"{url_publica()}/matricula/{c.token}/contracte"
+    producte = c.producte_en("es" if es else "ca")
+    promo = preus.promo_automatica(db, "matricula")
+    avis_promo = ""
+    if promo and promo.fi:
+        dia = preus.local(promo.fi).strftime("%d/%m")
+        avis_promo = (f"La promoción {promo.nom} (−{promo.percentatge:g} %) termina el {dia}." if es
+                      else f"La promoció {promo.nom} (−{promo.percentatge:g} %) s'acaba el {dia}.")
+    if es:
+        assumpte = "Tu matrícula está a medias · Autoescoles Rolan"
+        p1 = f"¡Hola, {c.nom}! Has empezado la matrícula de {producte} en Autoescoles Rolan, pero aún no la has terminado."
+        p2 = "Puedes seguir donde lo dejaste: tus datos ya están guardados."
+        boto = "Terminar la matrícula"
+        p3 = ("¿Tienes alguna duda? Responde a este correo y te contestará la secretaría de tu centro. "
+              "Si ya no te interesa, ignora este mensaje: no te enviaremos más.")
+    else:
+        assumpte = "La teva matrícula està a mitges · Autoescoles Rolan"
+        p1 = f"Hola, {c.nom}! Has començat la matrícula de {producte} a Autoescoles Rolan, però encara no l'has acabada."
+        p2 = "Pots continuar on ho vas deixar: les teves dades ja estan desades."
+        boto = "Acabar la matrícula"
+        p3 = ("Tens algun dubte? Respon aquest correu i et contestarà la secretaria del teu centre. "
+              "Si ja no t'interessa, ignora aquest missatge: no te n'enviarem cap més.")
+    html = (f"<p>{_html.escape(p1)}</p><p>{_html.escape(p2)}</p>"
+            + (f"<p><b>{_html.escape(avis_promo)}</b></p>" if avis_promo else "")
+            + _boto(enllac, boto) + f'<p style="color:#66708C">{_html.escape(p3)}</p>')
+    text = f"{p1}\n\n{p2}\n" + (f"\n{avis_promo}\n" if avis_promo else "") + f"\n{boto}: {enllac}\n\n{p3}\n"
+    return assumpte, _html_correu(html, es), text
+
+
+def envia_recordatoris(db) -> int:
+    """Un sol recordatori per matrícula començada i no pagada (si la persona no n'ha fet cap altra després)."""
+    try:
+        hores = float((ajustos.get(db, "recordatori_hores", "3") or "0").replace(",", "."))
+    except ValueError:
+        hores = 0
+    if hores <= 0 or not url_publica():
+        return 0
+    from datetime import timedelta
+    ara = datetime.utcnow()
+    candidates = (db.query(models.Comanda)
+                  .filter(models.Comanda.tipus == "matricula", models.Comanda.estat.in_(["dades", "signada"]),
+                          models.Comanda.recordatori_en.is_(None), models.Comanda.email != "",
+                          models.Comanda.creat_en <= ara - timedelta(hours=hores),
+                          models.Comanda.creat_en >= ara - timedelta(hours=MAX_HORES_RECORDATORI))
+                  .order_by(models.Comanda.id).all())
+    enviats = 0
+    for c in candidates:
+        # si després n'ha començat (o pagat) una altra amb el mateix correu, no se li recorda aquesta
+        mes_nova = (db.query(models.Comanda).filter(models.Comanda.email == c.email, models.Comanda.id > c.id).first())
+        c.recordatori_en = ara
+        db.commit()
+        if mes_nova:
+            continue
+        a, h, t = correu_recordatori(db, c)
+        ok, msg = correu.envia(c.email, a, h, t, respondre_a=(c.centre.email if c.centre else ""))
+        hora = datetime.now(preus.TZ).strftime("%d/%m/%Y %H:%M")
+        c.correus = ((c.correus or "") + f"\n{hora} · recordatori ({c.email}): {'OK' if ok else 'NO'} · {msg}").strip()
+        db.commit()
+        enviats += 1
+    return enviats

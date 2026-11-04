@@ -19,6 +19,7 @@ AJUSTOS = {
     "canon_pistes": "35.00",            # cànon de pistes (motos)
     "preu_expedient": "125",            # renovació d'expedient (text de la pàgina de preus)
     "correus_admin": "",                # qui rep còpia de totes les matrícules (separats per comes)
+    "recordatori_hores": "3",           # hores després de començar una matrícula sense pagar (0 = no s'envia)
 }
 
 _TAXA = "Taxa oficial DGT | Tasa oficial DGT | 94,05"

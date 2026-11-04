@@ -2,6 +2,9 @@
 S'afegeixen al diccionari general (app/traduccions.py)."""
 
 _T = {
+    "Enviar un únic recordatori si comences una matrícula a la web i no l'acabes": "Enviar un único recordatorio si empiezas una matrícula en la web y no la terminas",
+    "Nom, correu i matrícula començada": "Nombre, correo y matrícula empezada",
+    "Interès legítim / mesures precontractuals a petició teva": "Interés legítimo / medidas precontractuales a petición tuya",
     ", Google (API de Gemini de pagament, que fa funcionar l'assistent virtual del xat; no s'hi envien dades personals: si se n'hi escriuen, s'amaguen abans d'enviar el missatge, i Google no fa servir el contingut per millorar els seus productes)":
         ", Google (API de Gemini de pago, que hace funcionar el asistente virtual del chat; no se envían datos personales: si se escriben, se ocultan antes de enviar el mensaje, y Google no usa el contenido para mejorar sus productos)",
     "Classes de 45'": "Clases de 45'",

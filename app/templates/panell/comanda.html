@@ -5,7 +5,7 @@
 <h1 style="margin-top:8px">{{ c.nom_complet }}</h1>
 <p class="sub">{% if c.tipus == 'matricula' %}Matrícula{% else %}Compra de pràctiques{% endif %} · {{ c.producte }}</p>
 {% if fet == 'correus' %}<div class="avis ok">Correus enviats de nou. Mira'n el resultat a sota.</div>{% elif fet == 'nota' %}<div class="avis ok">Nota desada.</div>{% endif %}
-{% if c.estat != 'pagada' %}<div class="avis warn">Aquesta comanda encara <b>no està pagada</b>{% if c.estat == 'signada' %} (el contracte està signat){% endif %}. No cal fer res: si l'alumne/a no paga, no compta com a matrícula.</div>{% endif %}
+{% if c.estat != 'pagada' %}<div class="avis warn">Aquesta comanda encara <b>no està pagada</b>{% if c.estat == 'signada' %} (el contracte està signat){% endif %}. No cal fer res: si l'alumne/a no paga, no compta com a matrícula.{% if c.recordatori_en %} Se li va enviar un recordatori el {{ (c.recordatori_en|local).strftime('%d/%m/%Y a les %H:%M') }}.{% endif %}</div>{% endif %}
 
 <div class="card">
   <h2 style="margin-top:0">Alumne/a</h2>

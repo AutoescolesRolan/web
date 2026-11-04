@@ -101,10 +101,34 @@ def _inici():
         panell.primer_admin(db)
     finally:
         db.close()
+    _engega_recordatoris()
+
+
+def _engega_recordatoris():
+    """Cada 10 minuts mira si hi ha matrícules començades i no pagades per enviar-los el recordatori."""
+    if (os.environ.get("RECORDATORIS") or "").strip().lower() in ("0", "off", "no"):
+        return
+    import threading
+    import time as _t
+    from . import comandes
+
+    def bucle():
+        _t.sleep(60)
+        while True:
+            db = _db.SessionLocal()
+            try:
+                comandes.envia_recordatoris(db)
+            except Exception as e:
+                print(f"[recordatoris] error: {e}")
+            finally:
+                db.close()
+            _t.sleep(600)
+    threading.Thread(target=bucle, name="recordatoris", daemon=True).start()
 
 
 # Columnes afegides després de crear la base de dades a Render: (taula, columna, tipus SQL)
-COLUMNES_NOVES = [("comandes", "contacte_preferit", "VARCHAR(20) DEFAULT ''")]
+COLUMNES_NOVES = [("comandes", "contacte_preferit", "VARCHAR(20) DEFAULT ''"),
+                  ("comandes", "recordatori_en", "TIMESTAMP")]
 
 
 def _afegeix_columnes_noves():
