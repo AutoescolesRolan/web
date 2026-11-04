@@ -1,0 +1,50 @@
+{% extends "web/base_web.html" %}
+{% block title %}{% if c.tipus == 'matricula' %}La teva matrícula{% else %}La teva compra{% endif %} · Autoescoles Rolan{% endblock %}
+{% block extra_css %}{% include "web/_pagina_css.html" %}{% endblock %}
+{% block content %}
+<div class="wrap cwrap">
+  {% if nou %}<div class="ok-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>{% endif %}
+  {% if c.tipus == 'matricula' %}
+  <h1>{% if nou %}Ja estàs matriculat/da!{% else %}La teva matrícula{% endif %}</h1>
+  <p class="sub">{% if nou %}Hem rebut el pagament. T'hem enviat un correu a <b>{{ c.email }}</b> amb el contracte signat i el rebut.{% else %}Aquí tens el resum i els documents de la teva matrícula.{% endif %}</p>
+  {% else %}
+  <h1>{% if nou %}Pagament rebut!{% else %}La teva compra{% endif %}</h1>
+  <p class="sub">{% if nou %}T'hem enviat el rebut per correu a <b>{{ c.email }}</b>.{% else %}Aquí tens el resum i el rebut de la teva compra.{% endif %}</p>
+  {% endif %}
+
+  <div class="card">
+    <ul class="files">
+      <li><span>Alumne/a</span><b>{{ c.nom_complet }}</b></li>
+      {% if c.centre %}<li><span>Centre</span><b>{{ c.centre.nom }}</b></li>{% endif %}
+      <li><span>{% if c.tipus == 'matricula' %}Pack{% else %}Pràctiques{% endif %}</span><b>{{ c.producte_en(ll) }}</b></li>
+      {% if c.descompte %}<li><span>{{ c.promocio }}</span><b>−{{ eur2(c.descompte) }} €</b></li>{% endif %}
+      {% if c.taxa %}<li><span>Taxa oficial DGT</span><b>{{ eur2(c.taxa) }} €</b></li>{% endif %}
+      {% if c.canon %}<li><span>Cànon de pistes</span><b>{{ eur2(c.canon) }} €</b></li>{% endif %}
+      <li><span>Total pagat</span><b>{{ eur2(c.total) }} €</b></li>
+      <li><span>Núm. de rebut</span><b>{{ c.num_rebut }}</b></li>
+    </ul>
+    <div class="docs" style="margin-top:16px">
+      {% if c.contracte_pdf %}<a class="btn btn-primary" href="/comanda/{{ c.token }}/contracte.pdf">Descarregar el contracte</a>{% endif %}
+      <a class="btn btn-ghost" href="/comanda/{{ c.token }}/rebut.pdf">Descarregar el rebut</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <b style="color:var(--tinta)">I ara què?</b>
+    <ol class="passos">
+      {% if c.tipus == 'matricula' %}
+      {% if c.contacte_preferit == 'whatsapp' %}<li>La secretaria de {{ c.centre.nom if c.centre else 'el teu centre' }} et contactarà per WhatsApp per començar.</li>
+      {% elif c.contacte_preferit == 'correu' %}<li>La secretaria de {{ c.centre.nom if c.centre else 'el teu centre' }} et contactarà per correu per començar.</li>
+      {% elif c.contacte_preferit == 'trucada' %}<li>La secretaria de {{ c.centre.nom if c.centre else 'el teu centre' }} et trucarà per començar.</li>
+      {% else %}<li>La secretaria de {{ c.centre.nom if c.centre else 'el teu centre' }} es posarà en contacte amb tu per començar.</li>{% endif %}
+      <li>Per a l'expedient necessitaràs: DNI/NIE original, certificat mèdic per al permís i 2 fotos de carnet.</li>
+      {% if not c.taxa %}<li>Per presentar-te a l'examen falta la taxa de la DGT, que pots pagar al centre.</li>{% endif %}
+      {% else %}
+      <li>La secretaria del teu centre afegirà les classes al teu expedient i et dirà quan comences.</li>
+      {% endif %}
+    </ol>
+    {% if c.centre %}<p style="margin-top:14px;font-size:14px;color:var(--text-suau)">Tens algun dubte? Respon el correu que t'hem enviat o truca al centre{% if c.centre.telefon %}: <b style="color:var(--tinta)">{{ c.centre.telefon }}</b>{% if c.centre.mobil %} · <b style="color:var(--tinta)">{{ c.centre.mobil }}</b>{% endif %}{% endif %}.</p>{% endif %}
+  </div>
+  <p class="sub" style="font-size:13px;margin-top:18px">Guarda aquest enllaç o el correu: és la manera de tornar a descarregar els documents.</p>
+</div>
+{% endblock %}

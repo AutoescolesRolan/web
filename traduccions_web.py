@@ -2,6 +2,14 @@
 S'afegeixen al diccionari general (app/traduccions.py)."""
 
 _T = {
+    "Com vols que et contactem?": "¿Cómo quieres que te contactemos?",
+    "Correu electrònic": "Correo electrónico",
+    "Trucada": "Llamada",
+    "Cal triar com vols que et contactem, respondre les autoritzacions, acceptar el contracte i les condicions, i signar.":
+        "Tienes que elegir cómo quieres que te contactemos, responder las autorizaciones, aceptar el contrato y las condiciones, y firmar.",
+    "et contactarà per WhatsApp per començar.": "te contactará por WhatsApp para empezar.",
+    "et contactarà per correu per començar.": "te contactará por correo para empezar.",
+    "et trucarà per començar.": "te llamará para empezar.",
     "Consulta preus i comença la teva matrícula.": "Consulta precios y empieza tu matrícula.",
     "Classes soltes, exàmens i taxes de cada carnet (IVA inclòs). Es paguen al teu centre.":
         "Clases sueltas, exámenes y tasas de cada carnet (IVA incluido). Se pagan en tu centro.",

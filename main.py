@@ -90,6 +90,7 @@ def _inici():
                 raise
             print(f"[inici] la base de dades encara no respon ({type(e).__name__}); torno a provar en 5 s")
             time.sleep(5)
+    _afegeix_columnes_noves()
     db = _db.SessionLocal()
     try:
         seed.omple(db)
@@ -97,6 +98,20 @@ def _inici():
         panell.primer_admin(db)
     finally:
         db.close()
+
+
+# Columnes afegides després de crear la base de dades a Render: (taula, columna, tipus SQL)
+COLUMNES_NOVES = [("comandes", "contacte_preferit", "VARCHAR(20) DEFAULT ''")]
+
+
+def _afegeix_columnes_noves():
+    from sqlalchemy import inspect, text
+    insp = inspect(_db.engine)
+    for taula, col, tipus in COLUMNES_NOVES:
+        if col not in {c["name"] for c in insp.get_columns(taula)}:
+            with _db.engine.begin() as con:
+                con.execute(text(f"ALTER TABLE {taula} ADD COLUMN {col} {tipus}"))
+            print(f"[inici] columna nova: {taula}.{col}")
 
 
 @app.get("/idioma/{codi}")

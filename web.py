@@ -404,8 +404,10 @@ async def contracte_signa(token: str, request: Request, db: Session = Depends(ge
     if c.estat != "signada":
         if not (firma.startswith("data:image/png;base64,") and 200 < len(firma) < 600_000 and _te_traç(firma)
                 and f.get("accepta") == "1" and f.get("accepta_condicions") == "1"
-                and f.get("consent_imatge") in ("si", "no") and f.get("consent_comercial") in ("si", "no")):
+                and f.get("consent_imatge") in ("si", "no") and f.get("consent_comercial") in ("si", "no")
+                and f.get("contacte") in comandes.VIES_CONTACTE):
             return RedirectResponse(f"/matricula/{c.token}/contracte?err=camps", status_code=303)
+        c.contacte_preferit = f.get("contacte")
         c.signatura = firma
         c.signat_en = datetime.utcnow()
         c.ip_signatura = _ip(request)[:64]

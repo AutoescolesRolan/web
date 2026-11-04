@@ -253,7 +253,7 @@ def exporta(request: Request, estat: str = "pagada", tipus: str = "", centre: st
     ws.title = "Comandes"
     cap = ["Rebut", "Pagat el", "Estat", "Tipus", "Centre", "Carnet", "Producte", "Preu", "Descompte", "Promoció",
            "Taxa DGT", "Cànon", "Total", "Nom", "Cognoms", "DNI/NIE", "Naixement", "Correu", "Telèfon", "Adreça",
-           "CP", "Població", "Tutor/a", "DNI tutor/a", "Horari", "Observacions", "Pagament Stripe", "Idioma"]
+           "CP", "Població", "Tutor/a", "DNI tutor/a", "Horari", "Contactar per", "Observacions", "Pagament Stripe", "Idioma"]
     ws.append(cap)
     for cel in ws[1]:
         cel.font = Font(bold=True, color="FFFFFF")
@@ -264,7 +264,7 @@ def exporta(request: Request, estat: str = "pagada", tipus: str = "", centre: st
                    c.carnet_codi, c.producte, c.preu_base, c.descompte, c.promocio, c.taxa, c.canon, c.total,
                    c.nom, c.cognoms, c.dni, c.naixement.strftime("%d/%m/%Y") if c.naixement else "", c.email,
                    c.telefon, c.adreca, c.cp, c.localitat, c.tutor_nom, c.tutor_dni,
-                   {"MATI": "Matí", "TARDA": "Tarda"}.get(c.franja, c.franja), c.observacions, c.stripe_pagament,
+                   {"MATI": "Matí", "TARDA": "Tarda"}.get(c.franja, c.franja), comandes.via_contacte(c), c.observacions, c.stripe_pagament,
                    c.idioma])
     for col in ws.columns:
         ws.column_dimensions[col[0].column_letter].width = min(40, max(10, max(len(str(x.value or "")) for x in col) + 2))
