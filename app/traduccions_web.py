@@ -2,6 +2,8 @@
 S'afegeixen al diccionari general (app/traduccions.py)."""
 
 _T = {
+    ", Google (API de Gemini de pagament, que fa funcionar l'assistent virtual del xat; no s'hi envien dades personals: si se n'hi escriuen, s'amaguen abans d'enviar el missatge, i Google no fa servir el contingut per millorar els seus productes)":
+        ", Google (API de Gemini de pago, que hace funcionar el asistente virtual del chat; no se envían datos personales: si se escriben, se ocultan antes de enviar el mensaje, y Google no usa el contenido para mejorar sus productos)",
     "Classes de 45'": "Clases de 45'",
     "Tots inclouen matrícula, curs intensiu i tramitació d'expedient.": "Todos incluyen matrícula, curso intensivo y tramitación de expediente.",
     "No es cediran dades a tercers excepte per obligació legal o per a la prestació del servei, a través d'encarregats del tractament: la passarel·la de pagament (Stripe; les dades de la targeta les tracta directament Stripe i l'autoescola no les rep), el proveïdor d'allotjament de la web (Render), el proveïdor d'enviament de correus":

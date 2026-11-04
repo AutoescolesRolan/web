@@ -11,6 +11,7 @@
     <dt>Enviament de correus</dt><dd>{% if correu_ok %}<span class="pill ok">Configurat</span>{% else %}<span class="pill pend">Sense configurar</span>{% endif %}</dd>
     <dt>Google Maps (adreça)</dt><dd>{% if maps_ok %}<span class="pill ok">Configurat</span>{% else %}<span class="pill pend">Sense configurar</span>{% endif %}</dd>
     <dt>Google Analytics</dt><dd>{% if ga_id %}<span class="pill ok">Configurat</span> {{ ga_id }}{% elif aj.get('google_analytics_id') %}<span class="pill pend">L'ID no és vàlid</span>{% else %}<span class="pill pend">Sense configurar</span>{% endif %}</dd>
+    <dt>Assistent del xat (IA)</dt><dd>{% if assistent_ok %}<span class="pill ok">Actiu</span>{% else %}<span class="pill pend">Sense configurar (GEMINI_API_KEY)</span>{% endif %}</dd>
     <dt>Codi d'accés per correu</dt><dd>{% if dos_factors %}<span class="pill ok">Actiu</span>{% else %}<span class="pill pend">Inactiu (cal el correu configurat)</span>{% endif %}</dd>
     <dt>Adreça pública</dt><dd>{{ url or 'Sense configurar (PUBLIC_URL)' }}</dd>
   </dl>

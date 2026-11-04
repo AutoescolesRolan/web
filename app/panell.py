@@ -561,7 +561,8 @@ def dades(request: Request, fet: str = "", db: Session = Depends(get_db)):
                                               "stripe_test": pagaments.mode_proves(),
                                               "url": comandes.url_publica(),
                                               "maps_ok": bool(__import__("app.web", fromlist=["x"]).clau_maps(db)),
-                                              "ga_id": ajustos.ga_id(db), "dos_factors": dos_factors_actiu()}, db)
+                                              "ga_id": ajustos.ga_id(db), "dos_factors": dos_factors_actiu(),
+                                              "assistent_ok": __import__("app.assistent", fromlist=["x"]).actiu()}, db)
 
 
 @router.post("/dades")

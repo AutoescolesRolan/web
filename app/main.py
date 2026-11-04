@@ -56,6 +56,8 @@ templates.env.filters["local"] = preus.local
 from . import pagaments as _pagaments  # noqa: E402
 templates.env.globals["mode_demo"] = _pagaments.demo
 templates.env.globals["app_version"] = APP_VERSION
+from . import assistent as _assistent  # noqa: E402
+templates.env.globals["assistent_actiu"] = _assistent.actiu
 
 
 def render(request, nom, ctx=None, db=None, status_code=200):
@@ -166,3 +168,4 @@ from . import panell as _panell  # noqa: E402
 
 app.include_router(_web.router)
 app.include_router(_panell.router)
+app.include_router(_assistent.router)

@@ -260,5 +260,11 @@ document.addEventListener('change', function(e){
 </script>
 <script src="/static/js/avisos.js?v=1"></script>
 <script src="/static/js/mobil.js?v=2" defer></script>
+{# Assistent amb IA (només si hi ha GEMINI_API_KEY). El botó i el panell els crea assistent.js. #}
+{% if assistent_actiu() %}
+<link rel="stylesheet" href="/static/css/assistent.css?v=1">
+<script src="/static/js/assistent.js?v=1" defer></script>
+<style>footer{padding-bottom:96px!important}</style>
+{% endif %}
 </body>
 </html>

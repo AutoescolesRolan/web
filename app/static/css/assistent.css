@@ -1,0 +1,83 @@
+/* Assistent amb IA (botó i panell). El crea static/js/assistent.js. */
+.ast{font-family:'Inter',system-ui,sans-serif;--ast-blau:#2541B8;--ast-tinta:#14224F;--ast-verd:#8BC53F;--ast-vora:#DCE2F0;--ast-suau:#5B6785}
+.ast-boto{position:fixed;right:20px;bottom:20px;z-index:1500;display:flex;align-items:center;gap:11px;padding:7px 18px 7px 7px;border:1.5px solid #C3CEF4;border-radius:999px;background:linear-gradient(135deg,#FFFFFF 0%,#F1F4FF 55%,#E4EAFF 100%);color:var(--ast-tinta);font-family:'Inter',system-ui,sans-serif;text-align:left;cursor:pointer;box-shadow:0 14px 34px rgba(37,65,184,.24),0 2px 6px rgba(20,34,79,.06);transition:transform .18s,box-shadow .18s,border-color .18s}
+.ast-boto:hover{transform:translateY(-2px);border-color:var(--ast-blau);box-shadow:0 18px 40px rgba(37,65,184,.32)}
+.ast-boto:focus-visible{outline:3px solid var(--ast-blau);outline-offset:3px}
+.ast-boto .ast-ic{position:relative;width:42px;height:42px;flex:none;border-radius:50%;background:var(--ast-verd);color:var(--ast-tinta);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(139,197,63,.38)}
+.ast-boto .ast-ic svg{width:23px;height:23px;display:block}
+.ast-boto .ast-ic::after{content:"";position:absolute;right:0;top:1px;width:11px;height:11px;border-radius:50%;background:var(--ast-blau);border:2px solid #fff}
+.ast-boto .ast-l{display:flex;flex-direction:column;line-height:1.15}
+.ast-boto .ast-l1{font-family:'Bricolage Grotesque','Inter',system-ui,sans-serif;font-weight:700;font-size:15px;color:var(--ast-tinta)}
+.ast-boto .ast-l2{font-size:12px;font-weight:600;color:var(--ast-blau);margin-top:2px}
+/* entrada: cau des de dalt i rebota a terra (només la primera pàgina de la visita) */
+.ast-boto.ast-cau{animation:ast-cau 1.15s cubic-bezier(.25,.6,.4,1) both}
+.ast-boto.ast-cau .ast-ic{animation:ast-aixafa 1.15s both}
+@keyframes ast-cau{0%{transform:translateY(calc(-100vh + 60px));opacity:0}12%{opacity:1}
+  48%{transform:translateY(0)}60%{transform:translateY(-34px)}72%{transform:translateY(0)}
+  82%{transform:translateY(-11px)}90%{transform:translateY(0)}95%{transform:translateY(-3px)}100%{transform:translateY(0)}}
+@keyframes ast-aixafa{0%,46%{transform:none}50%{transform:scale(1.12,.86)}56%{transform:scale(.95,1.06)}
+  70%{transform:none}73%{transform:scale(1.06,.93)}78%,100%{transform:none}}
+@media(prefers-reduced-motion:reduce){.ast-boto.ast-cau,.ast-boto.ast-cau .ast-ic{animation:none}}
+.ast-obert .ast-boto{display:none}
+.ast-panell{position:fixed;right:20px;bottom:20px;z-index:1600;width:min(400px,calc(100vw - 24px));height:min(620px,calc(100vh - 40px));display:none;flex-direction:column;background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(20,34,79,.28);overflow:hidden;border:1px solid var(--ast-vora)}
+.ast-obert .ast-panell{display:flex}
+.ast-cap{display:flex;align-items:center;gap:10px;padding:14px 14px 14px 16px;background:var(--ast-tinta);color:#fff}
+.ast-cap .ast-av{width:34px;height:34px;border-radius:50%;background:var(--ast-verd);color:var(--ast-tinta);display:flex;align-items:center;justify-content:center;flex:none}
+.ast-cap .ast-av svg{width:20px;height:20px}
+.ast-cap b{display:block;font-size:15px}.ast-cap small{display:block;font-size:12px;color:#C9D2F0;margin-top:2px}
+.ast-cap .ast-tanca{margin-left:auto;background:transparent;border:none;color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:20px;line-height:1}
+.ast-cap .ast-tanca:hover{background:rgba(255,255,255,.12)}
+.ast-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:#F6F8FC}
+.ast-m{max-width:86%;padding:10px 13px;border-radius:14px;font-size:14px;line-height:1.5;white-space:normal;word-wrap:break-word}
+.ast-m p{margin:0 0 6px}.ast-m p:last-child{margin:0}.ast-m ul{margin:4px 0 6px 18px;padding:0}
+.ast-m a{color:var(--ast-blau);font-weight:600}
+.ast-m.u{align-self:flex-end;background:var(--ast-blau);color:#fff;border-bottom-right-radius:4px}
+.ast-m.u a{color:#fff}
+.ast-m.a{align-self:flex-start;background:#fff;color:var(--ast-tinta);border:1px solid var(--ast-vora);border-bottom-left-radius:4px}
+.ast-m.err{background:#FEF3C7;color:#92400E;border-color:#FDE68A}
+.ast-escrivint{display:inline-flex;gap:4px}.ast-escrivint i{width:6px;height:6px;border-radius:50%;background:#9AA5C4;animation:astp 1s infinite}
+.ast-escrivint i:nth-child(2){animation-delay:.15s}.ast-escrivint i:nth-child(3){animation-delay:.3s}
+@keyframes astp{0%,80%,100%{opacity:.3}40%{opacity:1}}
+.ast-sug{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.ast-sug button{border:1px solid var(--ast-vora);background:#fff;color:var(--ast-tinta);border-radius:999px;padding:6px 11px;font:500 13px inherit;font-family:inherit;cursor:pointer;text-align:left}
+.ast-sug button:hover{border-color:var(--ast-blau);color:var(--ast-blau)}
+.ast-persona-boto{align-self:flex-start;border:none;background:var(--ast-verd);color:var(--ast-tinta);border-radius:10px;padding:8px 12px;font:700 13px inherit;font-family:inherit;cursor:pointer}
+.ast-peu{border-top:1px solid var(--ast-vora);padding:10px 12px 8px;background:#fff}
+.ast-form{display:flex;gap:8px;align-items:flex-end}
+.ast-form textarea{flex:1;resize:none;max-height:120px;min-height:42px;padding:10px 12px;border:1px solid var(--ast-vora);border-radius:12px;font:14px/1.4 inherit;font-family:inherit;color:var(--ast-tinta)}
+.ast-form textarea:focus{outline:none;border-color:var(--ast-blau);box-shadow:0 0 0 3px rgba(37,65,184,.12)}
+.ast-envia{width:42px;height:42px;flex:none;border:none;border-radius:12px;background:var(--ast-blau);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ast-envia:disabled{opacity:.5;cursor:default}
+.ast-envia svg{width:18px;height:18px}
+.ast-nota{font-size:11.5px;color:var(--ast-suau);margin:6px 2px 0;line-height:1.4}
+.ast-nota a{color:var(--ast-blau);font-weight:600;cursor:pointer}
+.ast-pers{display:none;flex-direction:column;gap:8px;padding:14px 16px;background:#fff;border-top:1px solid var(--ast-vora)}
+.ast-pers.on{display:flex}
+.ast-pers b{font-size:14px;color:var(--ast-tinta)}
+.ast-pers input,.ast-pers textarea{padding:9px 11px;border:1px solid var(--ast-vora);border-radius:10px;font:14px inherit;font-family:inherit}
+.ast-pers .ast-fila{display:flex;gap:8px;justify-content:flex-end}
+.ast-pers .ast-fila button{border:none;border-radius:10px;padding:9px 14px;font:600 13.5px inherit;font-family:inherit;cursor:pointer}
+.ast-pers .ast-env{background:var(--ast-blau);color:#fff}.ast-pers .ast-cancel{background:#EEF1F6;color:var(--ast-tinta)}
+@media(max-width:560px){
+  .ast-boto{right:14px;bottom:14px;padding:5px;border:3px solid #fff}
+  .ast-boto .ast-l{display:none}
+  .ast-boto .ast-ic{width:50px;height:50px}
+  .ast-panell{left:10px;right:10px;bottom:10px;width:auto;height:min(68dvh,540px);border-radius:18px;box-shadow:0 18px 50px rgba(20,34,79,.32)}
+  .ast-form textarea,.ast-pers input,.ast-pers textarea{font-size:16px}
+  body:has(.cistbar) .ast-boto{bottom:92px}
+}
+/* Avisos de resposta de l'autoescola */
+.ast-boto .ast-num{position:absolute;right:-5px;top:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#E5484D;color:#fff;font:700 11.5px/20px 'Inter',system-ui,sans-serif;text-align:center;border:2px solid #fff;box-sizing:content-box}
+.ast-boto.ast-te-avis .ast-ic::after{display:none}
+.ast-boto.ast-te-avis{animation:ast-batec 2.4s ease-in-out 2}
+@keyframes ast-batec{0%,100%{transform:none}10%{transform:translateY(-3px)}20%{transform:none}}
+.ast-toast{position:fixed;right:20px;bottom:92px;z-index:1501;max-width:min(330px,calc(100vw - 40px));display:flex;flex-direction:column;gap:3px;text-align:left;background:#fff;border:1.5px solid #C3CEF4;border-left:4px solid var(--ast-verd);border-radius:14px;padding:11px 14px;box-shadow:0 14px 34px rgba(37,65,184,.24);font-family:'Inter',system-ui,sans-serif;cursor:pointer;animation:ast-toast-in .35s ease-out}
+.ast-toast[hidden]{display:none}
+.ast-toast b{font-size:14px;color:var(--ast-tinta)}
+.ast-toast span{font-size:13px;color:#5B6785;line-height:1.35}
+@keyframes ast-toast-in{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.ast-obert .ast-toast{display:none}
+.ast-m.ast-avis{background:#F1F8E8;border:1px solid #CFE8B0}
+.ast-m.ast-avis small{display:block;font-size:11.5px;color:#5B6785;margin:1px 0 4px}
+.ast-m.ast-avis .ast-avis-t{white-space:pre-wrap;margin:0 0 8px}
+.ast-m.ast-avis .ast-avis-b{display:inline-block;background:var(--ast-blau);color:#fff!important;text-decoration:none!important;border-radius:9px;padding:6px 11px;font-weight:600;font-size:13px}
