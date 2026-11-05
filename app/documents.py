@@ -35,6 +35,12 @@ def _data(d):
     return d.strftime("%d/%m/%Y") if d else ""
 
 
+def _cp_localitat(text: str) -> str:
+    """«08912 Badalona» → «08912 - Badalona» (com la de l'alumne)."""
+    parts = (text or "").split(" ", 1)
+    return f"{parts[0]} - {parts[1]}" if len(parts) == 2 and parts[0].isdigit() else (text or "")
+
+
 def context_contracte(db, c, pack) -> dict:
     a = ajustos.tots(db)
     clausula = f" + {pack.classes} classes 45'" if pack and pack.classes and (c.carnet_codi == "B") else ""
@@ -44,6 +50,9 @@ def context_contracte(db, c, pack) -> dict:
         "escola_telefon": a.get("escola_telefon", ""), "escola_email": ajustos.correu_general(db),
         "escola_titular": a.get("escola_titular", ""), "escola_num_provincial": a.get("escola_num_provincial", ""),
         "escola_localitat": a.get("escola_localitat", ""),
+        # adreça del centre on es matricula (si no n'hi ha, el domicili de l'escola), igual que la de l'alumne
+        "escola_adreca": (c.centre.adreca if c.centre else "") or a.get("escola_domicili", ""),
+        "escola_cp_localitat": _cp_localitat(c.centre.cp_localitat if c.centre else a.get("escola_localitat", "")),
         "alumne_nom": c.nom_complet, "alumne_dni": c.dni,
         "alumne_naixement": c.naixement.strftime("%d.%m.%Y") if c.naixement else "",
         "alumne_adreca": c.adreca, "alumne_cp_localitat": " - ".join(x for x in (c.cp, c.localitat) if x),
@@ -81,21 +90,32 @@ def blocs_contracte(db, c, pack):
             es_titol = estil.startswith(("heading", "títol", "titulo")) or (t.isupper() and len(t) < 60)
             blocs.append(("titol" if es_titol else "text", t))
         elif fill.tag == qn("w:tbl"):
+            # les taules es mantenen com a taules (igual que al contracte de paper)
+            files = []
             for row in DocxT(fill, doc).rows:
-                vist, netes = set(), []
+                vistes, cel_les = set(), []
                 for cel in row.cells:
+                    if id(cel._tc) in vistes:          # cel·la combinada: només un cop
+                        continue
+                    vistes.add(id(cel._tc))
                     t = " ".join((cel.text or "").split())
-                    if t and t not in vist:
-                        netes.append(t)
-                        vist.add(t)
-                if netes:
-                    blocs.append(("text", " · ".join(netes)))
+                    runs = [r for par in cel.paragraphs for r in par.runs if (r.text or "").strip()]
+                    negreta = bool(runs) and all(r.bold for r in runs)
+                    cel_les.append((t, negreta))
+                if any(t for t, _ in cel_les):
+                    files.append(cel_les)
+            if files:
+                blocs.append(("taula", files))
     # la línia de signatures de la plantilla de paper no cal: les signatures van al final
-    blocs = [b for b in blocs if not b[1].lower().startswith(("data ", "signat alumne"))]
+    blocs = [b for b in blocs if not (isinstance(b[1], str) and b[1].lower().startswith(("data ", "signat alumne")))
+             and not (b[0] == "taula" and any(x.lower().startswith(("data ", "signat alumne")) for f in b[1] for x, _ in f))]
     # caselles SÍ/NO de la protecció de dades → la tria de l'alumne
     acc = c.acceptacions or ""
     sortida = []
     for i, (tipus, t) in enumerate(blocs):
+        if tipus == "taula":
+            sortida.append((tipus, t))
+            continue
         n = " ".join(t.upper().replace("Í", "I").split())
         if n in ("SI NO", "SI/NO", "SI - NO", "SI-NO"):
             seg = blocs[i + 1][1].lower() if i + 1 < len(blocs) else ""
@@ -161,6 +181,7 @@ def _estils():
                             spaceBefore=8, spaceAfter=3),
         "p": ParagraphStyle("p", parent=base, fontName="Helvetica", fontSize=9.3, leading=13,
                             alignment=TA_JUSTIFY, textColor=colors.HexColor("#222b45"), spaceAfter=3),
+        "cel": ParagraphStyle("cel", parent=base, fontSize=8.8, leading=11.5, alignment=0),
         "kv": ParagraphStyle("kv", parent=base, fontName="Helvetica-Bold", fontSize=9.3, textColor=TINTA),
         "sig": ParagraphStyle("sig", parent=base, fontName="Helvetica", fontSize=9, textColor=TINTA,
                               alignment=TA_CENTER, leading=12),
@@ -213,6 +234,16 @@ def contracte_pdf(db, c, pack) -> bytes:
     for tipus, t in blocs_contracte(db, c, pack):
         if tipus == "titol":
             story.append(Paragraph(e(t), st["h"]))
+        elif tipus == "taula":
+            ncol = max(len(f) for f in t)
+            dades = [[Paragraph((f"<b>{e(x)}</b>" if neg else e(x)), st["cel"]) for x, neg in f] + [""] * (ncol - len(f))
+                     for f in t]
+            story.append(Table(dades, colWidths=[f"{100 / ncol:.4f}%"] * ncol,
+                               style=TableStyle([("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#444444")),
+                                                 ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                                                 ("LEFTPADDING", (0, 0), (-1, -1), 4), ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+                                                 ("TOPPADDING", (0, 0), (-1, -1), 2.5), ("BOTTOMPADDING", (0, 0), (-1, -1), 3)])))
+            story.append(Spacer(1, 6))
         elif tipus == "consent":
             marca = ("[ X ] SÍ &nbsp;&nbsp; [ &nbsp; ] NO" if t is True else
                      "[ &nbsp; ] SÍ &nbsp;&nbsp; [ X ] NO" if t is False else "[ &nbsp; ] SÍ &nbsp;&nbsp; [ &nbsp; ] NO")

@@ -12,7 +12,7 @@ AJUSTOS = {
     "escola_localitat": "Badalona",
     "escola_telefon": "934 647 857",
     "escola_email": "",                 # correu general (si és buit, el de Badalona Centre)
-    "escola_titular": "",
+    "escola_titular": "Urbà Rodríguez Costa",
     "escola_num_provincial": "",        # número d'autorització de la DGT
     "taxa_dgt": "94.05",                # taxa d'examen de la DGT (B, AM, A1, A2)
     "taxa_dgt_a": "28.87",              # taxa del carnet A
@@ -188,6 +188,12 @@ def _actualitza(db):
     if e and not (e.valor or "").strip():
         e.valor = AJUSTOS["escola_email"]
     _canvis_preus_nov_2026(db)
+    # titular de l'autoescola (surt al contracte): sempre Urbà Rodríguez Costa (un sol cop; després mana el panell)
+    if not db.get(models.Ajust, "fet_titular_nov_2026"):
+        t = db.get(models.Ajust, "escola_titular")
+        if t:
+            t.valor = AJUSTOS["escola_titular"]
+        db.add(models.Ajust(clau="fet_titular_nov_2026", valor="1"))
 
 
 PREUS_ANTICS = {   # nov. 2026: preus nous dels exàmens del carnet B (només si encara hi ha el preu antic)
