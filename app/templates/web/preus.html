@@ -33,7 +33,7 @@
 .pack{background:#fff;border:1px solid var(--vora);border-radius:16px;padding:22px;position:relative;display:flex;flex-direction:column}
 .pack.feat{border:2px solid var(--verd);box-shadow:0 10px 30px rgba(139,197,63,.18)}
 .pack .tag{position:absolute;top:-11px;left:22px;background:var(--verd);color:#173a05;font-size:11px;font-weight:700;padding:4px 11px;border-radius:100px}
-.pack h4{font-size:16px;color:var(--blau)}.pack .pp{font-family:var(--disp);font-weight:800;font-size:32px;margin:8px 0 2px}
+.pack h4{font-size:16px;color:var(--blau)}.pack .pk-preu{font-family:var(--disp);font-weight:800;font-size:30px;line-height:1.1;margin:8px 0 4px;color:var(--tinta);white-space:nowrap}
 .pack .inc{font-size:12.5px;color:var(--text-suau);margin-bottom:14px}
 .pack ul{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:16px;flex:1;font-size:13px;color:var(--text-suau)}
 .sec-head{max-width:640px;margin:44px 0 24px}.sec-head h2{font-size:clamp(24px,3vw,32px);font-weight:800}.sec-head p{color:var(--text-suau);margin-top:8px}
@@ -94,7 +94,7 @@
   <div class="sec-head{% if sel == 'B' %} sec-b{% endif %}"><span class="eyebrow"><span class="dot"></span>Carnet B{% if sel == 'B' %} · Cotxe · des de 18 anys{% endif %}</span><h2>Tria el teu pack</h2><p>Tots inclouen matrícula, curs intensiu i tramitació d'expedient.{% if sel == 'B' %} <span class="tax-b">Taxes DGT no incloses ({{ pw._taxa }}€).</span>{% endif %}</p></div>
   <div class="packs" id="packs" style="scroll-margin-top:90px">
     {% for p in pb %}
-    <div class="pack{% if p.destacat %} feat{% endif %}">{% if p.destacat %}<span class="tag">El més triat</span>{% endif %}<h4>{{ p.curt }}</h4><div class="pp">{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</div>
+    <div class="pack{% if p.destacat %} feat{% endif %}">{% if p.destacat %}<span class="tag">El més triat</span>{% endif %}<h4>{{ p.curt }}</h4><div class="pk-preu">{% if p.preu_abans %}<s class="abans">{{ p.preu_abans }}€</s>{% endif %}{{ p.preu_txt }}€</div>
       <div class="inc">{% if p.classes %}+ {{ p.classes }} pràctiques{% else %}Sense pràctiques{% endif %}</div>
       <ul>{% if loop.first %}<li>Matrícula</li><li>Curs intensiu</li><li>Tramitació expedient</li>{% else %}<li>Tot el del {{ pb[0].curt }}</li>{% if p.classes %}<li>{{ p.classes }} classes pràctiques</li>{% endif %}{% endif %}</ul>
       <a class="btn {% if p.destacat %}btn-verd{% else %}btn-ghost{% endif %}" style="justify-content:center" href="/matricula?carnet=B{% if p.codigo %}&amp;pack={{ p.codigo }}{% endif %}">Triar</a></div>

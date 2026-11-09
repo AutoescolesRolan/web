@@ -92,7 +92,7 @@
     <input type="hidden" name="incloure_canon" id="incloure_canon" value="0">
     <input type="hidden" name="carnet_url" value="{{ carnet_sel.codi if carnet_sel else dades.carnet_url }}">
     <input type="text" name="web" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
-    {% if promo %}<div class="note" style="background:var(--verd-suau);border-color:#cfe6b0;color:#3d5c15;margin-top:0">{{ T(promo.banner_ca, promo.banner_es) or promo.nom }} · −{{ '%g'|format(promo.percentatge) }}% al preu del pack.</div>{% endif %}
+    {% if promo %}<div class="note" style="background:var(--verd-suau);border-color:#cfe6b0;color:#3d5c15;margin-top:0">{{ promo.nom }} · −{{ '%g'|format(promo.percentatge) }}% {{ T(abast_promo(promo, 'ca'), abast_promo(promo, 'es')) }}.</div>{% endif %}
     {% if seccions %}
     <div class="cgroup">
       <h2 style="font-size:17px">On et vols matricular?</h2>

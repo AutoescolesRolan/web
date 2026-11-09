@@ -65,9 +65,10 @@ def preus_carnets_web(db) -> dict:
     """Preus de la web (inici, /preus i matrícula), amb la promoció vigent si n'hi ha."""
     taxa, taxa_a, canon = _num(db, "taxa_dgt", 94.05), _num(db, "taxa_dgt_a", 28.87), _num(db, "canon_pistes", 35)
     promo = preus.promo_automatica(db, "matricula")
-    pct = float(promo.percentatge or 0) if promo else 0
     out = {}
     for c in db.query(models.Carnet).filter(models.Carnet.actiu == True).all():
+        pc = preus.promo_automatica(db, "matricula", c.codi)
+        pct = float(pc.percentatge or 0) if pc else 0
         packs = sorted([p for p in c.packs if p.actiu and p.preu > 0], key=lambda p: (p.preu, p.id))
         llista = []
         for p in packs:
@@ -82,7 +83,7 @@ def preus_carnets_web(db) -> dict:
         canon_txt = "" if codi == "B" else preus.eur(canon)
         out[codi] = {"packs": llista, "des_de": des_de, "des_de_txt": preus.eur(des_de),
                      "des_de_abans": preus.eur(des_de_abans) if pct else "", "unic": len(llista) <= 1,
-                     "taxa_txt": taxa_txt, "canon_txt": canon_txt}
+                     "taxa_txt": taxa_txt, "canon_txt": canon_txt, "promo": pc}
     out["_expedient"] = preus.eur(_num(db, "preu_expedient", 125))
     out["_taxa"] = preus.eur(taxa)
     out["_promo"] = promo
@@ -312,7 +313,7 @@ async def matricula_desa(request: Request, db: Session = Depends(get_db)):
         if not tutor_dni:
             return error("dni")
         tutor_nom = d["tutor_nom"]
-    calc = preus.calcula(db, pack.preu, "matricula", d["codi_promo"])
+    calc = preus.calcula(db, pack.preu, "matricula", d["codi_promo"], pack.carnet.codi)
     if d["codi_promo"] and calc["codi_valid"] is False:
         return error("codi")
     es_moto = carnet.codi in ("AM", "A1", "A2", "A")

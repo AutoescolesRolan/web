@@ -251,7 +251,7 @@ def correu_recordatori(db, c):
     es = c.idioma == "es"
     enllac = f"{url_publica()}/matricula/{c.token}/contracte"
     producte = c.producte_en("es" if es else "ca")
-    promo = preus.promo_automatica(db, "matricula")
+    promo = preus.promo_automatica(db, "matricula", c.carnet_codi)
     avis_promo = ""
     if promo and promo.fi:
         dia = preus.local(promo.fi).strftime("%d/%m")

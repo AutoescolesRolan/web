@@ -1,12 +1,15 @@
-{# Pop-up de la promoció automàtica (p. ex. Black Friday). Un cop per visita, als 2 s, amb compte enrere fins a la data real de fi. #}
+{# Pop-up de la promoció automàtica (p. ex. Black Friday). Surt a cada pàgina que es carrega (també en refrescar), als 2 s, amb compte enrere fins a la data real de fi.
+   Quan es tanca, queda la franja d'una línia a dalt (#pp-barra, a base_web.html) fins que es torna a carregar la pàgina. #}
 {% if promo_popup %}{% set pp = promo_popup %}
+{% if pp.popup %}
 <div class="pp-fons" id="pp" hidden role="dialog" aria-modal="true" aria-labelledby="pp-titol" data-fi="{{ pp.fi_ms }}" data-id="{{ pp.id }}">
   <div class="pp">
     <button class="pp-tanca" type="button" id="pp-tanca" aria-label="{{ T('Tancar', 'Cerrar') }}">×</button>
     <div class="pp-eti">{% if pp.setmana %}Només aquesta setmana{% else %}Oferta per temps limitat{% endif %}</div>
     <h2 class="pp-titol" id="pp-titol">{{ pp.nom }}</h2>
-    <div class="pp-pct">−{{ pp.pct }}%<small>{{ T('a tots els packs', 'en todos los packs') }}</small></div>
-    <p class="pp-sub">Matricula't ara i estalvia en qualsevol carnet.</p>
+    {% if pp.tots %}<div class="pp-pct">−{{ pp.pct }}%<small>{{ T(pp.abast_ca, pp.abast_es) }}</small></div>
+    {% else %}<div class="pp-pct">−{{ pp.pct }}%</div><div class="pp-abast">{{ T(pp.abast_ca, pp.abast_es) }}</div>{% endif %}
+    <p class="pp-sub">{% if pp.tots %}Matricula't ara i estalvia en qualsevol carnet.{% else %}{{ T("Matricula't ara i estalvia.", "Matricúlate ahora y ahorra.") }}{% endif %}</p>
     <div class="pp-ce" aria-label="{{ T('Temps que queda', 'Tiempo que queda') }}">
       <div><b data-u="d">00</b><small>{{ T('dies', 'días') }}</small></div>
       <div><b data-u="h">00</b><small>{{ T('hores', 'horas') }}</small></div>
@@ -17,6 +20,7 @@
     <a class="pp-sec" href="/preus">{{ T('Veure els preus', 'Ver los precios') }}</a>
   </div>
 </div>
+{% endif %}
 <style>
 .pp-fons{position:fixed;inset:0;z-index:2500;background:rgba(11,20,51,.55);display:grid;place-items:center;padding:16px;overflow-y:auto}
 .pp-fons[hidden]{display:none}
@@ -28,6 +32,7 @@
 .pp-titol{position:relative;font:800 54px/.92 var(--disp);margin:10px 0 2px;letter-spacing:-.02em;text-transform:uppercase;color:#fff;text-wrap:balance}
 .pp-pct{position:relative;font:800 64px/1 var(--disp);color:#8BC53F;margin:6px 0 4px}
 .pp-pct small{font-size:20px;color:#fff;margin-left:6px;font-weight:700}
+.pp-abast{position:relative;font:700 19px/1.2 var(--body);color:#fff;margin:-2px 0 6px;text-wrap:balance}
 .pp-sub{position:relative;margin:0 0 16px;color:#C7CFEA;font-size:14px}
 .pp-ce{position:relative;display:flex;justify-content:center;gap:8px;margin-bottom:18px}
 .pp-ce div{display:flex;flex-direction:column;align-items:center;min-width:58px;border-radius:12px;padding:8px 6px 6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
@@ -43,30 +48,39 @@
 </style>
 <script>
 (function () {
-  var fons = document.getElementById('pp'); if (!fons) return;
-  var fi = +fons.getAttribute('data-fi'), clau = 'rolan_promo_vista_' + fons.getAttribute('data-id');
-  try { if (sessionStorage.getItem(clau)) return; } catch (e) {}
+  var barra = document.getElementById('pp-barra');
+  var fons = document.getElementById('pp');
+  var font = barra || fons; if (!font) return;
+  var fi = {{ pp.fi_ms }};
   var abans = null, rellotge = null;
   function dos(n) { return (n < 10 ? '0' : '') + n; }
   function tic() {
     var r = fi - Date.now();
-    if (r <= 0) { tanca(); return; }
+    if (r <= 0) { tanca(); if (barra) barra.hidden = true; clearInterval(rellotge); return; }
     var v = { d: Math.floor(r / 864e5), h: Math.floor(r / 36e5) % 24, m: Math.floor(r / 6e4) % 60, s: Math.floor(r / 1e3) % 60 };
-    fons.querySelectorAll('b[data-u]').forEach(function (b) { b.textContent = dos(v[b.getAttribute('data-u')]); });
+    if (fons) fons.querySelectorAll('b[data-u]').forEach(function (b) { b.textContent = dos(v[b.getAttribute('data-u')]); });
+    if (barra) barra.querySelector('[data-barra-temps]').textContent = (v.d ? v.d + 'd ' : '') + dos(v.h) + ':' + dos(v.m) + ':' + dos(v.s);
   }
+  function engega() { if (!rellotge) { tic(); rellotge = setInterval(tic, 1000); } }
+  function mostraBarra() { if (barra && fi - Date.now() > 0) { barra.hidden = false; engega(); } }
   function obre() {
     if (fi - Date.now() <= 0) return;
-    try { sessionStorage.setItem(clau, '1'); } catch (e) {}
     abans = document.activeElement;
-    tic(); rellotge = setInterval(tic, 1000);
+    engega();
     fons.hidden = false;
     document.getElementById('pp-tanca').focus();
     if (window.rolanEvent) window.rolanEvent('view_promotion', { promotion_name: document.getElementById('pp-titol').textContent });
   }
   function tanca() {
-    fons.hidden = true; clearInterval(rellotge);
+    if (!fons || fons.hidden) return;
+    fons.hidden = true;
     if (abans && abans.focus) abans.focus();
+    mostraBarra();
   }
+  if (barra) barra.addEventListener('click', function () {
+    if (window.rolanEvent) window.rolanEvent('select_promotion', { promotion_name: barra.querySelector('.pb-nom').textContent });
+  });
+  if (!fons) return;                          // pàgines sense pop-up (matrícula, pagament…): ni pop-up ni franja
   document.getElementById('pp-tanca').addEventListener('click', tanca);
   fons.addEventListener('click', function (e) { if (e.target === fons) tanca(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !fons.hidden) tanca(); });

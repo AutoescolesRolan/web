@@ -67,14 +67,26 @@ def _promo_popup(p, request):
     """Dades del pop-up de la promoció (només si n'hi ha una d'automàtica per a les matrícules)."""
     if not p or (p.aplica or "tot") not in ("tot", "matricula") or not (p.percentatge or 0) > 0 or not p.fi:
         return None
-    if request.url.path.startswith(_SENSE_POPUP):
-        return None
     fi = p.fi.replace(tzinfo=preus.TZ)          # les dates de les promocions són hora de Barcelona
     queda = fi - datetime.now(preus.TZ)
     if queda.total_seconds() <= 0:
         return None
     return {"id": p.id, "nom": p.nom, "pct": f"{p.percentatge:g}", "fi_ms": int(fi.timestamp() * 1000),
-            "setmana": queda.days < 7}
+            "setmana": queda.days < 7, "popup": not request.url.path.startswith(_SENSE_POPUP),
+            "tots": not p.llista_carnets, "abast_ca": abast_promo(p, "ca"), "abast_es": abast_promo(p, "es")}
+
+
+def abast_promo(p, idioma="ca"):
+    """«a tots els packs» o «als packs del carnet B» / «dels carnets B i AM»."""
+    ll = p.llista_carnets if p else []
+    i = " y " if idioma == "es" else " i "
+    noms = (", ".join(ll[:-1]) + i + ll[-1]) if len(ll) > 1 else (ll[0] if ll else "")
+    if idioma == "es":
+        return "en todos los packs" if not ll else (f"en los packs del carnet {noms}" if len(ll) == 1 else f"en los packs de los carnets {noms}")
+    return "a tots els packs" if not ll else (f"als packs del carnet {noms}" if len(ll) == 1 else f"als packs dels carnets {noms}")
+
+
+templates.env.globals["abast_promo"] = abast_promo
 
 
 def render(request, nom, ctx=None, db=None, status_code=200):
@@ -146,7 +158,8 @@ def _engega_recordatoris():
 
 # Columnes afegides després de crear la base de dades a Render: (taula, columna, tipus SQL)
 COLUMNES_NOVES = [("comandes", "contacte_preferit", "VARCHAR(20) DEFAULT ''"),
-                  ("comandes", "recordatori_en", "TIMESTAMP")]
+                  ("comandes", "recordatori_en", "TIMESTAMP"),
+                  ("promocions", "carnets", "VARCHAR(60) DEFAULT ''")]
 
 
 def _afegeix_columnes_noves():

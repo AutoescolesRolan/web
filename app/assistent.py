@@ -70,10 +70,11 @@ def dades_web(db: Session) -> str:
         L.append(f"- {c.nom}: {c.adreca}, {c.cp_localitat}" + (f" · tel. {tel}" if tel else "")
                  + (f" · horari de teòrica: {horari}" if horari else ""))
     promo = preus.promo_automatica(db, "matricula")
-    pct = float(promo.percentatge or 0) if promo else 0
     if promo:
-        L.append(f"## Promoció vigent: {promo.nom} (−{pct:g} % als packs de matrícula, ja aplicat al pagament) "
-                 f"fins al {preus.local(promo.fi).strftime('%d/%m/%Y') if promo.fi else '—'}")
+        abast = f"carnets {promo.carnets_txt}" if promo.llista_carnets else "tots els carnets"
+        L.append(f"## Promoció vigent: {promo.nom} (−{float(promo.percentatge or 0):g} % als packs de matrícula de {abast}, "
+                 f"ja aplicat al pagament) fins al {preus.local(promo.fi).strftime('%d/%m/%Y') if promo.fi else '—'}. "
+                 "Els preus de cada carnet de sota ja diuen si tenen descompte.")
     L.append("## Carnets i packs de matrícula (preus amb IVA)")
     taxa, taxa_a = _num(db, "taxa_dgt", 94.05), _num(db, "taxa_dgt_a", 28.87)
     canon, exped = _num(db, "canon_pistes", 35), _num(db, "preu_expedient", 125)
@@ -85,6 +86,8 @@ def dades_web(db: Session) -> str:
         if car.examens_ca:
             L.append(f"- Exàmens del carnet: {car.examens_ca}")
         L.append(f"- Taxes: {car.taxes_ca}")
+        pc = preus.promo_automatica(db, "matricula", car.codi)
+        pct = float(pc.percentatge or 0) if pc else 0
         for p in packs:
             preu = f"{_eur(p.preu)} €"
             if pct:

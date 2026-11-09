@@ -94,11 +94,23 @@ class Promocio(Base):
     percentatge: Mapped[float] = mapped_column(Float, default=0)       # 20 = -20 %
     codi: Mapped[str] = mapped_column(String(40), default="")         # buit = s'aplica sola
     aplica: Mapped[str] = mapped_column(String(20), default="tot")     # tot | matricula | practiques
+    carnets: Mapped[str] = mapped_column(String(60), default="")       # «B,AM»; buit = tots els carnets
     inici: Mapped[datetime] = mapped_column(DateTime)
     fi: Mapped[datetime] = mapped_column(DateTime)
     banner_ca: Mapped[str] = mapped_column(String(200), default="")
     banner_es: Mapped[str] = mapped_column(String(200), default="")
     activa: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    @property
+    def llista_carnets(self):
+        return [c for c in (self.carnets or "").upper().replace(" ", "").split(",") if c]
+
+    def per_al_carnet(self, carnet):
+        return not self.llista_carnets or (carnet or "").upper() in self.llista_carnets
+
+    @property
+    def carnets_txt(self):
+        return ", ".join(self.llista_carnets)
 
 
 class Comanda(Base):

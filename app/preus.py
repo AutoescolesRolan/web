@@ -38,25 +38,27 @@ def eur2(v) -> str:
     return f"{int(enter):,}".replace(",", ".") + "," + dec
 
 
-def _vigents(db, tipus):
+def _vigents(db, tipus, carnet=None):
+    """Promocions en marxa. Amb `carnet`, només les que valen per a aquell carnet
+    (una promoció sense carnets triats val per a tots)."""
     ara = ara_local()
     q = (db.query(models.Promocio)
          .filter(models.Promocio.activa == True, models.Promocio.inici <= ara, models.Promocio.fi >= ara)
          .filter(models.Promocio.aplica.in_(("tot", tipus))))
-    return q.all()
+    return [p for p in q.all() if carnet is None or p.per_al_carnet(carnet)]
 
 
-def promo_automatica(db, tipus):
+def promo_automatica(db, tipus, carnet=None):
     """La promoció sense codi que fa més descompte ara mateix (o None)."""
-    autos = [p for p in _vigents(db, tipus) if not (p.codi or "").strip()]
+    autos = [p for p in _vigents(db, tipus, carnet) if not (p.codi or "").strip()]
     return max(autos, key=lambda p: p.percentatge or 0) if autos else None
 
 
-def promo_per_codi(db, tipus, codi):
+def promo_per_codi(db, tipus, codi, carnet=None):
     codi = (codi or "").strip().upper()
     if not codi:
         return None
-    for p in _vigents(db, tipus):
+    for p in _vigents(db, tipus, carnet):
         if (p.codi or "").strip().upper() == codi:
             return p
     return None
@@ -72,13 +74,13 @@ def banner(db):
     return p
 
 
-def calcula(db, preu: float, tipus: str, codi: str = "") -> dict:
-    """Preu final d'un producte. tipus: «matricula» o «practiques»."""
+def calcula(db, preu: float, tipus: str, codi: str = "", carnet=None) -> dict:
+    """Preu final d'un producte. tipus: «matricula» o «practiques»; carnet: «B», «AM»…"""
     preu = round(float(preu or 0), 2)
-    millor = promo_automatica(db, tipus)
+    millor = promo_automatica(db, tipus, carnet)
     codi_estat = None
     if (codi or "").strip():
-        pc = promo_per_codi(db, tipus, codi)
+        pc = promo_per_codi(db, tipus, codi, carnet)
         codi_estat = bool(pc)
         if pc and (not millor or (pc.percentatge or 0) > (millor.percentatge or 0)):
             millor = pc

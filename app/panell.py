@@ -498,7 +498,13 @@ def promocions(request: Request, edita: int = 0, err: str = "", fet: str = "", d
         return _redir_login()
     return _r(request, "panell/promocions.html", {
         "promos": db.query(models.Promocio).order_by(models.Promocio.inici.desc()).all(),
-        "edita": db.get(models.Promocio, edita) if edita else None, "ara": preus.ara_local(), "err": err, "fet": fet}, db)
+        "edita": db.get(models.Promocio, edita) if edita else None, "ara": preus.ara_local(), "err": err, "fet": fet,
+        "carnets": _carnets_promo(db)}, db)
+
+
+def _carnets_promo(db):
+    return [c.codi.upper() for c in db.query(models.Carnet).filter(models.Carnet.actiu == True)
+            .order_by(models.Carnet.ordre).all()]
 
 
 @router.post("/promocions")
@@ -520,12 +526,15 @@ async def promocio_desa(request: Request, db: Session = Depends(get_db)):
     nom = (f.get("nom") or "").strip()
     pct = _float(f.get("percentatge"))
     inici, fi = _dt(f.get("inici")), _dt(f.get("fi"))
-    if not nom or not (0 < pct <= 90) or not inici or not fi or fi <= inici:
+    tots = _carnets_promo(db)
+    triats = [c for c in tots if f.get(f"carnet_{c}") == "1"]
+    if not nom or not (0 < pct <= 90) or not inici or not fi or fi <= inici or not triats:
         return RedirectResponse(f"/gestio/promocions?err=1{'&edita=' + str(pid) if pid else ''}", status_code=303)
     p = db.get(models.Promocio, pid) if pid else models.Promocio()
     p.nom, p.percentatge, p.inici, p.fi = nom[:120], pct, inici, fi
     p.codi = "".join(ch for ch in (f.get("codi") or "").upper() if ch.isalnum() or ch in "-_")[:40]
-    p.aplica = f.get("aplica") if f.get("aplica") in ("tot", "matricula", "practiques") else "tot"
+    p.aplica = "matricula"                       # les ofertes són sempre dels packs inicials (matrícula)
+    p.carnets = "" if len(triats) == len(tots) else ",".join(triats)
     p.banner_ca = (f.get("banner_ca") or "").strip()[:200]
     p.banner_es = (f.get("banner_es") or "").strip()[:200]
     p.activa = f.get("activa") == "1"
