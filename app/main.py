@@ -64,7 +64,8 @@ _SENSE_POPUP = ("/matricula", "/pagament", "/comanda", "/practiques", "/stripe")
 
 
 def _promo_popup(p, request):
-    """Dades del pop-up de la promoció (només si n'hi ha una d'automàtica per a les matrícules)."""
+    """Dades del pop-up i de la franja de la promoció (només si n'hi ha una d'automàtica per a les matrícules).
+    El pop-up només a la portada; la franja, a la resta de pàgines (no a matrícula ni pagament)."""
     if not p or (p.aplica or "tot") not in ("tot", "matricula") or not (p.percentatge or 0) > 0 or not p.fi:
         return None
     fi = p.fi.replace(tzinfo=preus.TZ)          # les dates de les promocions són hora de Barcelona
@@ -72,7 +73,8 @@ def _promo_popup(p, request):
     if queda.total_seconds() <= 0:
         return None
     return {"id": p.id, "nom": p.nom, "pct": f"{p.percentatge:g}", "fi_ms": int(fi.timestamp() * 1000),
-            "setmana": queda.days < 7, "popup": not request.url.path.startswith(_SENSE_POPUP),
+            "setmana": queda.days < 7, "popup": request.url.path == "/",
+            "barra": not request.url.path.startswith(_SENSE_POPUP),
             "tots": not p.llista_carnets, "abast_ca": abast_promo(p, "ca"), "abast_es": abast_promo(p, "es")}
 
 

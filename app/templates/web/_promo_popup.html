@@ -1,5 +1,5 @@
-{# Pop-up de la promoció automàtica (p. ex. Black Friday). Surt a cada pàgina que es carrega (també en refrescar), als 2 s, amb compte enrere fins a la data real de fi.
-   Quan es tanca, queda la franja d'una línia a dalt (#pp-barra, a base_web.html) fins que es torna a carregar la pàgina. #}
+{# Pop-up de la promoció automàtica (p. ex. Black Friday). Només a la portada i només el primer cop de cada visita, al cap d'1 s, amb compte enrere fins a la data real de fi.
+   Quan es tanca, queda la franja d'una línia a dalt (#pp-barra, a base_web.html) i a la resta de pàgines (menys matrícula i pagament) hi ha sempre la franja. #}
 {% if promo_popup %}{% set pp = promo_popup %}
 {% if pp.popup %}
 <div class="pp-fons" id="pp" hidden role="dialog" aria-modal="true" aria-labelledby="pp-titol" data-fi="{{ pp.fi_ms }}" data-id="{{ pp.id }}">
@@ -51,7 +51,8 @@
   var barra = document.getElementById('pp-barra');
   var fons = document.getElementById('pp');
   var font = barra || fons; if (!font) return;
-  var fi = {{ pp.fi_ms }};
+  var fi = {{ pp.fi_ms }}, clau = 'rolan_promo_vista_{{ pp.id }}', vista = false;
+  try { vista = !!sessionStorage.getItem(clau); } catch (e) {}
   var abans = null, rellotge = null;
   function dos(n) { return (n < 10 ? '0' : '') + n; }
   function tic() {
@@ -65,6 +66,7 @@
   function mostraBarra() { if (barra && fi - Date.now() > 0) { barra.hidden = false; engega(); } }
   function obre() {
     if (fi - Date.now() <= 0) return;
+    try { sessionStorage.setItem(clau, '1'); } catch (e) {}
     abans = document.activeElement;
     engega();
     fons.hidden = false;
@@ -80,14 +82,14 @@
   if (barra) barra.addEventListener('click', function () {
     if (window.rolanEvent) window.rolanEvent('select_promotion', { promotion_name: barra.querySelector('.pb-nom').textContent });
   });
-  if (!fons) return;                          // pàgines sense pop-up (matrícula, pagament…): ni pop-up ni franja
+  if (!fons || vista) { mostraBarra(); return; }   // altres pàgines, o ja l'ha vist en aquesta visita: només la franja
   document.getElementById('pp-tanca').addEventListener('click', tanca);
   fons.addEventListener('click', function (e) { if (e.target === fons) tanca(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !fons.hidden) tanca(); });
   document.getElementById('pp-cta').addEventListener('click', function () {
     if (window.rolanEvent) window.rolanEvent('select_promotion', { promotion_name: document.getElementById('pp-titol').textContent });
   });
-  setTimeout(obre, 2000);
+  setTimeout(obre, 1000);
 })();
 </script>
 {% endif %}
