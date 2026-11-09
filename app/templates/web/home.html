@@ -8,6 +8,12 @@
 .hero h1{font-size:clamp(38px,5.4vw,60px);font-weight:800;margin:20px 0 0;letter-spacing:-.03em}
 .hero h1 .hl{color:var(--blau);position:relative;white-space:nowrap}
 .hero h1 .hl:after{content:"";position:absolute;left:0;right:0;bottom:2px;height:9px;background:var(--verd);opacity:.55;z-index:-1;border-radius:3px}
+.hero h1 .h1-a,.hero h1 .h1-c{display:block}
+.hero h1 .rot{display:grid;height:1.12em;line-height:1.12em;overflow:hidden;color:var(--blau)}
+.hero h1 .rot>span{grid-area:1/1;white-space:nowrap;transform:translateY(105%);opacity:0;transition:transform .55s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.hero h1 .rot>span.on{transform:none;opacity:1}
+.hero h1 .rot>span.fora{transform:translateY(-105%);opacity:0}
+@media(prefers-reduced-motion:reduce){.hero h1 .rot>span{transition:none}}
 .hero p.lead{font-size:18px;color:var(--text-suau);margin:22px 0 30px;max-width:470px}
 .hero-cta{display:flex;gap:13px;flex-wrap:wrap}
 .hero-card{background:#fff;border:1px solid var(--vora);border-radius:22px;box-shadow:var(--ombra-alt);padding:28px}
@@ -45,7 +51,9 @@
 <section class="hero"><div class="wrap hero-in">
   <div>
     <span class="eyebrow"><span class="dot"></span>Formant conductors des de 1987</span>
-    <h1>El teu carnet, <span class="hl">sense complicar-te</span> la vida.</h1>
+    <h1><span class="h1-a">El teu carnet</span>
+      <span class="rot" data-rot><span class="on">de cotxe,</span> <span>de moto,</span> <span>de ciclomotor,</span></span>
+      <span class="h1-c">sense complicar-te la vida.</span></h1>
     <p class="lead">Matricula't en línia en pocs minuts i paga de forma segura. 3 centres al Barcelonès i el Maresme.</p>
     <div class="hero-cta">
       <a class="btn btn-verd btn-lg" href="/matricula">Comença ara</a>
@@ -97,4 +105,18 @@
   <p>Consulta preus i comença la teva matrícula.</p>
   <a class="btn btn-verd btn-lg" href="/preus">Veure preus</a>
 </div></div></section>
+<script>
+(function(){
+  var r=document.querySelector('[data-rot]'); if(!r) return;
+  var s=r.querySelectorAll(':scope>span'), i=0;
+  if(s.length<2 || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+  setInterval(function(){
+    if(document.hidden) return;
+    var a=s[i]; i=(i+1)%s.length; var b=s[i];
+    a.classList.remove('on'); a.classList.add('fora');
+    b.classList.remove('fora'); b.classList.add('on');
+    setTimeout(function(){ a.classList.remove('fora'); },600);
+  },2500);
+})();
+</script>
 {% endblock %}

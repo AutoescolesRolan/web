@@ -275,6 +275,11 @@ _T = {
     "Signa el contracte · Autoescoles Rolan": "Firma el contrato · Autoescoles Rolan",
     "La teva matrícula · Autoescoles Rolan": "Tu matrícula · Autoescoles Rolan",
     "La teva compra · Autoescoles Rolan": "Tu compra · Autoescoles Rolan",
+    "El teu carnet": "Tu carnet",
+    "de cotxe,": "de coche,",
+    "de moto,": "de moto,",
+    "de ciclomotor,": "de ciclomotor,",
+    "sense complicar-te la vida.": "sin complicarte la vida.",
 }
 
 TR_WEB = {k: (k, v) for k, v in _T.items()}
