@@ -359,6 +359,52 @@ def comanda_pdf(cid: int, doc: str, request: Request, db: Session = Depends(get_
     return Response(status_code=404)
 
 
+CAP_EXCEL = ["Rebut", "Pagat el", "Estat", "Tipus", "Centre", "Carnet", "Producte", "Preu", "Descompte", "Promoció",
+             "Taxa DGT", "Cànon", "Total", "Nom", "Cognoms", "DNI/NIE", "Naixement", "Correu", "Telèfon", "Adreça",
+             "CP", "Població", "Tutor/a", "DNI tutor/a", "Horari", "Contactar per", "Observacions", "Pagament Stripe",
+             "Idioma", "Creada el", "Nota interna"]
+
+
+def _capcalera(ws, cap):
+    from openpyxl.styles import Font, PatternFill
+    ws.append(cap)
+    for cel in ws[1]:
+        cel.font = Font(bold=True, color="FFFFFF")
+        cel.fill = PatternFill("solid", fgColor="14224F")
+
+
+def _ajusta(ws):
+    for col in ws.columns:
+        ws.column_dimensions[col[0].column_letter].width = min(40, max(10, max(len(str(x.value or "")) for x in col) + 2))
+    ws.auto_filter.ref = ws.dimensions
+    ws.freeze_panes = "A2"
+
+
+def fulla_comandes(ws, llista):
+    """Omple una fulla d'Excel amb les comandes (també la fa servir la còpia de seguretat)."""
+    ws.title = "Comandes"
+    _capcalera(ws, CAP_EXCEL)
+    for c in llista:
+        ws.append([c.num_rebut, c.pagat_en.strftime("%d/%m/%Y %H:%M") if c.pagat_en else "", c.estat,
+                   "Matrícula" if c.tipus == "matricula" else "Pràctiques", c.centre.nom if c.centre else "",
+                   c.carnet_codi, c.producte, c.preu_base, c.descompte, c.promocio, c.taxa, c.canon, c.total,
+                   c.nom, c.cognoms, c.dni, c.naixement.strftime("%d/%m/%Y") if c.naixement else "", c.email,
+                   c.telefon, c.adreca, c.cp, c.localitat, c.tutor_nom, c.tutor_dni,
+                   {"MATI": "Matí", "TARDA": "Tarda"}.get(c.franja, c.franja), comandes.via_contacte(c), c.observacions,
+                   c.stripe_pagament, c.idioma, c.creat_en.strftime("%d/%m/%Y %H:%M") if c.creat_en else "",
+                   c.nota_interna])
+    _ajusta(ws)
+
+
+def fulla_missatges(ws, llista):
+    ws.title = "Missatges"
+    _capcalera(ws, ["Data", "Centre", "Nom", "Correu", "Telèfon", "Missatge"])
+    for m in llista:
+        ws.append([m.creat_en.strftime("%d/%m/%Y %H:%M") if m.creat_en else "", m.centre.nom if m.centre else "",
+                   m.nom, m.email, m.telefon, m.text])
+    _ajusta(ws)
+
+
 @router.get("/exporta.xlsx")
 def exporta(request: Request, estat: str = "pagada", tipus: str = "", centre: str = "", q: str = "",
             db: Session = Depends(get_db)):
@@ -367,29 +413,8 @@ def exporta(request: Request, estat: str = "pagada", tipus: str = "", centre: st
     except _Fora:
         return _redir_login()
     from openpyxl import Workbook
-    from openpyxl.styles import Font, PatternFill
     wb = Workbook()
-    ws = wb.active
-    ws.title = "Comandes"
-    cap = ["Rebut", "Pagat el", "Estat", "Tipus", "Centre", "Carnet", "Producte", "Preu", "Descompte", "Promoció",
-           "Taxa DGT", "Cànon", "Total", "Nom", "Cognoms", "DNI/NIE", "Naixement", "Correu", "Telèfon", "Adreça",
-           "CP", "Població", "Tutor/a", "DNI tutor/a", "Horari", "Contactar per", "Observacions", "Pagament Stripe", "Idioma"]
-    ws.append(cap)
-    for cel in ws[1]:
-        cel.font = Font(bold=True, color="FFFFFF")
-        cel.fill = PatternFill("solid", fgColor="14224F")
-    for c in _consulta(db, u, estat, tipus, centre, q).all():
-        ws.append([c.num_rebut, c.pagat_en.strftime("%d/%m/%Y %H:%M") if c.pagat_en else "", c.estat,
-                   "Matrícula" if c.tipus == "matricula" else "Pràctiques", c.centre.nom if c.centre else "",
-                   c.carnet_codi, c.producte, c.preu_base, c.descompte, c.promocio, c.taxa, c.canon, c.total,
-                   c.nom, c.cognoms, c.dni, c.naixement.strftime("%d/%m/%Y") if c.naixement else "", c.email,
-                   c.telefon, c.adreca, c.cp, c.localitat, c.tutor_nom, c.tutor_dni,
-                   {"MATI": "Matí", "TARDA": "Tarda"}.get(c.franja, c.franja), comandes.via_contacte(c), c.observacions, c.stripe_pagament,
-                   c.idioma])
-    for col in ws.columns:
-        ws.column_dimensions[col[0].column_letter].width = min(40, max(10, max(len(str(x.value or "")) for x in col) + 2))
-    ws.auto_filter.ref = ws.dimensions
-    ws.freeze_panes = "A2"
+    fulla_comandes(wb.active, _consulta(db, u, estat, tipus, centre, q).all())
     buf = io.BytesIO()
     wb.save(buf)
     nom = f"comandes-web-{datetime.now().strftime('%Y-%m-%d')}.xlsx"
@@ -579,6 +604,22 @@ async def dades_desa(request: Request, db: Session = Depends(get_db)):
                 ajustos.desa(db, clau, (f.get(clau) or "").strip())
         db.commit()
     return RedirectResponse("/gestio/dades?fet=1", status_code=303)
+
+
+@router.get("/copia-seguretat.zip")
+def copia_seguretat(request: Request, db: Session = Depends(get_db)):
+    try:
+        u = _cal(request, db, admin=True)
+    except _Fora:
+        return _redir_login()
+    from fastapi.responses import FileResponse
+    from starlette.background import BackgroundTask
+    from . import copia
+    cami, nom = copia.genera(db)
+    ajustos.desa(db, "ultima_copia", f"{datetime.now().strftime('%d/%m/%Y %H:%M')} · {u.nom or u.email}")
+    db.commit()
+    return FileResponse(cami, media_type="application/zip", filename=nom,
+                        background=BackgroundTask(os.remove, cami))
 
 
 # ------------------------------------------------------------------ usuaris

@@ -16,6 +16,12 @@
     <dt>Adreça pública</dt><dd>{{ url or 'Sense configurar (PUBLIC_URL)' }}</dd>
   </dl>
 </div>
+<div class="card">
+  <h2 style="margin-top:0">Còpia de seguretat</h2>
+  <p class="sub" style="margin-top:0">Un fitxer ZIP amb totes les matrícules i missatges en Excel, els contractes i rebuts en PDF, i totes les dades de la web (preus, packs, promocions, centres). Conté dades personals dels alumnes: guarda'l en un lloc segur.</p>
+  <p style="margin:12px 0 0"><a class="btn verd" href="/gestio/copia-seguretat.zip">Descarregar còpia</a>
+  <span class="sub" style="margin-left:10px">{% if aj.get('ultima_copia') %}Última còpia: {{ aj.get('ultima_copia') }}{% else %}Encara no se n'ha fet cap.{% endif %}</span></p>
+</div>
 <form class="card" method="post" action="/gestio/dades">
   <input type="hidden" name="csrf" value="{{ csrf }}">
   <div class="grid2">
