@@ -102,16 +102,14 @@ html,body{overflow-x:clip;max-width:100%}
 }
 
 .promo-barra{display:flex;align-items:center;justify-content:center;gap:12px;white-space:nowrap;overflow:hidden;background:#0B1433;color:#fff;font-size:14px;padding:9px 16px 11px;text-decoration:none;background-image:repeating-linear-gradient(90deg,var(--verd) 0 30px,transparent 30px 56px);background-size:100% 3px;background-repeat:no-repeat;background-position:bottom}
+.promo-barra:hover .pb-nom{color:var(--verd)}
 .promo-barra[hidden]{display:none}
 .promo-barra .pb-nom{font-family:var(--disp);font-weight:800;text-transform:uppercase;letter-spacing:.02em}
 .promo-barra .pb-pct{font-family:var(--disp);font-weight:800;color:var(--verd);font-size:16px}
 .promo-barra .pb-abast{color:#C7CFEA}
 .promo-barra .pb-temps{color:#C7CFEA}
 .promo-barra .pb-temps [data-barra-temps]{color:#fff;font-weight:700;font-variant-numeric:tabular-nums}
-.promo-barra .pb-cta{background:var(--verd);color:#173a05;font-weight:700;font-size:13px;border-radius:100px;padding:4px 12px}
-.promo-barra:hover .pb-cta{background:#9AD34C}
 @media(max-width:760px){.promo-barra{gap:9px;font-size:13px;padding:8px 12px 10px}.promo-barra .pb-abast,.promo-barra .pb-q{display:none}}
-@media(max-width:400px){.promo-barra .pb-cta{display:none}}
 s.abans{color:var(--text-tenue);font-weight:600;font-size:.78em;margin:0 5px 0 2px;text-decoration-thickness:2px;text-decoration-color:#E5484D}
 .peu-idioma{display:inline-flex;gap:4px;align-items:center;color:#d6dcf3}
 .peu-idioma svg{width:15px;height:15px;flex:none;margin-right:2px}
@@ -129,7 +127,6 @@ s.abans{color:var(--text-tenue);font-weight:600;font-size:.78em;margin:0 5px 0 2
   <span class="pb-pct">−{{ promo_popup.pct }}%</span>
   <span class="pb-abast">{{ T(promo_popup.abast_ca, promo_popup.abast_es) }}</span>
   <span class="pb-temps"><span class="pb-q">{{ T('Acaba en', 'Termina en') }}</span> <span data-barra-temps>—</span></span>
-  <span class="pb-cta">{{ T("Matricula't", "Matricúlate") }} →</span>
 </a>
 {% endif %}
 <nav class="nav"><div class="wrap nav-in">
