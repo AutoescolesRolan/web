@@ -80,6 +80,7 @@ pre.reg{white-space:pre-wrap;font:12.5px/1.5 ui-monospace,Menlo,monospace;backgr
     <a href="/gestio/centres" class="{{ 'on' if p.startswith('/gestio/centres') }}">Centres</a>
     <a href="/gestio/dades" class="{{ 'on' if p.startswith('/gestio/dades') }}">Dades i correus</a>
     <a href="/gestio/usuaris" class="{{ 'on' if p.startswith('/gestio/usuaris') }}">Usuaris</a>
+    {% if ga_id %}<a href="https://analytics.google.com/analytics/web/" target="_blank" rel="noopener">Estadístiques ↗</a>{% endif %}
     {% endif %}
   </nav>
   <div class="qui">{{ u.nom or u.email }}{% if u.centre %} · {{ u.centre.nom }}{% endif %} <a href="/" target="_blank" rel="noopener">Veure la web ↗</a> <a href="/gestio/sortir">Sortir</a></div>
